@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qdebug.h"
+#include "fshost.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -38,4 +39,14 @@ void MainWindow::on_pushButton_clicked()
     flash_dialog -> raise();
     flash_dialog -> show();
     flash_dialog -> activateWindow();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    fshost = new FSHost();
+
+    qDebug() << "will start" << endl;
+    fshost->start();
+    qDebug() << "end start" << endl;
+
 }

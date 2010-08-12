@@ -1,8 +1,8 @@
 #include "flashdialog.h"
 #include "ui_flashdialog.h"
 #include "qwebsettings.h"
-#include "qdebug.h"
 #include "qurl.h"
+#include "trainer_studio.h"
 
 
 FlashDialog::FlashDialog(QWidget *parent) :
