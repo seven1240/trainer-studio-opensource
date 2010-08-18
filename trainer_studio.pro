@@ -1,15 +1,12 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-09T11:35:58
 # -------------------------------------------------
-
-contains(QT_VERSION, ^4\.[0-5]\..*) {
+contains(QT_VERSION, ^4\.[0-5]\..*) { 
     message("Cannot build with Qt version $$QT_VERSION.")
     error("Use at least Qt 4.6.")
 }
-
 TARGET = trainer_studio
 macx:TARGET = TrainerStudio
-
 FSPATH = ../../freeswitch/freeswitch
 INCLUDEPATH = $${FSPATH}/src/include \
     $${FSPATH}libs/apr/include \
@@ -17,15 +14,14 @@ INCLUDEPATH = $${FSPATH}/src/include \
 LIBS = -L$${FSPATH}/.libs \
     -lfreeswitch \
     -lm
-!win32:!macx {
+!win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
     LIBS += -lcrypt \
         -lrt
 }
 
-# xCONFIG += x86   # 32bit binary
-
+# CONFIG += x86   # 32bit binary
 QT += network \
     webkit \
     xml \
@@ -39,12 +35,17 @@ SOURCES += main.cpp \
     flashdialog.cpp \
     fshost.cpp \
     channel.cpp \
-    call.cpp
+    call.cpp \
+    logindialog.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
     trainer_studio.h \
     channel.h \
-    call.h
+    call.h \
+    logindialog.h
 FORMS += mainwindow.ui \
-    flashdialog.ui
+    flashdialog.ui \
+    logindialog.ui
+RESOURCES += resources.qrc
+OTHER_FILES += conf/freeswitch.xml

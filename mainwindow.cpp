@@ -8,7 +8,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    login_dialog = NULL;
+    flash_dialog = NULL;
+
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -25,6 +29,21 @@ void MainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void MainWindow::showLoginDialog()
+{
+        if (!login_dialog) {
+            login_dialog = new LoginDialog();
+            connect(login_dialog, SIGNAL(Login()), this, SLOT(onLogin()));
+    //        connect(preferences, SIGNAL(preprocessorsApplied(QStringList)), this, SLOT(applyPreprocessors(QStringList)));
+        }
+    login_dialog -> raise();
+//    login_dialog->setModal(true);
+    login_dialog -> show();
+
+    login_dialog -> activateWindow();
+
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -49,4 +68,10 @@ void MainWindow::on_pushButton_2_clicked()
     fshost->start();
     qDebug() << "end start" << endl;
 
+}
+
+void MainWindow::onLogin()
+{
+    qDebug() << "LoginSuccess";
+    show();
 }
