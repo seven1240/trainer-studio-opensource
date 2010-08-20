@@ -23,6 +23,7 @@ private:
     Ui::LoginDialog *ui;
 
 private slots:
+    void on_btnLogin_clicked();
     void on_pushButton_clicked();
     void on_buttonBox_rejected();
     void on_buttonBox_accepted();

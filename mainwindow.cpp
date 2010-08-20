@@ -2,14 +2,21 @@
 #include "ui_mainwindow.h"
 #include "qdebug.h"
 #include "fshost.h"
+#include "TcpClient.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // We should not need set NULL manually, but without this,
+    // flash_dialog is NULL but not login_dialog, weird
     login_dialog = NULL;
     flash_dialog = NULL;
+
+    tcp_client = new TCPClient();
+    tcp_client->start();
 
 }
 

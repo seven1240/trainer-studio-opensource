@@ -10,10 +10,13 @@ macx:TARGET = TrainerStudio
 FSPATH = ../../freeswitch/freeswitch
 INCLUDEPATH = $${FSPATH}/src/include \
     $${FSPATH}libs/apr/include \
-    $${FSPATH}/libs/libteletone/src
+    $${FSPATH}/libs/libteletone/src \
+    libs/qjson/src
 LIBS = -L$${FSPATH}/.libs \
     -lfreeswitch \
-    -lm
+    -lm \
+    -Llibs/qjson/lib \
+    -lqjson
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
@@ -36,14 +39,16 @@ SOURCES += main.cpp \
     fshost.cpp \
     channel.cpp \
     call.cpp \
-    logindialog.cpp
+    logindialog.cpp \
+    TCPClient.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
     trainer_studio.h \
     channel.h \
     call.h \
-    logindialog.h
+    logindialog.h \
+    TCPClient.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
     logindialog.ui
