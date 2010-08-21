@@ -2,7 +2,7 @@
 #include "ui_logindialog.h"
 #include "qdebug.h"
 #include "TCPClient.h"
-#include <QSplashScreen>
+#include <qmessagebox.h>
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -10,6 +10,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     qDebug() << "LoginDialog starting";
     ui->setupUi(this);
+    ui->frmSplash->hide();
+    this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+    this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
 }
 
 LoginDialog::~LoginDialog()
@@ -31,7 +34,26 @@ void LoginDialog::changeEvent(QEvent *e)
 
 void LoginDialog::on_buttonBox_accepted()
 {
-    tcp_client->ConnectToHost();
+
+
+}
+
+void LoginDialog::on_buttonBox_rejected()
+{
+    qDebug() << "Rejected";
+    this->show();
+}
+
+void LoginDialog::on_pushButton_clicked()
+{
+    emit Login();
+}
+
+void LoginDialog::on_btnLogin_clicked()
+{
+    ui->frmSplash->setGeometry( ui->frmLogin->geometry());
+    ui->frmSplash->show();
+    tcp_client->connectToHost();
 
     QVariantList system;
 
@@ -56,32 +78,52 @@ void LoginDialog::on_buttonBox_accepted()
     // wait socket
     int i;
     for(i=0; i<20 && (!tcp_client->isConnected()); i++) {
+        QApplication::processEvents();
         qDebug() << tcp_client->isConnected();
         sleep(1);
     }
 
-    if( i == 10) {
+    if(i == 20) {
         // error socket connect
-        this->show();
+        QMessageBox::critical( this, "Idapted Trainer Studio",
+                                  "Login Error, please try again!" );
+        ui->frmSplash->hide();
+
     } else { //connected
+        ui->lbProgress->setText("Socket connected, authenticating...");
         tcp_client->write(json);
+
+        for(i=0; i<20 && (!authenticated); i++) {
+            QApplication::processEvents();
+            sleep(1);
+        }
+        if(i = 20) {
+            QMessageBox::critical( this, "Idapted Trainer Studio",
+                                   QString("Authenticate Error:\nReason: NO RESPONSE!"));
+            ui->frmSplash->hide();
+        }
+
     }
-    emit Login();
-
+//    emit Login();
 }
 
-void LoginDialog::on_buttonBox_rejected()
+void LoginDialog::on_cancelLogin_clicked()
 {
-    qDebug() << "Rejected";
-    this->show();
+    tcp_client->close();
+    ui->frmSplash->hide();
 }
 
-void LoginDialog::on_pushButton_clicked()
+void LoginDialog::onAuthenticated(QVariantMap map)
 {
-    emit Login();
+    qDebug() << "Authenticated";
+    user = map;
+    authenticated = true;
+    hide();
 }
 
-void LoginDialog::on_btnLogin_clicked()
+void LoginDialog::onAuthenticateError(QString reason)
 {
-    ui->frmSplash->setGeometry( ui->frmLogin->geometry());
+    QMessageBox::critical( this, "Idapted Trainer Studio",
+                           QString("Authenticate Error:\nReason: %1").arg(reason));
+    ui->frmSplash->hide();
 }

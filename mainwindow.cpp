@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     tcp_client = new TCPClient();
     tcp_client->start();
+    this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
 
 }
 
@@ -80,5 +81,10 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::onLogin()
 {
     qDebug() << "LoginSuccess";
+    show();
+}
+
+void MainWindow::onAuthenticated(QVariantMap user)
+{
     show();
 }

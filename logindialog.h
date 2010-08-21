@@ -2,6 +2,7 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
+#include <qvariant.h>
 
 namespace Ui {
     class LoginDialog;
@@ -21,8 +22,13 @@ signals:
 
 private:
     Ui::LoginDialog *ui;
-
+    QVariantMap user;
+    bool authenticated;
+public slots:
+    void onAuthenticated(QVariantMap);
+    void onAuthenticateError(QString);
 private slots:
+    void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
     void on_pushButton_clicked();
     void on_buttonBox_rejected();

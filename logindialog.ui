@@ -111,6 +111,9 @@
    </widget>
   </widget>
   <widget class="QFrame" name="frmSplash">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -141,7 +144,7 @@
      <string>Connecting to server, please wait...</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="cancelLogin">
     <property name="geometry">
      <rect>
       <x>190</x>

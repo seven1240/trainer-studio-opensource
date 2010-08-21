@@ -13,13 +13,17 @@ class TCPClient : public QThread
     Q_OBJECT
 public:
     TCPClient();
-    void ConnectToHost();
+    void connectToHost();
+    void close();
     void write(QByteArray);
     bool isConnected();
 
 protected:
     void run();
 
+signals:
+    void authenticated(QVariantMap);
+    void authenticateError(QString reason);
 private slots:
     void onReadyRead();
     void onSocketError(QAbstractSocket::SocketError);

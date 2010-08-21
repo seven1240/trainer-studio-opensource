@@ -35,9 +35,14 @@ void TCPClient::run()
 //    qDebug() << obj->metaObject()->className()
 }
 
-void TCPClient::ConnectToHost()
+void TCPClient::connectToHost()
 {
     tcpSocket->connectToHost("voip.idapted.com", 7000);
+}
+
+void TCPClient::close()
+{
+    tcpSocket->close();
 }
 
 void TCPClient::onReadyRead()
@@ -52,6 +57,28 @@ void TCPClient::onReadyRead()
 
     QString s(ba);
     qDebug() << s;
+
+    QJson::Parser parser;
+    bool ok;
+    QVariantMap result;
+
+    result = parser.parse (ba, &ok).toMap();
+    qDebug() << result;
+    if(!ok) {
+        qDebug() << "Invalid JSON!";
+    }else{
+        if(result["status"] == "Ping") {
+
+        }else if(result["status"] == "Authenticated") {
+            emit(authenticated(result));
+            ping = true;
+        } else if(result["status"] == "AuthenticateError"){
+            emit(authenticateError(result["reason"].toString()));
+        } else {
+            qDebug() << "Unknown JSON";
+        }
+
+    }
 }
 
 void TCPClient::onSocketError(QAbstractSocket::SocketError)
@@ -64,21 +91,12 @@ void TCPClient::onConnected()
 {
     connected = true;
     qDebug() << "Socket Connected";
-//    QJson::Parser parser;
-//    bool ok;
-//    QVariant result;
-//
-//    qDebug() << "Connnected";
-////    char *s = "{'action':'Authenticate','username':'jpalley', 'password':'veecue', 'system_info':[{'memory':'1024'}]}\n";
-//    char *s="{\"password\":\"veecue\",\"username\":\"jpalley\",\"system_info\":[{\"memory\":\"100\"}],\"action\":\"Authenticate\"}\n";
-//    qDebug() << s;
-//    result = parser.parse (s, &ok);
-//    qDebug() << result;
-//    tcpSocket->write(s);
+
 }
 
 void TCPClient::onDisconnected()
 {
+    ping = false;
     connected = false;
     qDebug() << "Disconnected, reconnecting in 10 seconds...";
 //    sleep(1);
