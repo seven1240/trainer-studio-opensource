@@ -3,6 +3,7 @@
 #include "qdebug.h"
 #include "TCPClient.h"
 #include <qmessagebox.h>
+#include "fshost.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -97,9 +98,21 @@ void LoginDialog::on_btnLogin_clicked()
             QApplication::processEvents();
             sleep(1);
         }
-        if(i = 20) {
+        if(i == 20) {
             QMessageBox::critical( this, "Idapted Trainer Studio",
                                    QString("Authenticate Error:\nReason: NO RESPONSE!"));
+            ui->frmSplash->hide();
+        }
+
+        ui->lbProgress->setText("Waiting FreeSWITCH to be loaded...");
+
+        for(i=0; i<20 && (!fshost->isRunning()); i++ ){
+            QApplication::processEvents();
+            sleep(1);
+        }
+        if(i == 20) {
+            QMessageBox::critical( this, "Idapted Trainer Studio",
+                                   QString("Error Loading FreeSWITCH\nReason: NO RESPONSE!"));
             ui->frmSplash->hide();
         }
 
@@ -109,6 +122,7 @@ void LoginDialog::on_btnLogin_clicked()
 
 void LoginDialog::on_cancelLogin_clicked()
 {
+    qDebug() << "Cancel";
     tcp_client->close();
     ui->frmSplash->hide();
 }

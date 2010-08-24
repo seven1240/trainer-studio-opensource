@@ -50,7 +50,8 @@ public:
     void generalEventHandler(QSharedPointer<switch_event_t>event);
     void generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level);
     void printEventHeaders(QSharedPointer<switch_event_t>event);
-    QBool isModuleLoaded(QString);
+    bool isModuleLoaded(QString);
+    bool isRunning();
 
 protected:
     void run(void);
@@ -85,6 +86,7 @@ private slots:
     void minimalModuleLoaded(QString, QString);
 
 private:
+    bool running;
     /* Helper methods */
     void createFolders();
 

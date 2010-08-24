@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     channel.cpp \
     call.cpp \
     logindialog.cpp \
-    TCPClient.cpp
+    TCPClient.cpp \
+    isettings.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
@@ -48,7 +49,8 @@ HEADERS += mainwindow.h \
     channel.h \
     call.h \
     logindialog.h \
-    TCPClient.h
+    TCPClient.h \
+    isettings.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
     logindialog.ui

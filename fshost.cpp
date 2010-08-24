@@ -49,10 +49,10 @@ FSHost::FSHost(QObject *parent) :
 
 }
 
-QBool FSHost::isModuleLoaded(QString modName)
-{
-    return _loadedModules.contains(modName);
-}
+//QBool FSHost::isModuleLoaded(QString modName)
+//{
+//    return _loadedModules.contains(modName);
+//}
 
 void FSHost::createFolders()
 {
@@ -119,6 +119,10 @@ void FSHost::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_
     emit eventLog(node, level);
 }
 
+bool FSHost::isRunning(){
+    return running;
+}
+
 void FSHost::run(void)
 {
     switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT;
@@ -128,6 +132,7 @@ void FSHost::run(void)
 
     createFolders();
 
+    running = true;
     /* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
     qDebug() << "Initializing core...";
     /* Initialize the core and load modules, that will startup FS completely */
@@ -164,6 +169,7 @@ void FSHost::run(void)
     if (destroy_status == SWITCH_STATUS_SUCCESS)
     {
         qDebug() << "We have properly shutdown the core.";
+        running = false;
     }
 }
 

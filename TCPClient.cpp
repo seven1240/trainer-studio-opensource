@@ -67,8 +67,8 @@ void TCPClient::onReadyRead()
     if(!ok) {
         qDebug() << "Invalid JSON!";
     }else{
-        if(result["status"] == "Ping") {
-
+        if(result["status"] == "Pong") {
+            qDebug() << "Got Pong";
         }else if(result["status"] == "Authenticated") {
             emit(authenticated(result));
             ping = true;

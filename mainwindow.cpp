@@ -3,6 +3,7 @@
 #include "qdebug.h"
 #include "fshost.h"
 #include "TcpClient.h"
+#include "isettings.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -86,5 +87,26 @@ void MainWindow::onLogin()
 
 void MainWindow::onAuthenticated(QVariantMap user)
 {
+    ISettings *settings = new ISettings(this);
+
+    QVariantMap gw = settings->getGateway(QString("default"));
+
+    if(gw["username"] == user["voip_username"] && gw["password"] == user["voip_password"]) {
+        //ok
+        qDebug() << "No gateway info changed";
+    }else{
+        qDebug() << "Need to set gateway";
+
+        QVariantMap newgw;
+        newgw.insert("username", user["voip_username"]);
+        newgw.insert("password", user["voip_password"]);
+        QVariantList serverlist = user["servers"].toList();
+        QVariantMap server = serverlist[0].toMap();
+
+        newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
+        settings -> writeGateway(newgw);
+    }
+
     show();
+    delete(settings);
 }
