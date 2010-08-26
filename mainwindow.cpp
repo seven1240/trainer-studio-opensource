@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
     this->connect(tcp_client, SIGNAL(forcedpause(QString)), this, SLOT(onForcedPause(QString)));
+    this->connect(incoming_call_dialog, SIGNAL(answered()), this, SLOT(onAnswered()));
 
 }
 
@@ -149,3 +150,15 @@ void MainWindow::onForcedPause(QString reason)
                           reason);
 }
 
+void MainWindow::onAnswered()
+{
+
+    if (!flash_dialog) {
+        flash_dialog = new FlashDialog();
+//        connect(preferences, SIGNAL(preprocessorsApplied(QStringList)), this, SLOT(applyPreprocessors(QStringList)));
+    }
+
+    flash_dialog -> raise();
+    flash_dialog -> show();
+    flash_dialog -> activateWindow();
+}

@@ -17,6 +17,8 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+signals:
+    void answered();
 private slots:
 
     void on_pushButton_clicked();

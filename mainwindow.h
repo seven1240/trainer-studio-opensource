@@ -36,7 +36,7 @@ private slots:
     void onPaused(bool);
     void onForcedPause(QString reason);
     void onLogin();
-
+    void onAnswered();
 };
 
 #endif // MAINWINDOW_H

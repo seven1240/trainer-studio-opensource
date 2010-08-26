@@ -31,8 +31,8 @@ void IncomingCallDialog::changeEvent(QEvent *e)
 void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
 {
     qDebug() << "incoming call";
-    const char *cid_name = switch_event_get_header_nil(event.data(), "caller-id-name");
-    const char *cid_number = switch_event_get_header_nil(event.data(), "caller-id-number");
+    const char *cid_name = switch_event_get_header_nil(event.data(), "caller_id_name");
+    const char *cid_number = switch_event_get_header_nil(event.data(), "caller_id_number");
     ui->lbCallerID->setText(QString("\"%1 <%2>\"").arg(cid_name).arg(cid_number));
     show();
 }
@@ -41,6 +41,8 @@ void IncomingCallDialog::on_pushButton_2_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "answer", &res);
+    emit(answered());
+    hide();
 }
 
 void IncomingCallDialog::on_pushButton_clicked()
