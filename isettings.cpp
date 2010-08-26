@@ -79,16 +79,17 @@ void ISettings::writeGateway(QVariantMap newgw)
 
     QDomElement gws = cfg.elementsByTagName("gateways").at(0).toElement();
 
-//    if(gws.isNull()) {
-//        qDebug() << "NULLLLLLLLLL";
+    if(gws.isNull()) {
+        qDebug() << "NULL gateways tag!";
 //        QDomDocument c = cfg.toDocument() ;
 ////        gws = c.c
 //        cfg = c.toElement();
-//    }
+    }
+
 
         QDomDocument d = gws.toDocument();
         QDomElement nGw = d.createElement("gateway");
-        gws.clear();
+//        gws.clear();
         gws.insertAfter(nGw, QDomNode());
         nGw.setAttribute("name","default");
 

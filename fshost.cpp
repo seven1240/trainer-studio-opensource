@@ -266,8 +266,11 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //            eventChannelDestroy(event, uuid);
 //            break;
 //        }
-//    case SWITCH_EVENT_CUSTOM:/*5A*/
-//        {
+    case SWITCH_EVENT_CUSTOM:/*5A*/
+        {
+              if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0){
+                  emit(incomingCall(event));
+              }
 //            if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0)
 //            {
 //                QString state = switch_event_get_header_nil(event.data(), "State");
@@ -332,8 +335,8 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //            {
 //                //printEventHeaders(event);
 //            }
-//            break;
-//        }
+            break;
+        }
 //    case SWITCH_EVENT_MODULE_LOAD:
 //        {
 //            QString modType = switch_event_get_header_nil(event.data(), "type");

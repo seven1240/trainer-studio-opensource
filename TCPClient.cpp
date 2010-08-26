@@ -74,6 +74,14 @@ void TCPClient::onReadyRead()
             ping = true;
         } else if(result["status"] == "AuthenticateError"){
             emit(authenticateError(result["reason"].toString()));
+        } else if(result["status"] == "Paused"){
+            emit(paused(true));
+        } else if(result["status"] == "Unpaused"){
+            emit(paused(false));
+        } else if(result["status"] == "ForcedPause"){
+            emit(forcedPause(result["reason"].toString()));
+        } else if(result["status"] == "ReservedForInteraction"){
+            emit(reservedForInteraction(result));
         } else {
             qDebug() << "Unknown JSON";
         }
@@ -111,4 +119,13 @@ void TCPClient::write(QByteArray ba)
 bool TCPClient::isConnected()
 {
     return connected;
+}
+
+void TCPClient::pause(bool action)
+{
+    if(action){
+        tcpSocket->write("{\"action\":\"Pause\"}");
+    }else{
+        tcpSocket->write("{\"action\":\"Unpause\"}");
+    }
 }

@@ -41,7 +41,8 @@ SOURCES += main.cpp \
     call.cpp \
     logindialog.cpp \
     TCPClient.cpp \
-    isettings.cpp
+    isettings.cpp \
+    IncomingCallDialog.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
@@ -50,9 +51,11 @@ HEADERS += mainwindow.h \
     call.h \
     logindialog.h \
     TCPClient.h \
-    isettings.h
+    isettings.h \
+    IncomingCallDialog.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
-    logindialog.ui
+    logindialog.ui \
+    IncomingCallDialog.ui
 RESOURCES += resources.qrc
 OTHER_FILES += conf/freeswitch.xml

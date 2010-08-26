@@ -66,9 +66,10 @@ signals:
 
     /* Logging signals */
     void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
-    void newEvent(QSharedPointer<switch_event_t>);
+    void newEvent(QSharedPointer<switch_event_t>);    
 
     /* Call signals */
+    void incomingCall(QSharedPointer<switch_event_t>event);
 //    void ringing(QSharedPointer<Call>);
 //    void answered(QSharedPointer<Call>);
 //    void newOutgoingCall(QSharedPointer<Call>);

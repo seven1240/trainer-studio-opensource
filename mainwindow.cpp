@@ -4,6 +4,7 @@
 #include "fshost.h"
 #include "TcpClient.h"
 #include "isettings.h"
+#include "qmessagebox.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,10 +16,13 @@ MainWindow::MainWindow(QWidget *parent) :
     // flash_dialog is NULL but not login_dialog, weird
     login_dialog = NULL;
     flash_dialog = NULL;
+    incoming_call_dialog = new IncomingCallDialog();
 
     tcp_client = new TCPClient();
     tcp_client->start();
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+    this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
+    this->connect(tcp_client, SIGNAL(forcedpause(QString)), this, SLOT(onForcedPause(QString)));
 
 }
 
@@ -105,8 +109,43 @@ void MainWindow::onAuthenticated(QVariantMap user)
 
         newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
         settings -> writeGateway(newgw);
+
+        QString res;
+        fshost->sendCmd("sofia", "profile softphone killgw default", &res);
+        sleep(1);
+        fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+        sleep(1);
+        fshost->sendCmd("sofia", "profile softphone register default", &res);
     }
 
     show();
     delete(settings);
 }
+
+void MainWindow::on_btnState_clicked()
+{
+    if(ui->btnState->isChecked()){
+        tcp_client->pause(false);
+    }else{
+        tcp_client->pause(true);
+    }
+//    ui->btnState->toggle();
+}
+
+void MainWindow::onPaused(bool state)
+{
+    if(state){
+        ui->btnState->setText("> Start Working");
+        ui->btnState->setChecked(false);
+    }else{
+        ui->btnState->setText("|| Pause");
+        ui->btnState->setChecked(true);
+    }
+}
+
+void MainWindow::onForcedPause(QString reason)
+{
+    QMessageBox::warning(this, "Idapted Trainer Studio",
+                          reason);
+}
+

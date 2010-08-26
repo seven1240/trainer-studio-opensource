@@ -17,6 +17,7 @@ public:
     void close();
     void write(QByteArray);
     bool isConnected();
+    void pause(bool action);
 
 protected:
     void run();
@@ -24,6 +25,9 @@ protected:
 signals:
     void authenticated(QVariantMap);
     void authenticateError(QString reason);
+    void paused(bool state);
+    void forcedPause(QString reason);
+    void reservedForInteraction(QVariantMap);
 private slots:
     void onReadyRead();
     void onSocketError(QAbstractSocket::SocketError);
