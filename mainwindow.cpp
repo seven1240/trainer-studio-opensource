@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
     this->connect(tcp_client, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
     this->connect(incoming_call_dialog, SIGNAL(answered()), this, SLOT(onAnswered()));
+    this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
 
 }
 
@@ -94,6 +95,7 @@ void MainWindow::onAuthenticated(QVariantMap user)
     ISettings *settings = new ISettings(this);
 
     QVariantMap gw = settings->getGateway(QString("default"));
+    QString res;
 
     if(gw["username"] == user["voip_username"] && gw["password"] == user["voip_password"]) {
         //ok
@@ -110,13 +112,13 @@ void MainWindow::onAuthenticated(QVariantMap user)
         newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
         settings -> writeGateway(newgw);
 
-        QString res;
         fshost->sendCmd("sofia", "profile softphone killgw default", &res);
         sleep(1);
         fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
         sleep(1);
-        fshost->sendCmd("sofia", "profile softphone register default", &res);
+
     }
+    fshost->sendCmd("sofia", "profile softphone register default", &res);
 
     show();
     delete(settings);
@@ -162,4 +164,9 @@ void MainWindow::onAnswered()
     flash_dialog -> raise();
     flash_dialog -> show();
     flash_dialog -> activateWindow();
+}
+
+void MainWindow::onGatewayStateChange(QString state)
+{
+    ui->lbStatus->setText(QString("SIP state: %1").arg(state));
 }

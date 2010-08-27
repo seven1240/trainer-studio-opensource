@@ -37,6 +37,7 @@ private slots:
     void onForcedPause(QString reason);
     void onLogin();
     void onAnswered();
+    void onGatewayStateChange(QString state);
 };
 
 #endif // MAINWINDOW_H

@@ -18,6 +18,7 @@ protected:
     void changeEvent(QEvent *e);
 
 private slots:
+    void on_btnTest_clicked();
     void on_btnDisconnect_clicked();
     void onReservedForInteraction(QVariantMap);
     void onLoadFinished(bool);

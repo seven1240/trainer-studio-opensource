@@ -268,53 +268,13 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //        }
     case SWITCH_EVENT_CUSTOM:/*5A*/
         {
-              if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0){
-                  emit(incomingCall(event));
-              }
-//            if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0)
-//            {
-//                QString state = switch_event_get_header_nil(event.data(), "State");
-//                QString gw = switch_event_get_header_nil(event.data(), "Gateway");
-//                QSharedPointer<Account> acc = _accounts.value(gw);
-//                if (acc.isNull())
-//                    return;
-//
-//                if (state == "TRYING") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_TRYING);
-//                    emit accountStateChange(acc);
-//                } else if (state == "REGISTER") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_REGISTER);
-//                    emit accountStateChange(acc);
-//                } else if (state == "REGED") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_REGED);
-//                    emit accountStateChange(acc);
-//                } else if (state == "UNREGED") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_UNREGED);
-//                    emit accountStateChange(acc);
-//                } else if (state == "UNREGISTER") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_UNREGISTER);
-//                    emit accountStateChange(acc);
-//                } else if (state =="FAILED") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_FAILED);
-//                    emit accountStateChange(acc);
-//                } else if (state == "FAIL_WAIT") {
-//                    acc.data()->setState(FSCOMM_GW_STATE_FAIL_WAIT);
-//                    emit accountStateChange(acc);
-//                } else if (state == "EXPIRED") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_EXPIRED);
-//                    emit accountStateChange(acc);
-//                } else if (state == "NOREG") {
-//                    acc.data()->setStatusPhrase(switch_event_get_header_nil(event.data(), "Phrase"));
-//                    acc.data()->setState(FSCOMM_GW_STATE_NOREG);
-//                    emit accountStateChange(acc);
-//                }
+            if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0){
+                emit(incomingCall(event));
+            }else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0){
+                QString state = switch_event_get_header_nil(event.data(), "State");
+                emit gatewayStateChange(state);
+            }
+
 //            }
 //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
 //            {

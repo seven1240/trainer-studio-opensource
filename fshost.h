@@ -70,6 +70,7 @@ signals:
 
     /* Call signals */
     void incomingCall(QSharedPointer<switch_event_t>event);
+    void gatewayStateChange(QString state);
 //    void ringing(QSharedPointer<Call>);
 //    void answered(QSharedPointer<Call>);
 //    void newOutgoingCall(QSharedPointer<Call>);
