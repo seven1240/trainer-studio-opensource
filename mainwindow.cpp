@@ -12,17 +12,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    tcp_client = new TCPClient();
+    tcp_client->start();
+
     // We should not need set NULL manually, but without this,
     // flash_dialog is NULL but not login_dialog, weird
     login_dialog = NULL;
-    flash_dialog = NULL;
+    flash_dialog = new FlashDialog();;
     incoming_call_dialog = new IncomingCallDialog();
 
-    tcp_client = new TCPClient();
-    tcp_client->start();
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
-    this->connect(tcp_client, SIGNAL(forcedpause(QString)), this, SLOT(onForcedPause(QString)));
+    this->connect(tcp_client, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
     this->connect(incoming_call_dialog, SIGNAL(answered()), this, SLOT(onAnswered()));
 
 }
@@ -31,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    if(login_dialog) delete login_dialog;
+    if(flash_dialog) delete flash_dialog;
+    if(incoming_call_dialog) delete incoming_call_dialog;
+    if(tcp_client) delete tcp_client;
+    if(fshost) delete fshost;
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -62,13 +68,6 @@ void MainWindow::showLoginDialog()
 
 void MainWindow::on_pushButton_clicked()
 {
-    qDebug() << "hahahahah" << endl;
-
-    if (!flash_dialog) {
-        flash_dialog = new FlashDialog();
-//        connect(preferences, SIGNAL(preprocessorsApplied(QStringList)), this, SLOT(applyPreprocessors(QStringList)));
-    }
-
     flash_dialog -> raise();
     flash_dialog -> show();
     flash_dialog -> activateWindow();
@@ -148,6 +147,8 @@ void MainWindow::onForcedPause(QString reason)
 {
     QMessageBox::warning(this, "Idapted Trainer Studio",
                           reason);
+    ui->btnState->setText("> Start Working");
+    ui->btnState->setChecked(false);
 }
 
 void MainWindow::onAnswered()

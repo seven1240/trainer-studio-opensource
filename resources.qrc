@@ -6,4 +6,7 @@
         <file alias="freeswitch.xml">conf/freeswitch.xml</file>
     </qresource>
     <qresource prefix="/sounds"/>
+    <qresource prefix="/resources">
+        <file alias="loadflash.js">resources/loadflash.js</file>
+    </qresource>
 </RCC>

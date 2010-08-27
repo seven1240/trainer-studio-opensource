@@ -32,7 +32,6 @@ void TCPClient::run()
         }
         sleep(10);
     }
-//    qDebug() << obj->metaObject()->className()
 }
 
 void TCPClient::connectToHost()
@@ -65,7 +64,7 @@ void TCPClient::onReadyRead()
     result = parser.parse (ba, &ok).toMap();
     qDebug() << result;
     if(!ok) {
-        qDebug() << "Invalid JSON!";
+        qDebug() << "Invalid JSON! " << ba;
     }else{
         if(result["status"] == "Pong") {
             qDebug() << "Got Pong";
@@ -82,6 +81,7 @@ void TCPClient::onReadyRead()
             emit(forcedPause(result["reason"].toString()));
         } else if(result["status"] == "ReservedForInteraction"){
             emit(reservedForInteraction(result));
+            qDebug() << "ReservedForInteraction....";
         } else {
             qDebug() << "Unknown JSON";
         }

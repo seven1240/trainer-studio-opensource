@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.showLoginDialog();
-//    w.show();
+    w.show();
 
     return a.exec();
 }

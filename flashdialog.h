@@ -2,6 +2,7 @@
 #define FLASHDIALOG_H
 
 #include <QDialog>
+#include <qvariant.h>
 
 namespace Ui {
     class FlashDialog;
@@ -16,8 +17,14 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+private slots:
+    void on_btnDisconnect_clicked();
+    void onReservedForInteraction(QVariantMap);
+    void onLoadFinished(bool);
+
 private:
     Ui::FlashDialog *ui;
+    QString js; //js code to load flash
 };
 
 #endif // FLASHDIALOG_H

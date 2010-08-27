@@ -7,10 +7,9 @@ contains(QT_VERSION, ^4\.[0-5]\..*) {
 }
 TARGET = trainer_studio
 macx:TARGET = TrainerStudio
-FSPATH = /Applications/FreeSWITCH #or /usr/local/freeswitch
-INCLUDEPATH = $${FSPATH}/include \
-    #$${FSPATH}libs/apr/include \
-    #$${FSPATH}/libs/libteletone/src \
+FSPATH = /Applications/FreeSWITCH # or /usr/local/freeswitch
+INCLUDEPATH = $${FSPATH}/include \ # $${FSPATH}libs/apr/include \
+# $${FSPATH}/libs/libteletone/src \
     libs/qjson/src
 LIBS = -L/Applications/FreeSWITCH/lib \
     -lfreeswitch \
@@ -23,8 +22,7 @@ LIBS = -L/Applications/FreeSWITCH/lib \
     LIBS += -lcrypt \
         -lrt
 }
-
-CONFIG += x86   # 32bit binary
+CONFIG += x86 # 32bit binary
 QT += network \
     webkit \
     xml \
@@ -58,4 +56,5 @@ FORMS += mainwindow.ui \
     logindialog.ui \
     IncomingCallDialog.ui
 RESOURCES += resources.qrc
-OTHER_FILES += conf/freeswitch.xml
+OTHER_FILES += conf/freeswitch.xml \
+    resources/loadflash.js
