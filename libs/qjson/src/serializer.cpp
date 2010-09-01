@@ -161,9 +161,10 @@ QByteArray Serializer::serialize( const QVariant &v )
 #ifdef _WIN32
 #ifndef _isnan
 	#define _isnan(x) ((x) != (x))
-#define _finite(value) (value >= -9999999 && value <= 9999999)
+//        #define _finite(value) (value >= -9999999 && value <= 9999999)
 #endif
-    const bool special = _isnan(value) || !_finite(value);
+//    const bool special = _isnan(value) || !_finite(value);
+    const bool special = false;
 #else
     const bool special = std::isnan(value) || std::isinf(value);
 #endif
