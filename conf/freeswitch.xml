@@ -135,6 +135,7 @@
                         </global_settings>
                         <profiles>
                                 <profile name="softphone">
+                                        <gateways></gateways>
                                         <settings>
                                                 <!--<param name="media-option" value="bypass-media-after-att-xfer"/>-->
                                                 <param name="user-agent-string" value="FreeSWITCH/FSComm"/>

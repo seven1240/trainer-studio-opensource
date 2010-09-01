@@ -30,6 +30,12 @@
 #include <QtGui>
 #include "fshost.h"
 
+#ifdef _WIN32
+#define DOTDIR "trainer_studio"
+#else
+#define DOTDIR ".trainer_studio"
+#endif
+
 /* Declare it globally */
 FSHost *fshost;
 
@@ -58,23 +64,23 @@ void FSHost::createFolders()
 {
     /* Create directory structure for softphone with default configs */
     QDir conf_dir = QDir::home();
-    if (!conf_dir.exists(".trainer_studio"))
-        conf_dir.mkpath(".trainer_studio");
-    if (!conf_dir.exists(".trainer_studio/recordings"))
-        conf_dir.mkpath(".trainer_studio/recordings");
-    if (!conf_dir.exists(".trainer_studio/sounds")) {
-        conf_dir.mkpath(".trainer_studio/sounds");
+    if (!conf_dir.exists(DOTDIR))
+        conf_dir.mkpath(DOTDIR);
+    if (!conf_dir.exists(DOTDIR "/recordings"))
+        conf_dir.mkpath(DOTDIR "/recordings");
+    if (!conf_dir.exists(DOTDIR "/sounds")) {
+        conf_dir.mkpath(DOTDIR "/sounds");
     }
-    if(!QFile::exists(QString("%1/.trainer_studio/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
-        conf_dir.mkdir(".trainer_studio/conf");
+    if(!QFile::exists(QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
+        conf_dir.mkdir(DOTDIR "/conf");
         QFile rootXML(":/conf/freeswitch.xml");
         qDebug() << rootXML.exists(":conf/freeswitch.xml");
-        QString dest = QString("%1/.trainer_studio/conf/freeswitch.xml").arg(conf_dir.absolutePath());
+        QString dest = QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath());
         rootXML.copy(dest);
     }
 
     /* Set all directories to the home user directory */
-    if (conf_dir.cd(".trainer_studio"))
+    if (conf_dir.cd(DOTDIR))
     {
         SWITCH_GLOBAL_dirs.conf_dir = (char *) malloc(strlen(QString("%1/conf").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
         if (!SWITCH_GLOBAL_dirs.conf_dir) {
