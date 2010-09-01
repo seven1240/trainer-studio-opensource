@@ -159,6 +159,10 @@ QByteArray Serializer::serialize( const QVariant &v )
   } else if (( v.type() == QVariant::Double) || (v.type() == QMetaType::Float)) { // a double or a float?
     const double value = v.toDouble();
 #ifdef _WIN32
+#ifndef _isnan
+	#define _isnan(x) ((x) != (x))
+#define _finite(value) (value >= -9999999 && value <= 9999999)
+#endif
     const bool special = _isnan(value) || !_finite(value);
 #else
     const bool special = std::isnan(value) || std::isinf(value);
