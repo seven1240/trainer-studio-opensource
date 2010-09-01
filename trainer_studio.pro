@@ -5,17 +5,21 @@ contains(QT_VERSION, ^4\.[0-5]\..*) {
     message("Cannot build with Qt version $$QT_VERSION.")
     error("Use at least Qt 4.6.")
 }
-TARGET = trainer_studio
-macx:TARGET = TrainerStudio
-FSPATH = /Applications/FreeSWITCH # or /usr/local/freeswitch
-INCLUDEPATH = $${FSPATH}/include \ # $${FSPATH}libs/apr/include \
-# $${FSPATH}/libs/libteletone/src \
+TARGET = TrainerStudio
+FSPATH = ../freeswitch
+
+INCLUDEPATH = $${FSPATH}/src/include \
+    $${FSPATH}/libs/apr/include \
+    $${FSPATH}/libs/libteletone/src \
     libs/qjson/src
-LIBS = -L/Applications/FreeSWITCH/lib \
-    -lfreeswitch \
-    -lm \
-    -Llibs/qjson/lib \
-    -lqjson
+!win32 {
+    LIBS = -L/Applications/FreeSWITCH/lib \
+        -lfreeswitch \
+        -lm \
+        -Llibs/qjson/lib \
+        -lqjson
+}
+
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib

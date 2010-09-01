@@ -113,9 +113,9 @@ void MainWindow::onAuthenticated(QVariantMap user)
         settings -> writeGateway(newgw);
 
         fshost->sendCmd("sofia", "profile softphone killgw default", &res);
-        sleep(1);
+        switch_sleep(1000);
         fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
-        sleep(1);
+        switch_sleep(1000);
 
     }
     fshost->sendCmd("sofia", "profile softphone register default", &res);
