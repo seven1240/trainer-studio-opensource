@@ -28,7 +28,7 @@ void TCPClient::run()
 
         qDebug() << "TCPClient running ...";
         if(ping) {
-            tcpSocket->write("{\"action\":\"Ping\"}");
+            //tcpSocket->write("{\"action\":\"Ping\"}");
         }
         sleep(10);
     }
@@ -123,6 +123,7 @@ bool TCPClient::isConnected()
 
 void TCPClient::pause(bool action)
 {
+	qDebug() << "Pause: " << action;
     if(action){
         tcpSocket->write("{\"action\":\"Pause\"}");
     }else{
