@@ -5,7 +5,7 @@ TEMPLATE = lib
 QT      -= gui
 TARGET   = qjson
 DESTDIR  = $$QJSON_BASE/lib
-CONFIG += create_prl
+CONFIG += create_prl x86
 
 VERSION = 0.7.1
 
@@ -15,6 +15,8 @@ windows: {
 
 QJSON_CPP = $$QJSON_SRCBASE
 INCLUDEPATH += $$QJSON_CPP
+
+QMAKE_LFLAGS_SONAME += -install_name @executable_path/../Frameworks/libqjson.dylib
 
 PRIVATE_HEADERS += \
   json_parser.hh \
