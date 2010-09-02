@@ -48,6 +48,7 @@ Source: "D:\trainer_studio\trunk\debug\dlls\QtNetworkd4.dll"; DestDir: "{app}"; 
 Source: "D:\trainer_studio\trunk\debug\dlls\QtWebKitd4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trunk\debug\dlls\QtXmld4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trunk\debug\dlls\QtXmlPatternsd4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trunk\debug\dlls\NPSWF32.dll"; DestDir: "{sys}\Macromed\Flash";
 Source: "D:\trainer_studio\trunk\debug\mod\*"; DestDir: "{app}/mod"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
