@@ -79,12 +79,12 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  ).arg("127.0.0.1"
                                  ).arg(data["realtime_uuid"].toString()
                                  ).arg("2000"
-                                 ).arg(data["interaction_id"].toString()
                                  ).arg(interactionID
+                                 ).arg(data["scenario_id"].toString()
                                  ).arg("trainer28"
                                  ).arg("trainer28"
                                  ).arg("test"
-                                 ).arg("http://www.idapted.com"
+                                 ).arg("http://www.eqenglish.com"
                                  ).arg(js
                                  );
 
@@ -102,7 +102,7 @@ void FlashDialog::onLoadFinished(bool)
 //    QWebFrame *frame = ui->webView->page()->mainFrame();
 //    QWebElement e = frame->findFirstElement("embed");
 //    qDebug() << e.toInnerXml();
-//    e.evaluateJavaScript("alert(this);this.FlashVars='aaaa=b';this.LoadMovie(0, 'http://www.idapted.com/flex/interaction/trainer/interaction.swf');");
+//    e.evaluateJavaScript("alert(this);this.FlashVars='aaaa=b';this.LoadMovie(0, 'http://www.eqenglish.com/flex/interaction/trainer/interaction.swf');");
 }
 
 void FlashDialog::on_btnDisconnect_clicked()
@@ -111,7 +111,7 @@ void FlashDialog::on_btnDisconnect_clicked()
     fshost->sendCmd("pa", "hangup", &res);
 
     QString jsLoadFlash = QString("var vars='product_type=eqenglish"
-                                 "&background_color=#F3F3F3"
+                                 "&background_color=%23F3F3F3"
                                  "&font_family=Arial"
                                  "&default_ui_language=en_US"
                                  "&ui_language=en_US"
@@ -119,7 +119,7 @@ void FlashDialog::on_btnDisconnect_clicked()
                                  "&interaction_id=%1"
                                  "&base_url=%2';%3"
                                  ).arg(interactionID
-                                 ).arg("http://www.idapted.com"
+                                 ).arg("http://www.eqenglish.com"
                                  ).arg(js
                                  );
 
