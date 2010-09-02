@@ -5,6 +5,7 @@ contains(QT_VERSION, ^4\.[0-5]\..*) {
     message("Cannot build with Qt version $$QT_VERSION.")
     error("Use at least Qt 4.6.")
 }
+
 TARGET = TrainerStudio
 FSPATH = ../freeswitch
 
@@ -20,6 +21,14 @@ INCLUDEPATH = $${FSPATH}/src/include \
         -lqjson
 }
 
+win32 {
+    LIBS = -L../freeswitch/ \
+        -L../freeswitch/w32/Library/Debug \
+        -lfreeswitchcore \
+        -L../trainer_studio/libs/qjson/lib \
+        -lqjson0
+}
+
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
@@ -33,7 +42,7 @@ QT += network \
     xmlpatterns \
     multimedia \
     testlib
-TARGET = trainer_studio
+
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
