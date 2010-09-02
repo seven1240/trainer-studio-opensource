@@ -81,7 +81,7 @@ void LoginDialog::on_btnLogin_clicked()
     for(i=0; i<20 && (!tcp_client->isConnected()); i++) {
         QApplication::processEvents();
         qDebug() << tcp_client->isConnected();
-        switch_sleep(1000);
+        switch_sleep(1000000);
     }
 
     if(i == 20) {
@@ -96,7 +96,7 @@ void LoginDialog::on_btnLogin_clicked()
 
         for(i=0; i<20 && (!authenticated); i++) {
             QApplication::processEvents();
-            switch_sleep(1000);
+            switch_sleep(1000000);
         }
         if(i == 20) {
             QMessageBox::critical( this, "Idapted Trainer Studio",
@@ -108,7 +108,7 @@ void LoginDialog::on_btnLogin_clicked()
 
         for(i=0; i<20 && (!fshost->isRunning()); i++ ){
             QApplication::processEvents();
-            switch_sleep(1000);
+            switch_sleep(1000000);
         }
         if(i == 20) {
             QMessageBox::critical( this, "Idapted Trainer Studio",

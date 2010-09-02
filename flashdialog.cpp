@@ -14,21 +14,19 @@ FlashDialog::FlashDialog(QWidget *parent) :
     ui(new Ui::FlashDialog)
 {
     QWebSettings *websetting= QWebSettings::globalSettings();
-      websetting->setAttribute(QWebSettings::JavascriptEnabled,true);
-      websetting->setAttribute(QWebSettings::PluginsEnabled,true);
+    websetting->setAttribute(QWebSettings::JavascriptEnabled,true);
+    websetting->setAttribute(QWebSettings::PluginsEnabled,true);
 
     ui->setupUi(this);
     setLayout(ui->verticalLayout);
 
     QWebSettings *settings = ui->webView->settings();
+//    settings->setAttribute(QWebSettings::PluginsEnabled, true);
 
     this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
     this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
-//    settings->setAttribute(QWebSettings::PluginsEnabled, true);
 
-//    ui->webView->load(QUrl("http://www.adobe.com/software/flash/about/"));
-//    ui->webView->load(QUrl("http://www.idapted.com/flex/interaction/trainer/interaction.swf"));
-//    ui->webView->load(QUrl("http://www.idapted.com/images/banner.swf"));
+
     ui->webView->load(QUrl("about:blank"));
 
     qDebug() << (settings->testAttribute(QWebSettings::PluginsEnabled) ? " true" : " false");
@@ -39,11 +37,6 @@ FlashDialog::FlashDialog(QWidget *parent) :
     js = file.readAll();
     file.close();
 
-//    QString vars="var vars='a=b';";
-//    vars = "var vars='realtime_port=2000&trainer_login=lpatrick281&interaction_id=106344&font_size=12&realtime_subscriber=lpatrick281&environment=production&cs_number=400-887-1020&realtime_channel=4a5599957289d1e9456f0c334fc0dbdbe0085b75&base_url=http://www.eqenglish.com&realtime_host=10.20.13.227&scenario_id=837';";
-//    js = vars + js;
-//    qDebug() << js;
-//    ui->webView->page()->mainFrame()->evaluateJavaScript(js);
 }
 
 FlashDialog::~FlashDialog()
@@ -67,15 +60,17 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
     interactionID = data["interaction_id"].toString();
 
-    QString jsLoadFlash = QString("var vars='realtime_host=%1"
-                                 "&realtime_channel=%2"
-                                 "&font_size=12&cs_number=4008871020&realtime_port=%3"
-                                 "&interaction_id=%4"
-                                 "&scenario_id=%5"
-                                 "&realtime_subscriber=%6"
-                                 "&trainer_login=%7"
-                                 "&trainer_xxxxpwd=%8"
-                                 "&base_url=%9';%10"
+    QString jsLoadFlash = QString("var url='%1/flex/interaction/trainer/interaction.swf';"
+                                 "var vars='realtime_host=%2"
+                                 "&realtime_channel=%3"
+                                 "&font_size=12&cs_number=4008871020&realtime_port=%4"
+                                 "&interaction_id=%5"
+                                 "&scenario_id=%6"
+                                 "&realtime_subscriber=%7"
+                                 "&trainer_login=%8"
+                                 "&trainer_xxxxpwd=%9"
+                                 "&base_url=%10';%11"
+                                 ).arg("http://www.eqenglish.com"
                                  ).arg("127.0.0.1"
                                  ).arg(data["realtime_uuid"].toString()
                                  ).arg("2000"
@@ -110,29 +105,33 @@ void FlashDialog::on_btnDisconnect_clicked()
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
 
-    QString jsLoadFlash = QString("var vars='product_type=eqenglish"
-                                 "&background_color=%23F3F3F3"
-                                 "&font_family=Arial"
-                                 "&default_ui_language=en_US"
-                                 "&ui_language=en_US"
-                                 "&mode=trainer"
-                                 "&interaction_id=%1"
-                                 "&base_url=%2';%3"
-                                 ).arg(interactionID
-                                 ).arg("http://www.eqenglish.com"
-                                 ).arg(js
-                                 );
+//  FlashVars does't work for this swf, Hmmm...
 
-    qDebug() << jsLoadFlash;
-    ui->webView->reload();
-    ui->webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
+    QString flash_url = QString("%1/flex/markspot/markspot.swf?"
+                                     "product_type=eqenglish"
+                                     "&background_color=#F3F3F3"
+                                     "&font_family=Arial"
+                                     "&default_ui_language=en_US"
+                                     "&ui_language=en_US"
+                                     "&mode=trainer"
+                                     "&interaction_id=%2"
+                                     "&base_url=%3"
+                                     ).arg("http://www.eqenglish.com"
+                                     ).arg(interactionID
+                                     ).arg("http://www.eqenglish.com"
+                                     );
+    ui->webView->load(QUrl(flash_url));
 }
 
 void FlashDialog::on_btnTest_clicked()
 {
-    QString vars = "var vars='realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=10.20.13.227&scenario_id=697';";
-    js = vars + js;
-    qDebug() << js;
-    ui->webView->reload();
-    ui->webView->page()->mainFrame()->evaluateJavaScript(js);
+    QString vars = "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';var vars='realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=10.20.13.227&scenario_id=697';";
+//    QString vars = "var url='http://www.eqenglish.com/flex/markspot/markspot.swf';var vars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';";
+//    QString vars = "var url='http://localhost:8000/markspot.swf';var vars='product_type=eqenglish';";
+//    QString  js1 = vars + js;
+//    qDebug() << js1;
+//    ui->webView->reload();
+//    ui->webView->page()->mainFrame()->evaluateJavaScript(js1);
+//    ui->webView->load(QUrl("http://localhost:8000/markspot.swf?product_type=eqenglish"));
+    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
 }

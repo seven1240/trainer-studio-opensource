@@ -114,9 +114,9 @@ void MainWindow::onAuthenticated(QVariantMap user)
         settings->saveToFile();
 
         fshost->sendCmd("sofia", "profile softphone killgw default", &res);
-        switch_sleep(1000);
+        switch_sleep(1000000);
         fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
-        switch_sleep(1000);
+        switch_sleep(1000000);
 
     }
     fshost->sendCmd("sofia", "profile softphone register default", &res);
@@ -171,4 +171,5 @@ void MainWindow::on_pushButton_3_clicked()
     ISettings *settings = new ISettings(this);
     settings->resetGateway();
     settings->saveToFile();
+    delete settings;
 }

@@ -1,9 +1,7 @@
 <RCC>
-    <qresource prefix="/images">
-        <file alias="splash.png">images/idapted_splash.png</file>
-    </qresource>
+    <qresource prefix="/images"/>
     <qresource prefix="/conf">
-        <file alias="freeswitch.xml">conf/freeswitch.xml</file>
+        <file alias="freeswitch.xml">resources/conf/freeswitch.xml</file>
     </qresource>
     <qresource prefix="/sounds"/>
     <qresource prefix="/resources">

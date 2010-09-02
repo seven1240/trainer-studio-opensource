@@ -1,5 +1,6 @@
 #include "TCPClient.h"
 #include "parser.h"
+#include "switch.h"
 
 
 TCPClient *tcp_client;
@@ -21,8 +22,6 @@ void TCPClient::run()
 
 
 //        tcpSocket->connectToHost("localhost", 3000);
-
-
 //    ConnectToHost();
     for (;;) {
 
@@ -30,7 +29,7 @@ void TCPClient::run()
         if(ping) {
             //tcpSocket->write("{\"action\":\"Ping\"}");
         }
-        sleep(10);
+        switch_sleep(10000000);
     }
 }
 
