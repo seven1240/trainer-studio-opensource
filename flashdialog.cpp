@@ -65,6 +65,8 @@ void FlashDialog::changeEvent(QEvent *e)
 
 void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
+    interactionID = data["interaction_id"].toString();
+
     QString jsLoadFlash = QString("var vars='realtime_host=%1"
                                  "&realtime_channel=%2"
                                  "&font_size=12&cs_number=4008871020&realtime_port=%3"
@@ -78,7 +80,7 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  ).arg(data["realtime_uuid"].toString()
                                  ).arg("2000"
                                  ).arg(data["interaction_id"].toString()
-                                 ).arg(data["scenario_id"].toString()
+                                 ).arg(interactionID
                                  ).arg("trainer28"
                                  ).arg("trainer28"
                                  ).arg("test"
@@ -107,6 +109,23 @@ void FlashDialog::on_btnDisconnect_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
+
+    QString jsLoadFlash = QString("var vars='product_type=eqenglish"
+                                 "&background_color=#F3F3F3"
+                                 "&font_family=Arial"
+                                 "&default_ui_language=en_US"
+                                 "&ui_language=en_US"
+                                 "&mode=trainer"
+                                 "&interaction_id=%1"
+                                 "&base_url=%2';%3"
+                                 ).arg(interactionID
+                                 ).arg("http://www.idapted.com"
+                                 ).arg(js
+                                 );
+
+    qDebug() << jsLoadFlash;
+    ui->webView->reload();
+    ui->webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
 }
 
 void FlashDialog::on_btnTest_clicked()

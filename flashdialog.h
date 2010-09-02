@@ -26,6 +26,7 @@ private slots:
 private:
     Ui::FlashDialog *ui;
     QString js; //js code to load flash
+    QString interactionID;
 };
 
 #endif // FLASHDIALOG_H
