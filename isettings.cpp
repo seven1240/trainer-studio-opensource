@@ -94,14 +94,27 @@ void ISettings::writeGateway(QVariantMap newgw)
         /* Set each one of the parameters */
         setParam(nGw, "username", newgw["username"].toString());
         setParam(nGw, "password", newgw["password"].toString());
-        setParam(nGw, "register", "false");
+        setParam(nGw, "register", "true");
         setParam(nGw, "realm", newgw["realm"].toString());
         setParam(nGw, "expire-seconds", "600");
         setParam(nGw, "retry-seconds", "60");
 
 
     setConfigNode(cfg, "sofia.conf");
-    saveToFile();
+}
+
+void ISettings::resetGateway()
+{
+    QDomElement cfg = getConfigNode("sofia.conf");
+
+    QDomNode gws = cfg.elementsByTagName("gateways").at(0);
+
+    for(QDomNode c = gws.firstChild(); !c.isNull(); c = gws.firstChild()) {
+        gws.removeChild(c);
+    }
+//    gws.clear();
+//    qDebug() << gws.to d.toString();
+    setConfigNode(cfg, "sofia.conf");
 }
 
 void ISettings::setConfigNode(QDomElement node, QString module) {

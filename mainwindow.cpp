@@ -110,7 +110,8 @@ void MainWindow::onAuthenticated(QVariantMap user)
         QVariantMap server = serverlist[0].toMap();
 
         newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
-        settings -> writeGateway(newgw);
+        settings->writeGateway(newgw);
+        settings->saveToFile();
 
         fshost->sendCmd("sofia", "profile softphone killgw default", &res);
         switch_sleep(1000);
@@ -155,12 +156,6 @@ void MainWindow::onForcedPause(QString reason)
 
 void MainWindow::onAnswered()
 {
-
-    if (!flash_dialog) {
-        flash_dialog = new FlashDialog();
-//        connect(preferences, SIGNAL(preprocessorsApplied(QStringList)), this, SLOT(applyPreprocessors(QStringList)));
-    }
-
     flash_dialog -> raise();
     flash_dialog -> show();
     flash_dialog -> activateWindow();
@@ -169,4 +164,11 @@ void MainWindow::onAnswered()
 void MainWindow::onGatewayStateChange(QString state)
 {
     ui->lbStatus->setText(QString("SIP state: %1").arg(state));
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    ISettings *settings = new ISettings(this);
+    settings->resetGateway();
+    settings->saveToFile();
 }

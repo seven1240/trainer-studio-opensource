@@ -29,6 +29,7 @@
 
 #include <QtGui>
 #include "fshost.h"
+#include "isettings.h"
 
 #ifdef _WIN32
 #define DOTDIR "trainer_studio"
@@ -137,6 +138,11 @@ void FSHost::run(void)
     switch_status_t destroy_status;
 
     createFolders();
+
+    ISettings *settings = new ISettings(this);
+    settings->resetGateway();
+    settings->saveToFile();
+    delete settings;
 
     running = true;
     /* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */

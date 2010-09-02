@@ -29,6 +29,7 @@ private:
     IncomingCallDialog *incoming_call_dialog;
 
 private slots:
+    void on_pushButton_3_clicked();
     void on_btnState_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();

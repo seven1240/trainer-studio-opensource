@@ -15,6 +15,7 @@ public:
     void saveToFile();
     QVariantMap getGateway(QString name);
     void writeGateway(QVariantMap newgw);
+    void resetGateway();
 private:
     void setParam(QDomElement &parent, QString name, QString value);
     static QDomDocument *xml;
