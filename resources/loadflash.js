@@ -6,8 +6,5 @@ t += 'play="true" loop="false"  allowScriptAccess="sameDomain" type="application
 t += 'pluginspage="http://www.adobe.com/go/getflashplayer" ';
 t += 'flashvars="' + vars + '"></embed>';
 
-alert(vars);
-document.write("<textarea rows=20 cols=80>");
-document.write(t);
-document.write("</textarea>");
+//alert(vars);
 document.write(t);

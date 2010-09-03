@@ -139,7 +139,7 @@ void FSHost::run(void)
 
     createFolders();
 
-    ISettings *settings = new ISettings(this);
+    ISettings *settings = new ISettings();
     settings->resetGateway();
     settings->saveToFile();
     delete settings;

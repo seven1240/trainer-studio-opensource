@@ -8,19 +8,15 @@ contains(QT_VERSION, ^4\.[0-5]\..*) {
 
 TARGET = TrainerStudio
 FSPATH = ../freeswitch
-
 INCLUDEPATH = $${FSPATH}/src/include \
     $${FSPATH}/libs/apr/include \
     $${FSPATH}/libs/libteletone/src \
     libs/qjson/src
-!win32 {
-    LIBS = -L/Applications/FreeSWITCH/lib \
-        -lfreeswitch \
-        -lm \
-        -Llibs/qjson/lib \
-        -lqjson
-}
-
+!win32:LIBS = -L/Applications/FreeSWITCH/lib \
+    -lfreeswitch \
+    -lm \
+    -Llibs/qjson/lib \
+    -lqjson
 win32 {
     LIBS = -L../freeswitch/ \
         -L../freeswitch/w32/Library/Debug \
@@ -69,5 +65,5 @@ FORMS += mainwindow.ui \
     logindialog.ui \
     IncomingCallDialog.ui
 RESOURCES += resources.qrc
-OTHER_FILES += conf/freeswitch.xml \
-    resources/loadflash.js
+OTHER_FILES += resources/loadflash.js \
+    resources/conf/freeswitch.xml
