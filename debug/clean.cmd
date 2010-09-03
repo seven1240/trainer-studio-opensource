@@ -1,0 +1,1 @@
+del *.obj mod*.cpp

@@ -134,8 +134,8 @@ void ISettings::setConfigNode(QDomElement node, QString module) {
 void ISettings::saveToFile() {
     ISettings::mutex->lock();
     if (ISettings::xml) {
-        QFile *f = new QFile(QString("%1%2%3").arg(SWITCH_GLOBAL_dirs.conf_dir, SWITCH_PATH_SEPARATOR ,"freeswitch.xml"));
-        qDebug() << "XXXX: " << QString("%1%2%3").arg(SWITCH_GLOBAL_dirs.conf_dir, SWITCH_PATH_SEPARATOR ,"freeswitch.xml");
+        QFile *f = new QFile(QString("%1/freeswitch.xml").arg(SWITCH_GLOBAL_dirs.conf_dir));
+		qDebug() << "Write to: " << QString("%1/freeswitch.xml").arg(SWITCH_GLOBAL_dirs.conf_dir);
         if ( !f->open(QFile::WriteOnly | QFile::Truncate) ) {
             /* TODO: Let the user know */
             qDebug() << "Could not open from file.";

@@ -113,13 +113,12 @@ void MainWindow::onAuthenticated(QVariantMap user)
         settings->writeGateway(newgw);
         settings->saveToFile();
 
-        fshost->sendCmd("sofia", "profile softphone killgw default", &res);
+        //fshost->sendCmd("sofia", "profile softphone killgw default", &res);
         switch_sleep(1000000);
         fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
         switch_sleep(1000000);
 
     }
-    fshost->sendCmd("sofia", "profile softphone register default", &res);
 
     show();
     delete(settings);

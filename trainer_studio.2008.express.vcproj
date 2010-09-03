@@ -75,7 +75,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="c:\Qt\4.6.3\lib\QtWebKitd4.lib c:\Qt\4.6.3\lib\QtMultimediad4.lib c:\Qt\4.6.3\lib\QtTestd4.lib c:\Qt\4.6.3\lib\QtXmlPatternsd4.lib c:\Qt\4.6.3\lib\QtXmld4.lib c:\Qt\4.6.3\lib\QtGuid4.lib c:\Qt\4.6.3\lib\QtNetworkd4.lib c:\Qt\4.6.3\lib\QtCored4.lib libs\qjson\lib\qjson0.lib ..\freeswitch\w32\Library\Debug\freeswitchcore.lib"
-				OutputFile="debug\trainer_studio.exe"
+				OutputFile="debug\TrainerStudio.exe"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="c:\Qt\4.6.3\lib"
 				DelayLoadDLLs=""
