@@ -41,6 +41,22 @@ QDomElement ISettings::getConfigNode(QString module) {
     return QDomElement();
 }
 
+QString ISettings::getPaRingFile() {
+
+    QDomElement cfg = getConfigNode("portaudio.conf");
+
+    QDomNodeList nodeList = cfg.elementsByTagName("param");
+
+    for (int i = 0; i < nodeList.count(); i++) {
+        QDomElement param = nodeList.at(i).toElement();
+        if(param.attributeNode("name").value() == "ring-file"){
+            return param.attributeNode("value").value();
+        }
+    }
+    return "tone_stream://%(2000,4000,440.0,480.0);loops=20";
+}
+
+
 QVariantMap ISettings::getGateway(QString gwname) {
 
     QDomElement cfg = getConfigNode("sofia.conf");

@@ -2,6 +2,7 @@
 #define TRAINER_STUDIO_H
 
 #include "qdebug.h"
+#include <qsettings.h>
 
 
 

@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     login_dialog = NULL;
     flash_dialog = new FlashDialog();;
     incoming_call_dialog = new IncomingCallDialog();
+    settings_dialog = NULL;
 
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
@@ -36,6 +37,7 @@ MainWindow::~MainWindow()
     if(login_dialog) delete login_dialog;
     if(flash_dialog) delete flash_dialog;
     if(incoming_call_dialog) delete incoming_call_dialog;
+    if(settings_dialog) delete settings_dialog;
     if(tcp_client) delete tcp_client;
     if(fshost) delete fshost;
 }
@@ -171,4 +173,10 @@ void MainWindow::on_pushButton_3_clicked()
     settings->resetGateway();
     settings->saveToFile();
     delete settings;
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    if(!settings_dialog) settings_dialog = new SettingsDialog();
+    settings_dialog->show();
 }

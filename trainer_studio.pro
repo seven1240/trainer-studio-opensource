@@ -1,11 +1,10 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-09T11:35:58
 # -------------------------------------------------
-contains(QT_VERSION, ^4\.[0-5]\..*) { 
+contains(QT_VERSION, ^4\\.[0-5]\\..*) { 
     message("Cannot build with Qt version $$QT_VERSION.")
     error("Use at least Qt 4.6.")
 }
-
 TARGET = TrainerStudio
 FSPATH = ../freeswitch
 INCLUDEPATH = $${FSPATH}/src/include \
@@ -17,14 +16,11 @@ INCLUDEPATH = $${FSPATH}/src/include \
     -lm \
     -Llibs/qjson/lib \
     -lqjson
-win32 {
-    LIBS = -L../freeswitch/ \
-        -L../freeswitch/w32/Library/Debug \
-        -lfreeswitchcore \
-        -L../trainer_studio/libs/qjson/lib \
-        -lqjson0
-}
-
+win32:LIBS = -L../freeswitch/ \
+    -L../freeswitch/w32/Library/Debug \
+    -lfreeswitchcore \
+    -L../trainer_studio/libs/qjson/lib \
+    -lqjson0
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
@@ -38,7 +34,6 @@ QT += network \
     xmlpatterns \
     multimedia \
     testlib
-
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -49,7 +44,9 @@ SOURCES += main.cpp \
     logindialog.cpp \
     TCPClient.cpp \
     isettings.cpp \
-    IncomingCallDialog.cpp
+    IncomingCallDialog.cpp \
+    SettingsDialog.cpp \
+    EchoTestDialog.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
@@ -59,11 +56,16 @@ HEADERS += mainwindow.h \
     logindialog.h \
     TCPClient.h \
     isettings.h \
-    IncomingCallDialog.h
+    IncomingCallDialog.h \
+    SettingsDialog.h \
+    EchoTestDialog.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
     logindialog.ui \
-    IncomingCallDialog.ui
+    IncomingCallDialog.ui \
+    SettingsDialog.ui \
+    EchoTestDialog.ui
 RESOURCES += resources.qrc
 OTHER_FILES += resources/loadflash.js \
-    resources/conf/freeswitch.xml
+    resources/conf/freeswitch.xml \
+    resources/conf/tsconf.xml

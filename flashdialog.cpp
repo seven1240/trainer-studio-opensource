@@ -133,5 +133,6 @@ void FlashDialog::on_btnTest_clicked()
 //    ui->webView->reload();
 //    ui->webView->page()->mainFrame()->evaluateJavaScript(js1);
 //    ui->webView->load(QUrl("http://localhost:8000/markspot.swf?product_type=eqenglish"));
-    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
+//    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
+    ui->webView->load(QUrl("http://www.eqenglish.com"));
 }

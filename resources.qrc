@@ -2,6 +2,7 @@
     <qresource prefix="/images"/>
     <qresource prefix="/conf">
         <file alias="freeswitch.xml">resources/conf/freeswitch.xml</file>
+        <file alias="tsconf.xml">resources/conf/tsconf.xml</file>
     </qresource>
     <qresource prefix="/sounds"/>
     <qresource prefix="/resources">

@@ -5,7 +5,9 @@
 #include <flashdialog.h>
 #include <logindialog.h>
 #include <IncomingCallDialog.h>
+#include <SettingsDialog.h>
 #include "trainer_studio.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -27,8 +29,10 @@ private:
     FlashDialog *flash_dialog;
     LoginDialog *login_dialog;
     IncomingCallDialog *incoming_call_dialog;
+    SettingsDialog *settings_dialog;
 
 private slots:
+    void on_pushButton_4_clicked();
     void on_pushButton_3_clicked();
     void on_btnState_clicked();
     void on_pushButton_2_clicked();

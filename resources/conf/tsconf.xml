@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<document type="trainer_studio/xml">
+    <profiles>
+        <profile name="EQEnglish Trainer">
+            <params name="url" value="http://www.eqenglish.com">
+            <params name="server" value="voip.idapted.com">
+            <params name="port" value="7000">
+        </profile>
+
+        <profile name="Test Server">
+            <params name="url" value="http://www.idapted.com">
+            <params name="server" value="voip.idapted.com">
+            <params name="port" value="7000">
+        </profile>
+
+        <profile name="Develop">
+            <params name="url" value="http://www.eqenglish.com">
+            <params name="server" value="voip.idapted.com">
+            <params name="port" value="7000">
+        </profile>
+    </profiles>
+</document>
