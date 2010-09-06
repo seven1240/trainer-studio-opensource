@@ -5,6 +5,7 @@
 #include <QtXml>
 #include <qfiledialog.h>
 #include "isettings.h"
+#include <qmessagebox.h>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -23,6 +24,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
                           ":" + settings.value("trainer_server_port").toString());
     settings.endGroup();
 
+    ignore_change_event = true;
     updateDevlist();
 
 }
@@ -80,6 +82,8 @@ void SettingsDialog::updateDevlist()
 {
     QString devices;
 
+    ignore_change_event = true;
+
     fshost->sendCmd("pa", "rescan", &devices);
     switch_status_t status = fshost->sendCmd("pa", "devlist", &devices);
 
@@ -118,10 +122,20 @@ void SettingsDialog::updateDevlist()
             if(flaglist.count() > 1) {
                 if("r" == flaglist.at(0) || "r" == flaglist.at(1)) {
                     ui->cbRing->setCurrentIndex(ui->cbRing->count() - 1);
-                }else if ("o" == flaglist.at(0) || "o" == flaglist.at(1)) {
+                }
+                if ("o" == flaglist.at(0) || "o" == flaglist.at(1)) {
                     ui->cbOutput->setCurrentIndex(ui->cbOutput->count() - 1);
-                }else if ("i" == flaglist.at(0) || "i" == flaglist.at(1)) {
+                }
+                if ("i" == flaglist.at(0) || "i" == flaglist.at(1)) {
                     ui->cbInput->setCurrentIndex(ui->cbInput->count() - 1);
+                }
+            } else {
+                if("r" == flag) {
+                    ui->cbRing->setCurrentIndex(ui->cbRing->count() - 1);
+                } else if("o" == flag) {
+                    ui->cbOutput->setCurrentIndex(ui->cbOutput->count() - 1);
+                } else if("i" == flag) {
+                    ui->cbInput->setCurrentIndex(ui->cbInput->count() -1);
                 }
             }
         }
@@ -130,6 +144,7 @@ void SettingsDialog::updateDevlist()
     ISettings *isettings = new ISettings(this);
     ui->leRingFile->setText(isettings->getPaRingFile());
     delete isettings;
+    ignore_change_event = false;
 }
 
 void SettingsDialog::on_pbReset_clicked()
@@ -153,14 +168,46 @@ void SettingsDialog::on_tbSelectFile_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
                        tr("Open File"), QDir::home().absolutePath(), tr("Wav Files (*.wav)"));
-    ui->leRingFile->setText(fileName);
+    if(!fileName.isEmpty()) ui->leRingFile->setText(fileName);
 }
 
 void SettingsDialog::on_pbSave_clicked()
 {
+    QString indev = ui->cbInput->itemData(ui->cbInput->currentIndex()).toString();
+    QString outdev = ui->cbOutput->itemData(ui->cbOutput->currentIndex()).toString();
+    QString ringdev = ui->cbRing->itemData(ui->cbRing->currentIndex()).toString();
+
+    QVariantMap conf;
+    conf.insert("ring-file", ui->leRingFile->text());
+    conf.insert("indev", indev);
+    conf.insert("outdev", outdev);
+    conf.insert("ringdev", ringdev);
+
     ISettings *isettings = new ISettings(this);
-
-//    QDomElement = isettings->getConfigNode("portaudio");
-
+    isettings->writePaConfig(conf);
+    isettings->saveToFile();
     delete isettings;
+
+    QMessageBox::information(this, "OK", "saved ok");
+}
+
+void SettingsDialog::on_cbInput_currentIndexChanged(int index)
+{
+    QString res;
+    if(ignore_change_event) return;
+    fshost->sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
+}
+
+void SettingsDialog::on_cbOutput_currentIndexChanged(int index)
+{
+    QString res;
+    if(ignore_change_event) return;
+    fshost->sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
+}
+
+void SettingsDialog::on_cbRing_currentIndexChanged(int index)
+{
+    QString res;
+    if(ignore_change_event) return;
+    fshost->sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
 }

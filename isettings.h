@@ -17,6 +17,7 @@ public:
     void writeGateway(QVariantMap newgw);
     void resetGateway();
     QString getPaRingFile();
+    void writePaConfig(QVariantMap newconf);
 private:
     void setParam(QDomElement &parent, QString name, QString value);
     static QDomDocument *xml;

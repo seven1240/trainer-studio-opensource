@@ -56,6 +56,31 @@ QString ISettings::getPaRingFile() {
     return "tone_stream://%(2000,4000,440.0,480.0);loops=20";
 }
 
+void ISettings::writePaConfig(QVariantMap newconf)
+{
+    QDomElement cfg = getConfigNode("portaudio.conf");
+
+    QDomElement settings = cfg.elementsByTagName("settings").at(0).toElement();
+
+    if(settings.isNull()) {
+        qDebug() << "NULL PA settings!";
+        return;
+    }
+
+    QDomNodeList params = settings.childNodes();
+
+    for(int i=0; i< params.count(); i++) {
+        QDomElement param = params.at(i).toElement();
+        QString name = param.attributeNode("name").value();
+        QString value = param.attributeNode("value").value();
+
+        qDebug() << name << ": " << value << " -- " << newconf[name];
+
+        if(!newconf[name].toString().isNull() && newconf[name].toString() != value) {
+            param.setAttribute("value", newconf[name].toString());
+        }
+    }
+}
 
 QVariantMap ISettings::getGateway(QString gwname) {
 
