@@ -17,8 +17,9 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
-    void showLoginDialog();
     ~MainWindow();
+    void showLoginDialog();
+    QVariantMap getUser() { return _user; }
 
 protected:
     void changeEvent(QEvent *e);
@@ -30,6 +31,7 @@ private:
     LoginDialog *login_dialog;
     IncomingCallDialog *incoming_call_dialog;
     SettingsDialog *settings_dialog;
+    QVariantMap _user;
 
 private slots:
     void on_pushButton_4_clicked();

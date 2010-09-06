@@ -74,8 +74,6 @@ void ISettings::writePaConfig(QVariantMap newconf)
         QString name = param.attributeNode("name").value();
         QString value = param.attributeNode("value").value();
 
-        qDebug() << name << ": " << value << " -- " << newconf[name];
-
         if(!newconf[name].toString().isNull() && newconf[name].toString() != value) {
             param.setAttribute("value", newconf[name].toString());
         }
@@ -153,8 +151,8 @@ void ISettings::resetGateway()
     for(QDomNode c = gws.firstChild(); !c.isNull(); c = gws.firstChild()) {
         gws.removeChild(c);
     }
-//    gws.clear();
-//    qDebug() << gws.to d.toString();
+//    gws.clear();  // this doesn't work?
+
     setConfigNode(cfg, "sofia.conf");
 }
 

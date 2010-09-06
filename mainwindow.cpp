@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // We should not need set NULL manually, but without this,
     // flash_dialog is NULL but not login_dialog, weird
     login_dialog = NULL;
-    flash_dialog = new FlashDialog();;
+    flash_dialog = new FlashDialog(this);
     incoming_call_dialog = new IncomingCallDialog();
     settings_dialog = NULL;
 
@@ -94,6 +94,8 @@ void MainWindow::onLogin()
 
 void MainWindow::onAuthenticated(QVariantMap user)
 {
+    //remember user info
+    _user = user;
     ISettings *settings = new ISettings(this);
 
     QVariantMap gw = settings->getGateway(QString("default"));

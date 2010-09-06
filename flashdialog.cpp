@@ -7,6 +7,7 @@
 #include <QWebFrame>
 #include <QWebElement>
 #include "fshost.h"
+#include "mainwindow.h"
 
 
 FlashDialog::FlashDialog(QWidget *parent) :
@@ -58,7 +59,13 @@ void FlashDialog::changeEvent(QEvent *e)
 
 void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
+    QSettings settings;
+    QString url = settings.value("General/url").toString();
+    QVariantMap user = ((MainWindow *)(this->parent()))->getUser();
+    qDebug() << user["login"];
+
     interactionID = data["interaction_id"].toString();
+
 
     QString jsLoadFlash = QString("var url='%1/flex/interaction/trainer/interaction.swf';"
                                  "var vars='realtime_host=%2"
@@ -76,10 +83,10 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  ).arg("2000"
                                  ).arg(interactionID
                                  ).arg(data["scenario_id"].toString()
-                                 ).arg("trainer28"
-                                 ).arg("trainer28"
+                                 ).arg(user["login"].toString()
+                                 ).arg(user["login"].toString()
                                  ).arg("test"
-                                 ).arg("http://www.eqenglish.com"
+                                 ).arg(url
                                  ).arg(js
                                  );
 
@@ -102,6 +109,9 @@ void FlashDialog::onLoadFinished(bool)
 
 void FlashDialog::on_btnDisconnect_clicked()
 {
+    QSettings settings;
+    QString url = settings.value("General/url").toString();
+
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
 
@@ -116,9 +126,9 @@ void FlashDialog::on_btnDisconnect_clicked()
                                      "&mode=trainer"
                                      "&interaction_id=%2"
                                      "&base_url=%3"
-                                     ).arg("http://www.eqenglish.com"
+                                     ).arg(url
                                      ).arg(interactionID
-                                     ).arg("http://www.eqenglish.com"
+                                     ).arg(url
                                      );
     ui->webView->load(QUrl(flash_url));
 }
