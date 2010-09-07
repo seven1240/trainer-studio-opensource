@@ -8,11 +8,11 @@ TCPClient *tcp_client;
 TCPClient::TCPClient()
 {
     ping = false;
-    tcpSocket = new QTcpSocket(this);
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-    connect(tcpSocket, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    _tcpSocket = new QTcpSocket(this);
+    connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    connect(_tcpSocket, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(_tcpSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
 }
 
@@ -33,23 +33,25 @@ void TCPClient::run()
     }
 }
 
-void TCPClient::connectToHost()
+void TCPClient::connectToHost(QString host, int port)
 {
-    tcpSocket->connectToHost("voip.idapted.com", 7000);
+    _host = host;
+    _port = port;
+    _tcpSocket->connectToHost(host, port);
 }
 
 void TCPClient::close()
 {
-    tcpSocket->close();
+    _tcpSocket->close();
 }
 
 void TCPClient::onReadyRead()
 {
     QByteArray ba;
-    while( tcpSocket->canReadLine() )
+    while( _tcpSocket->canReadLine() )
     {
         // read and process the line
-        ba = tcpSocket->readAll();
+        ba = _tcpSocket->readAll();
 
     }
 
@@ -112,7 +114,7 @@ void TCPClient::onDisconnected()
 
 void TCPClient::write(QByteArray ba)
 {
-    tcpSocket->write(ba.append("\n"));
+    _tcpSocket->write(ba.append("\n"));
 }
 
 bool TCPClient::isConnected()
@@ -124,8 +126,8 @@ void TCPClient::pause(bool action)
 {
 	qDebug() << "Pause: " << action;
     if(action){
-        tcpSocket->write("{\"action\":\"Pause\"}");
+        _tcpSocket->write("{\"action\":\"Pause\"}");
     }else{
-        tcpSocket->write("{\"action\":\"Unpause\"}");
+        _tcpSocket->write("{\"action\":\"Unpause\"}");
     }
 }

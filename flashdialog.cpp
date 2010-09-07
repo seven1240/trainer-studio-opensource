@@ -97,13 +97,25 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 
 void FlashDialog::onLoadFinished(bool)
 {
-
+    QUrl url = ui->webView->url();
+    if(url.toString().indexOf("/markspot.swf") < 0) {
+        return;
+    }
     qDebug() << "LoadFinished";
     //    QString flash_vars = QString("realtime_host=%1&realtime_channel=%2&realtime_uuid=%3&font_size=12&cs_number=4008871020&realtime_port=2000&interaction_id=%4&scenario_id=%5&realtime_subscriber=%6&trainer_login=%7&trainer_pwd=%8&")
 
-//    QWebFrame *frame = ui->webView->page()->mainFrame();
-//    QWebElement e = frame->findFirstElement("embed");
-//    qDebug() << e.toInnerXml();
+    QWebFrame *frame = ui->webView->page()->mainFrame();
+    frame->addToJavaScriptWindowObject("mainWindow", this);
+    QWebElement e = frame->findFirstElement("embed");
+//    QWebElementCollection c = frame->findAllElements("*");
+//    for(int i=0; i<c.count(); i++) {
+//        qDebug() << c.at(i).tagName() << ": " << c.at(i).toInnerXml();
+//    }
+
+    QString jsstr = "mainWindow.onFSCommand('a', 'b'); this.id='a'; this.name='a'; function a_DoFSCommand(cmd, args){alert(cmd); alert(args);} alert(this.name);";
+    e.evaluateJavaScript(jsstr);
+    qDebug() << e.toInnerXml();
+    qDebug() << ui->webView->url();
 //    e.evaluateJavaScript("alert(this);this.FlashVars='aaaa=b';this.LoadMovie(0, 'http://www.eqenglish.com/flex/interaction/trainer/interaction.swf');");
 }
 
@@ -135,7 +147,7 @@ void FlashDialog::on_btnDisconnect_clicked()
 
 void FlashDialog::on_btnTest_clicked()
 {
-    QString vars = "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';var vars='realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=10.20.13.227&scenario_id=697';";
+//    QString vars = "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';var vars='realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=10.20.13.227&scenario_id=697';";
 //    QString vars = "var url='http://www.eqenglish.com/flex/markspot/markspot.swf';var vars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';";
 //    QString vars = "var url='http://localhost:8000/markspot.swf';var vars='product_type=eqenglish';";
 //    QString  js1 = vars + js;
@@ -144,5 +156,12 @@ void FlashDialog::on_btnTest_clicked()
 //    ui->webView->page()->mainFrame()->evaluateJavaScript(js1);
 //    ui->webView->load(QUrl("http://localhost:8000/markspot.swf?product_type=eqenglish"));
 //    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
-    ui->webView->load(QUrl("http://www.eqenglish.com"));
+//    ui->webView->load(QUrl("http://www.eqenglish.com"));
+    ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
+}
+
+
+void FlashDialog::onFSCommand(QString cmd, QString args)
+{
+    qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
 }

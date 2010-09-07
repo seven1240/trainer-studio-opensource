@@ -17,6 +17,9 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+public slots:
+    void onFSCommand(QString cmd, QString args);
+
 private slots:
     void on_btnTest_clicked();
     void on_btnDisconnect_clicked();
@@ -27,6 +30,9 @@ private:
     Ui::FlashDialog *ui;
     QString js; //js code to load flash
     QString interactionID;
+    QString webTag; //track web activity
+
+
 };
 
 #endif // FLASHDIALOG_H

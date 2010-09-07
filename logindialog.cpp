@@ -52,9 +52,15 @@ void LoginDialog::on_pushButton_clicked()
 
 void LoginDialog::on_btnLogin_clicked()
 {
+    QSettings settings;
+    QString host = settings.value("General/trainer_server").toString();
+    int port = settings.value("trainer_server_port").toInt();
+    port = port == 0 ? 7000 : port;
+
+    qDebug() << host << ": " << port;
     ui->frmSplash->setGeometry( ui->frmLogin->geometry());
     ui->frmSplash->show();
-    tcp_client->connectToHost();
+    tcp_client->connectToHost(host, port);
 
     QVariantList system;
 
@@ -75,47 +81,57 @@ void LoginDialog::on_btnLogin_clicked()
 
     qDebug() << json;
 
+    _abort = false;
 
     // wait socket
     int i;
-    for(i=0; i<20 && (!tcp_client->isConnected()); i++) {
+    for(i=0; i<200 && (!tcp_client->isConnected()); i++) {
+        if(_abort) return;
         QApplication::processEvents();
-        qDebug() << tcp_client->isConnected();
-        switch_sleep(1000000);
+        switch_sleep(100000);
     }
 
-    if(i == 20) {
+    if(i == 200) {
         // error socket connect
         QMessageBox::critical( this, "Idapted Trainer Studio",
                                   "Login Error, please try again!" );
         ui->frmSplash->hide();
+        return;
 
-    } else { //connected
-        ui->lbProgress->setText("Socket connected, authenticating...");
-        tcp_client->write(json);
+    }
 
-        for(i=0; i<20 && (!authenticated); i++) {
-            QApplication::processEvents();
-            switch_sleep(1000000);
-        }
-        if(i == 20) {
-            QMessageBox::critical( this, "Idapted Trainer Studio",
-                                   QString("Authenticate Error:\nReason: NO RESPONSE!"));
-            ui->frmSplash->hide();
-        }
 
-        ui->lbProgress->setText("Waiting FreeSWITCH to be loaded...");
+    //else connected
+    ui->lbProgress->setText("Socket connected, authenticating...");
+    ui->lbProgress->repaint();
 
-        for(i=0; i<20 && (!fshost->isRunning()); i++ ){
-            QApplication::processEvents();
-            switch_sleep(1000000);
-        }
-        if(i == 20) {
-            QMessageBox::critical( this, "Idapted Trainer Studio",
-                                   QString("Error Loading FreeSWITCH\nReason: NO RESPONSE!"));
-            ui->frmSplash->hide();
-        }
+    tcp_client->write(json);
 
+    for(i=0; i<200 && (!_authenticated); i++) {
+        if(_abort) return;
+        QApplication::processEvents();
+        switch_sleep(100000);
+    }
+    if(i == 200) {
+        QMessageBox::critical( this, "Idapted Trainer Studio",
+                               QString("Authenticate Error:\nReason: NO RESPONSE!"));
+        ui->frmSplash->hide();
+        return;
+    }
+
+    ui->lbProgress->setText("Waiting FreeSWITCH to be loaded...");
+    ui->lbProgress->repaint();
+
+    for(i=0; i<200 && (!fshost->isRunning()); i++ ){
+        if(_abort) return;
+        QApplication::processEvents();
+        switch_sleep(100000);
+    }
+    if(i == 200) {
+        QMessageBox::critical( this, "Idapted Trainer Studio",
+                               QString("Error Loading FreeSWITCH\nReason: NO RESPONSE!"));
+        ui->frmSplash->hide();
+        return;
     }
 //    emit Login();
 }
@@ -131,7 +147,7 @@ void LoginDialog::onAuthenticated(QVariantMap map)
 {
     qDebug() << "Authenticated";
     user = map;
-    authenticated = true;
+    _authenticated = true;
     hide();
 }
 

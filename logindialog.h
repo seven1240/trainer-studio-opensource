@@ -23,7 +23,8 @@ signals:
 private:
     Ui::LoginDialog *ui;
     QVariantMap user;
-    bool authenticated;
+    bool _authenticated;
+    bool _abort; //abort login
 public slots:
     void onAuthenticated(QVariantMap);
     void onAuthenticateError(QString);

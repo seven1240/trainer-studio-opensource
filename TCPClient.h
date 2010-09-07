@@ -13,7 +13,8 @@ class TCPClient : public QThread
     Q_OBJECT
 public:
     TCPClient();
-    void connectToHost();
+    void connectToHost() { connectToHost(_host, _port); }
+    void connectToHost(QString host, int port);
     void close();
     void write(QByteArray);
     bool isConnected();
@@ -38,7 +39,9 @@ private slots:
 private:
     bool ping;
     bool connected;
-    QTcpSocket *tcpSocket;
+    QTcpSocket *_tcpSocket;
+    QString _host;
+    int _port;
 };
 
 
