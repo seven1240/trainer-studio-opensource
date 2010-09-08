@@ -74,9 +74,9 @@ void TCPClient::onReadyRead()
         if(status == "Pong") {
             qDebug() << "Got Pong";
         }else if(status == "Authenticated") {
-            emit(authenticated(result));
             qDebug() << "blahh..... Authed";
-            ping = true;
+            emit(authenticated(result));
+//            ping = true;
         } else if(status == "AuthenticateError"){
             emit(authenticateError(result["reason"].toString()));
         } else if(status== "Paused"){

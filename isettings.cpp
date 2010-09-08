@@ -7,25 +7,34 @@ QDomDocument *ISettings::xml = 0;
 ISettings::ISettings(QObject *parent) :
     QObject(parent)
 {
-    ISettings::mutex->lock();
     if (!(ISettings::xml)) {
+        qDebug() << "lock1";
+        ISettings::mutex->lock();
+        qDebug() << "locked1";
+
         QFile *f = new QFile(QString("%1/freeswitch.xml").arg(SWITCH_GLOBAL_dirs.conf_dir));
         if ( !f->open(QIODevice::ReadOnly | QIODevice::Text ) ) {
             /* TODO: Let the user know */
             qDebug() << "Could not read from file.";
-            return;
+            goto fail;
         }
-        QString errMsg;
-        int errLine = 0, errCol = 0;
-        ISettings::xml = new QDomDocument();
-        if ( !ISettings::xml->setContent(f, &errMsg, &errLine, &errCol) ) {
-            /* TODO: Let the user know */
-            qDebug() << "Could not set content";
+        {//run in it's own block
+            QString errMsg;
+            int errLine = 0, errCol = 0;
+            ISettings::xml = new QDomDocument();
+            if ( !ISettings::xml->setContent(f, &errMsg, &errLine, &errCol) ) {
+                /* TODO: Let the user know */
+                qDebug() << "Could not set content";
+            }
+            f->close();
         }
-        f->close();
+    fail:
         delete(f);
+        ISettings::mutex->unlock();
+        qDebug() << "unlocked1";
+
     }
-    ISettings::mutex->unlock();
+
 }
 
 QDomElement ISettings::getConfigNode(QString module) {
@@ -58,26 +67,38 @@ QString ISettings::getPaRingFile() {
 
 void ISettings::writePaConfig(QVariantMap newconf)
 {
+    qDebug() << "lock2";
+    ISettings::mutex->lock();
+    qDebug() << "locked2";
+
     QDomElement cfg = getConfigNode("portaudio.conf");
 
     QDomElement settings = cfg.elementsByTagName("settings").at(0).toElement();
 
     if(settings.isNull()) {
         qDebug() << "NULL PA settings!";
-        return;
+        goto fail;
     }
 
-    QDomNodeList params = settings.childNodes();
+    {//run in it's own block, or it will throw jump to label crosses initialization ...
+        QDomNodeList params = settings.childNodes();
 
-    for(int i=0; i< params.count(); i++) {
-        QDomElement param = params.at(i).toElement();
-        QString name = param.attributeNode("name").value();
-        QString value = param.attributeNode("value").value();
+        for(int i=0; i< params.count(); i++) {
+            QDomElement param = params.at(i).toElement();
+            QString name = param.attributeNode("name").value();
+            QString value = param.attributeNode("value").value();
 
-        if(!newconf[name].toString().isNull() && newconf[name].toString() != value) {
-            param.setAttribute("value", newconf[name].toString());
+            if(!newconf[name].toString().isNull() && newconf[name].toString() != value) {
+                param.setAttribute("value", newconf[name].toString());
+            }
         }
     }
+
+fail:
+    ISettings::mutex->unlock();
+    qDebug() << "unlocked2";
+
+
 }
 
 QVariantMap ISettings::getGateway(QString gwname) {
@@ -140,6 +161,7 @@ void ISettings::writeGateway(QVariantMap newgw)
 
 
     setConfigNode(cfg, "sofia.conf");
+
 }
 
 void ISettings::resetGateway()
@@ -157,7 +179,10 @@ void ISettings::resetGateway()
 }
 
 void ISettings::setConfigNode(QDomElement node, QString module) {
+    qDebug() << "lock4";
     ISettings::mutex->lock();
+    qDebug() << "locked4";
+
     QDomElement e = ISettings::xml->documentElement();
     QDomNodeList l = e.elementsByTagName("configuration");
     for (int i = 0; i < l.count(); i++) {
@@ -168,17 +193,21 @@ void ISettings::setConfigNode(QDomElement node, QString module) {
         }
     }
     ISettings::mutex->unlock();
+    qDebug() << "unlocked4";
+
 }
 
 void ISettings::saveToFile() {
+    qDebug() << "lock5";
     ISettings::mutex->lock();
+
     if (ISettings::xml) {
         QFile *f = new QFile(QString("%1/freeswitch.xml").arg(SWITCH_GLOBAL_dirs.conf_dir));
 		qDebug() << "Write to: " << QString("%1/freeswitch.xml").arg(SWITCH_GLOBAL_dirs.conf_dir);
         if ( !f->open(QFile::WriteOnly | QFile::Truncate) ) {
             /* TODO: Let the user know */
             qDebug() << "Could not open from file.";
-            return;
+            goto fail;
         }
         QTextStream out(f);
         ISettings::xml->save(out, 2);
@@ -186,7 +215,7 @@ void ISettings::saveToFile() {
         if ( !f->open(QFile::ReadOnly) ) {
             /* TODO: Let the user know */
             qDebug() << "Could not open from file.";
-            return;
+            goto fail;
         }
         QString errMsg;
         int errLine = 0, errCol = 0;
@@ -198,7 +227,11 @@ void ISettings::saveToFile() {
         f->close();
         delete(f);
     }
+
+fail:
     ISettings::mutex->unlock();
+    qDebug() << "unlocked5";
+
 }
 
 void ISettings::setParam(QDomElement &parent, QString name, QString value) {
