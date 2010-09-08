@@ -21,6 +21,7 @@ public slots:
     void onFSCommand(QString cmd, QString args);
 
 private slots:
+    void on_btnFinish_clicked();
     void on_btnTest_clicked();
     void on_btnDisconnect_clicked();
     void onReservedForInteraction(QVariantMap);

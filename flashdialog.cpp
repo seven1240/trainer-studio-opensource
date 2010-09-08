@@ -75,9 +75,9 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  "&scenario_id=%6"
                                  "&realtime_subscriber=%7"
                                  "&trainer_login=%8"
-                                 "&trainer_xxxxpwd=%9"
+                                 "&trainer_pwd=%9"
                                  "&base_url=%10';%11"
-                                 ).arg("http://www.eqenglish.com"
+                                 ).arg(url
                                  ).arg("127.0.0.1"
                                  ).arg(data["realtime_uuid"].toString()
                                  ).arg("2000"
@@ -155,13 +155,18 @@ void FlashDialog::on_btnTest_clicked()
 //    ui->webView->reload();
 //    ui->webView->page()->mainFrame()->evaluateJavaScript(js1);
 //    ui->webView->load(QUrl("http://localhost:8000/markspot.swf?product_type=eqenglish"));
-//    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
+    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
 //    ui->webView->load(QUrl("http://www.eqenglish.com"));
-    ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
+//    ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
 }
 
 
 void FlashDialog::onFSCommand(QString cmd, QString args)
 {
     qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
+}
+
+void FlashDialog::on_btnFinish_clicked()
+{
+    qDebug() << "Nothing";
 }

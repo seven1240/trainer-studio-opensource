@@ -194,6 +194,7 @@ void ISettings::saveToFile() {
             /* TODO: Let the user know */
             qDebug() << "Could not set content";
         }
+        f->flush();
         f->close();
         delete(f);
     }

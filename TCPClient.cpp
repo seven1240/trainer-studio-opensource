@@ -61,32 +61,37 @@ void TCPClient::onReadyRead()
     QJson::Parser parser;
     bool ok;
     QVariantMap result;
-
     result = parser.parse (ba, &ok).toMap();
     qDebug() << result;
+    QString status = result["status"].toString();
+
+    qDebug() << status << "---- ---- ";
+
     if(!ok) {
         qDebug() << "Invalid JSON! " << ba;
     }else{
-        if(result["status"] == "Pong") {
+        qDebug() << status;
+        if(status == "Pong") {
             qDebug() << "Got Pong";
-        }else if(result["status"] == "Authenticated") {
+        }else if(status == "Authenticated") {
             emit(authenticated(result));
+            qDebug() << "blahh..... Authed";
             ping = true;
-        } else if(result["status"] == "AuthenticateError"){
+        } else if(status == "AuthenticateError"){
             emit(authenticateError(result["reason"].toString()));
-        } else if(result["status"] == "Paused"){
+        } else if(status== "Paused"){
             emit(paused(true));
-        } else if(result["status"] == "Unpaused"){
+        } else if(status == "Unpaused"){
             emit(paused(false));
-        } else if(result["status"] == "ForcedPause"){
+        } else if(status == "ForcedPause"){
             emit(forcedPause(result["reason"].toString()));
-        } else if(result["status"] == "ReservedForInteraction"){
+        } else if(status == "ReservedForInteraction"){
             emit(reservedForInteraction(result));
             qDebug() << "ReservedForInteraction....";
         } else {
             qDebug() << "Unknown JSON";
         }
-
+qDebug() << "en??";
     }
 }
 
