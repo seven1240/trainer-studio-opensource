@@ -7,7 +7,7 @@ TCPClient *tcp_client;
 
 TCPClient::TCPClient()
 {
-    ping = false;
+    _ping = false;
     _tcpSocket = new QTcpSocket(this);
     connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
@@ -25,8 +25,8 @@ void TCPClient::run()
 //    ConnectToHost();
     for (;;) {
 
-        qDebug() << "TCPClient running ...";
-        if(ping) {
+        qDebug() << "TCPClient running: " << _tcpSocket->state();
+        if(_connected && _ping) {
             //tcpSocket->write("{\"action\":\"Ping\"}");
         }
         switch_sleep(10000000);
@@ -35,6 +35,7 @@ void TCPClient::run()
 
 void TCPClient::connectToHost(QString host, int port)
 {
+    if (_connected) return;
     _host = host;
     _port = port;
     _tcpSocket->connectToHost(host, port);
@@ -109,24 +110,31 @@ void TCPClient::onReadyRead()
 
 void TCPClient::onSocketError(QAbstractSocket::SocketError)
 {
-    qDebug() << "Errorrrrrrrrrrrrr";
-
+    _connected = false;
+    qDebug() << "Socket Error: " << _tcpSocket->error() << " "
+            << _tcpSocket->errorString();
 }
 
 void TCPClient::onConnected()
 {
-    connected = true;
+    _connected = true;
     qDebug() << "Socket Connected";
 
 }
 
 void TCPClient::onDisconnected()
 {
-    ping = false;
-    connected = false;
+    _ping = false;
+    _connected = false;
     qDebug() << "Disconnected, reconnecting in 10 seconds...";
-//    sleep(1);
-//    ConnectToHost();
+
+    QTimer::singleShot(10000, this, SLOT(onTimer()));
+}
+
+void TCPClient::onTimer()
+{
+    qDebug() << "Reconnect";
+    connectToHost();
 }
 
 void TCPClient::sendAction(char *action)
@@ -153,7 +161,8 @@ void TCPClient::write(char *s)
 
 bool TCPClient::isConnected()
 {
-    return connected;
+    return _connected;
+//    return _tcpSocket->isValid();
 }
 
 void TCPClient::pause(bool action)

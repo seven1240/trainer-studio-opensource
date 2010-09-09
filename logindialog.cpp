@@ -94,7 +94,7 @@ void LoginDialog::on_btnLogin_clicked()
 
     if(i == 200) {
         // error socket connect
-        QMessageBox::critical( this, "Idapted Trainer Studio",
+        QMessageBox::critical( this, QApplication::applicationName(),
                                   "Login Error, please try again!" );
         ui->frmSplash->hide();
         return;
@@ -114,7 +114,7 @@ void LoginDialog::on_btnLogin_clicked()
         switch_sleep(100000);
     }
     if(i == 200) {
-        QMessageBox::critical( this, "Idapted Trainer Studio",
+        QMessageBox::critical( this, QApplication::applicationName(),
                                QString("Authenticate Error:\nReason: NO RESPONSE!"));
         ui->frmSplash->hide();
         return;
@@ -129,7 +129,7 @@ void LoginDialog::on_btnLogin_clicked()
         switch_sleep(100000);
     }
     if(i == 200) {
-        QMessageBox::critical( this, "Idapted Trainer Studio",
+        QMessageBox::critical( this, QApplication::applicationName(),
                                QString("Error Loading FreeSWITCH\nReason: NO RESPONSE!"));
         ui->frmSplash->hide();
         return;
@@ -187,7 +187,7 @@ void LoginDialog::onAuthenticated(QVariantMap map)
 
 void LoginDialog::onAuthenticateError(QString reason)
 {
-    QMessageBox::critical( this, "Idapted Trainer Studio",
+    QMessageBox::critical( this, QApplication::applicationName(),
                            QString("Authenticate Error:\nReason: %1").arg(reason));
     ui->frmSplash->hide();
 }

@@ -122,7 +122,7 @@ void MainWindow::onPaused(bool state)
 
 void MainWindow::onForcedPause(QString reason)
 {
-    QMessageBox::warning(this, "Idapted Trainer Studio",
+    QMessageBox::warning(this, QApplication::applicationName(),
                           reason);
     ui->btnState->setText("> Start Working");
     ui->btnState->setChecked(false);

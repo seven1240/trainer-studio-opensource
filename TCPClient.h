@@ -41,11 +41,12 @@ private slots:
     void onSocketError(QAbstractSocket::SocketError);
     void onConnected();
     void onDisconnected();
+    void onTimer();
 
 
 private:
-    bool ping;
-    bool connected;
+    bool _ping;
+    bool _connected;
     QTcpSocket *_tcpSocket;
     QString _host;
     int _port;
