@@ -15,6 +15,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->frmSplash->hide();
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
+    this->connect(fshost, SIGNAL(moduleLoaded(QString,QString)), this, SLOT(onFSModuleLoaded(QString, QString)));
 }
 
 LoginDialog::~LoginDialog()
@@ -120,11 +121,12 @@ void LoginDialog::on_btnLogin_clicked()
         return;
     }
 
-    ui->lbProgress->setText("Waiting VoIP module to be loaded...");
-    ui->lbProgress->repaint();
+    _moduleLoadingMsg = "Waiting VoIP module to be loaded...";
 
     for(i=0; i<200 && (!fshost->isSofiaReady()); i++ ){
         if(_abort) return;
+        ui->lbProgress->setText(_moduleLoadingMsg);
+        ui->lbProgress->repaint();
         QApplication::processEvents();
         switch_sleep(100000);
     }
@@ -190,4 +192,9 @@ void LoginDialog::onAuthenticateError(QString reason)
     QMessageBox::critical( this, QApplication::applicationName(),
                            QString("Authenticate Error:\nReason: %1").arg(reason));
     ui->frmSplash->hide();
+}
+
+void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
+{
+    _moduleLoadingMsg = QString("Loaded: [%1] %2").arg(modType).arg(modKey);
 }

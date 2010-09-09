@@ -52,7 +52,7 @@ FSHost::FSHost(QObject *parent) :
     qRegisterMetaType<QSharedPointer<switch_log_node_t> >("QSharedPointer<switch_log_node_t>");
     qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
 
-    connect(this, SIGNAL(loadedModule(QString,QString)), this, SLOT(minimalModuleLoaded(QString,QString)));
+//    connect(this, SIGNAL(loadedModule(QString,QString)), this, SLOT(minimalModuleLoaded(QString,QString)));
     _running = false;
     _ready = false;
     _sofia_ready = false;
@@ -317,7 +317,7 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
             if(modKey == "mod_sofia") {
                 _sofia_ready = true;
             }
-//            emit loadedModule(modType, modKey);
+            emit moduleLoaded(modType, modKey);
             break;
         }
     default:

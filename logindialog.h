@@ -25,6 +25,7 @@ private:
     QVariantMap _user;
     bool _authenticated;
     bool _abort; //abort login
+    QString _moduleLoadingMsg;
 public slots:
     void onAuthenticated(QVariantMap);
     void onAuthenticateError(QString);
@@ -35,6 +36,7 @@ private slots:
     void on_pushButton_clicked();
     void on_buttonBox_rejected();
     void on_buttonBox_accepted();
+    void onFSModuleLoaded(QString, QString);
 };
 
 #endif // LOGINDIALOG_H

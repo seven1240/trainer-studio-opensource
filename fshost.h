@@ -62,7 +62,7 @@ signals:
     /* Status signals */
     void coreLoadingError(QString);
     void loadingModules(QString, int, QColor);
-    void loadedModule(QString, QString);
+    void moduleLoaded(QString, QString);
     void ready(void);
 
 
