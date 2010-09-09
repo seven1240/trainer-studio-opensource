@@ -8,6 +8,7 @@
 #include <QWebElement>
 #include "fshost.h"
 #include "mainwindow.h"
+#include "qmessagebox.h"
 
 
 FlashDialog::FlashDialog(QWidget *parent) :
@@ -21,23 +22,30 @@ FlashDialog::FlashDialog(QWidget *parent) :
     ui->setupUi(this);
     setLayout(ui->verticalLayout);
 
-    QWebSettings *settings = ui->webView->settings();
+//    QWebSettings *settings = ui->webView->settings();
 //    settings->setAttribute(QWebSettings::PluginsEnabled, true);
 
     this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+    this->connect(tcp_client, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
+    this->connect(tcp_client, SIGNAL(interactionReconnected), this, SLOT(onInteractionReconnected()));
+    this->connect(tcp_client, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
     this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
 
-    ui->webView->load(QUrl("about:blank"));
+//    ui->webView->load(QUrl("about:blank"));
+    QSettings settings;
+    QString url = settings.value("General/url").toString();
+    ui->webView->load(QUrl(QString("%1/user/keep_alive").arg(url)));
 
-    qDebug() << (settings->testAttribute(QWebSettings::PluginsEnabled) ? " true" : " false");
+    // Allow JS call AT callback using the mainWindow object
+    ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
+    this->connect(ui->webView->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(onJSWindowObjectCleared()));
 
     QFile file;
     file.setFileName(":/resources/loadflash.js");
     file.open(QIODevice::ReadOnly);
-    js = file.readAll();
+    _js = file.readAll();
     file.close();
-
 }
 
 FlashDialog::~FlashDialog()
@@ -64,10 +72,10 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
     QVariantMap user = ((MainWindow *)(this->parent()))->getUser();
     qDebug() << user["login"];
 
-    interactionID = data["interaction_id"].toString();
+    _interactionID = data["interaction_id"].toString();
 
 
-    QString jsLoadFlash = QString("var url='%1/flex/interaction/trainer/interaction.swf';"
+    QString params = QString("var url='%1/flex/interaction/trainer/interaction.swf';"
                                  "var vars='realtime_host=%2"
                                  "&realtime_channel=%3"
                                  "&font_size=12&cs_number=4008871020&realtime_port=%4"
@@ -76,23 +84,20 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  "&realtime_subscriber=%7"
                                  "&trainer_login=%8"
                                  "&trainer_pwd=%9"
-                                 "&base_url=%10';%11"
+                                 "&base_url=%10';"
                                  ).arg(url
                                  ).arg("127.0.0.1"
                                  ).arg(data["realtime_uuid"].toString()
                                  ).arg("2000"
-                                 ).arg(interactionID
+                                 ).arg(_interactionID
                                  ).arg(data["scenario_id"].toString()
                                  ).arg(user["login"].toString()
                                  ).arg(user["login"].toString()
                                  ).arg("test"
                                  ).arg(url
-                                 ).arg(js
                                  );
-
-    qDebug() << jsLoadFlash;
-    ui->webView->reload();
-    ui->webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
+    //Load movie useing js
+    loadMovie(params);
 }
 
 void FlashDialog::onLoadFinished(bool)
@@ -130,7 +135,7 @@ void FlashDialog::on_btnDisconnect_clicked()
 
 //  FlashVars does't work for this swf, Hmmm...
 
-    QString flash_url = QString("%1/flex/markspot/markspot.swf?"
+    QString review_url = QString("%1/flex/markspot/markspot.swf?"
                                      "product_type=eqenglish"
                                      "&background_color=#F3F3F3"
                                      "&font_family=Arial"
@@ -140,10 +145,12 @@ void FlashDialog::on_btnDisconnect_clicked()
                                      "&interaction_id=%2"
                                      "&base_url=%3"
                                      ).arg(url
-                                     ).arg(interactionID
+                                     ).arg(_interactionID
                                      ).arg(url
                                      );
-    ui->webView->load(QUrl(flash_url));
+    ui->webView->load(QUrl(review_url));
+    tcp_client->sendAction("Review");
+
 }
 
 void FlashDialog::on_btnTest_clicked()
@@ -160,29 +167,33 @@ void FlashDialog::on_btnTest_clicked()
 
     if(f == 0) {
         f++;
-        ui->webView->load(QUrl("http://www.eqenglish.com/user/keep_alive"));
+//        ui->webView->load(QUrl("http://www.eqenglish.com/user/keep_alive"));
     } else if (f == 1) {
         f++;
 //        ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
         QString jsLoadFlash=QString("var vars='realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697';"
-                            "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';%1").arg(js);
+                            "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';%1").arg(_js);
         qDebug() << jsLoadFlash;
         ui->webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
     } else if( f==2){
         f=0;
 
-//        ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
+        QString s = "var url='http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';"
+                    "var vars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';"
+                    ;
 
-        QWebFrame *frame = ui->webView->page()->mainFrame();
-        frame->addToJavaScriptWindowObject("mainWindow", this);
-        QWebElement e = frame->findFirstElement("embed");
+        QString ss = QString("%1;%2").arg(s).arg(_js);
+        ui->webView->page()->mainFrame()->evaluateJavaScript(ss);
 
-        QString s="this.FlashVars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';"
-                  "alert(this);"
-                  "this.LoadMovie(0, 'http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=http://www.eqenglish.com');";
-        qDebug() << s;
-        e.evaluateJavaScript("alert(movie_DoFSCommand);");
-        e.evaluateJavaScript(s);
+//        QWebFrame *frame = ui->webView->page()->mainFrame();
+//        frame->addToJavaScriptWindowObject("mainWindow", this);
+//        QWebElement e = frame->findFirstElement("embed");
+//
+//        QString s="this.FlashVars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';"
+//                  "alert(this);"
+//                  "this.LoadMovie(0, 'http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=http://www.eqenglish.com');";
+//        qDebug() << s;
+//        e.evaluateJavaScript(s);
 
     }
 }
@@ -192,14 +203,68 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
     qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
     if(cmd == "saved" || cmd == "committedProblems"){
         //finished = True
-        ui->webView->load(QUrl("about:blank"));
-        hide();
+        ui->webView->reload();
+//        hide();
     } else if(cmd == "log") {
-        qDebug() << "LOG: " << args;
+        qDebug() << "Flagh Log: " << args;
+    } else {
+        qDebug() << "Unknown FS command: " << cmd;
     }
 }
 
 void FlashDialog::on_btnFinish_clicked()
 {
     qDebug() << "Nothing";
+}
+
+void FlashDialog::on_btnReconnect_clicked()
+{
+    int ret = QMessageBox::warning(this, "TS",
+                 "This will attempt to re-connect you to the student and fix sound issues."
+                 "The student will be disconnected and re-called."
+                 "Please do not hit this button twice."
+                 "This re-connect may take a few seconds."
+                 "Are you sure you want to continue?",
+                 QMessageBox::Yes | QMessageBox::No );
+    if (ret == QMessageBox::No) return;
+
+    tcp_client->write(QString("{\"action\": \"Reconnect\","
+                       "\"interaction_id\", \"%1\"").arg(_interactionID));
+    onLostConnection();
+}
+
+void FlashDialog::onLostConnection()
+{
+    ui->btnReconnect->setStyleSheet("background-color: red;");
+    ui->btnReconnect->setText("Reconnecting...");
+    ui->btnReconnect->setEnabled(false);
+}
+
+void FlashDialog::onInteractionReconnected()
+{
+    ui->btnReconnect->setStyleSheet("background-color: ;");
+    ui->btnReconnect->setText("Reconnect");
+    ui->btnReconnect->setEnabled(true);
+}
+
+void FlashDialog::onInvokeMessage(QString msg)
+{
+    qDebug() << "Invoke msg: " << msg;
+}
+
+void FlashDialog::loadMovie(QString params)
+{
+    qDebug() << params;
+    ui->webView->page()->mainFrame()->evaluateJavaScript(params + _js);
+}
+
+void FlashDialog::onJSWindowObjectCleared()
+{
+    qDebug() << "Cleared!!!!";
+    qDebug() << "Cleared!!!!";
+    qDebug() << "Cleared!!!!";
+    qDebug() << "Cleared!!!!";
+
+    ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
+
 }

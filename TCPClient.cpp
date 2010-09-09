@@ -69,29 +69,41 @@ void TCPClient::onReadyRead()
 
     if(!ok) {
         qDebug() << "Invalid JSON! " << ba;
-    }else{
-        qDebug() << status;
-        if(status == "Pong") {
-            qDebug() << "Got Pong";
-        }else if(status == "Authenticated") {
-            qDebug() << "blahh..... Authed";
-            emit(authenticated(result));
-//            ping = true;
-        } else if(status == "AuthenticateError"){
-            emit(authenticateError(result["reason"].toString()));
-        } else if(status== "Paused"){
-            emit(paused(true));
-        } else if(status == "Unpaused"){
-            emit(paused(false));
-        } else if(status == "ForcedPause"){
-            emit(forcedPause(result["reason"].toString()));
-        } else if(status == "ReservedForInteraction"){
-            emit(reservedForInteraction(result));
-            qDebug() << "ReservedForInteraction....";
+        return;
+    }
+
+    qDebug() << status;
+    if(status == "Pong") {
+        qDebug() << "Got Pong";
+    }else if(status == "Authenticated") {
+        qDebug() << "blahh..... Authed";
+        emit(authenticated(result));
+        //            ping = true;
+    } else if (status == "AuthenticateError"){
+        emit (authenticateError(result["reason"].toString()));
+    } else if (status== "Paused"){
+        emit(paused(true));
+    } else if (status == "Unpaused"){
+        emit(paused(false));
+    } else if (status == "ForcedPause"){
+        emit(forcedPause(result["reason"].toString()));
+    } else if (status == "ReservedForInteraction"){
+        emit(reservedForInteraction(result));
+        qDebug() << "ReservedForInteraction....";
+    } else if (status == "Unregistered") {
+
+    } else if (status == "Message") {
+        emit(invokeMessage(result["message"].toString()));
+    } else {
+        QString action = result["action"].toString();
+
+        if (action == "LostConnection") {
+            emit(lostConnection());
+        } else if (action == "Reconnected") {
+            emit(interactionReconnected());
         } else {
             qDebug() << "Unknown JSON";
         }
-qDebug() << "en??";
     }
 }
 
@@ -117,9 +129,26 @@ void TCPClient::onDisconnected()
 //    ConnectToHost();
 }
 
+void TCPClient::sendAction(char *action)
+{
+    write(QString("{\"action\": \"%1\"}").arg(action));
+    qDebug() << QString("{\"action\": \"%1\"}").arg(action);
+}
+
 void TCPClient::write(QByteArray ba)
 {
     _tcpSocket->write(ba.append("\n"));
+}
+
+void TCPClient::write(QString s)
+{
+    write(s.toAscii());
+}
+
+void TCPClient::write(char *s)
+{
+    QByteArray ba(s);
+    write(ba);
 }
 
 bool TCPClient::isConnected()
@@ -131,8 +160,8 @@ void TCPClient::pause(bool action)
 {
 	qDebug() << "Pause: " << action;
     if(action){
-        _tcpSocket->write("{\"action\":\"Pause\"}");
+        sendAction("Pause");
     }else{
-        _tcpSocket->write("{\"action\":\"Unpause\"}");
+        sendAction("Unpause");
     }
 }

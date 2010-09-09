@@ -16,7 +16,10 @@ public:
     void connectToHost() { connectToHost(_host, _port); }
     void connectToHost(QString host, int port);
     void close();
+    void sendAction(char *);
     void write(QByteArray);
+    void write(QString);
+    void write(char *);
     bool isConnected();
     void pause(bool action);
 
@@ -29,6 +32,10 @@ signals:
     void paused(bool state);
     void forcedPause(QString reason);
     void reservedForInteraction(QVariantMap);
+    void invokeMessage(QString msg);
+    void lostConnection();
+    void interactionReconnected();
+
 private slots:
     void onReadyRead();
     void onSocketError(QAbstractSocket::SocketError);

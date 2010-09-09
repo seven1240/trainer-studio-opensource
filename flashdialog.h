@@ -19,20 +19,26 @@ protected:
 
 public slots:
     void onFSCommand(QString cmd, QString args);
+    void onJSWindowObjectCleared();
 
 private slots:
+    void on_btnReconnect_clicked();
     void on_btnFinish_clicked();
     void on_btnTest_clicked();
     void on_btnDisconnect_clicked();
     void onReservedForInteraction(QVariantMap);
     void onLoadFinished(bool);
+    void onLostConnection();
+    void onInteractionReconnected();
+    void onInvokeMessage(QString);
+
 
 private:
     Ui::FlashDialog *ui;
-    QString js; //js code to load flash
-    QString interactionID;
-    QString webTag; //track web activity
-
+    QString _js; //js code to load flash
+    QString _interactionID;
+    QString _webTag; //track web activity
+    void loadMovie(QString params);
 
 };
 

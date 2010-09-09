@@ -28,6 +28,7 @@ private:
 public slots:
     void onAuthenticated(QVariantMap);
     void onAuthenticateError(QString);
+
 private slots:
     void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
