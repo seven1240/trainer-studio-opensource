@@ -96,35 +96,7 @@ void MainWindow::onAuthenticated(QVariantMap user)
 {
     //remember user info
     _user = user;
-    ISettings *settings = new ISettings(this);
-
-    QVariantMap gw = settings->getGateway(QString("default"));
-    QString res;
-
-    if(gw["username"] == user["voip_username"] && gw["password"] == user["voip_password"]) {
-        //ok
-        qDebug() << "No gateway info changed";
-    }else{
-        qDebug() << "Need to set gateway";
-
-        QVariantMap newgw;
-        newgw.insert("username", user["voip_username"]);
-        newgw.insert("password", user["voip_password"]);
-        QVariantList serverlist = user["servers"].toList();
-        QVariantMap server = serverlist[0].toMap();
-
-        newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
-        settings->writeGateway(newgw);
-        settings->saveToFile();
-
-        //fshost->sendCmd("sofia", "profile softphone killgw default", &res);
-        switch_sleep(1000000);
-        fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
-
-    }
-
     show();
-    delete(settings);
 }
 
 void MainWindow::on_btnState_clicked()

@@ -4,6 +4,7 @@
 #include "TCPClient.h"
 #include <qmessagebox.h>
 #include "fshost.h"
+#include "isettings.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -119,10 +120,10 @@ void LoginDialog::on_btnLogin_clicked()
         return;
     }
 
-    ui->lbProgress->setText("Waiting FreeSWITCH to be loaded...");
+    ui->lbProgress->setText("Waiting VoIP module to be loaded...");
     ui->lbProgress->repaint();
 
-    for(i=0; i<200 && (!fshost->isRunning()); i++ ){
+    for(i=0; i<200 && (!fshost->isSofiaReady()); i++ ){
         if(_abort) return;
         QApplication::processEvents();
         switch_sleep(100000);
@@ -133,6 +134,39 @@ void LoginDialog::on_btnLogin_clicked()
         ui->frmSplash->hide();
         return;
     }
+
+    //setup sip account and register
+    ui->lbProgress->setText("Registering to VoIP sever...");
+    ui->lbProgress->repaint();
+
+    ISettings *isettings = new ISettings(this);
+
+    QVariantMap gw = isettings->getGateway(QString("default"));
+    QString res;
+
+    if(gw["username"] == _user["voip_username"] && gw["password"] == _user["voip_password"]) {
+        //this should not happen
+        qDebug() << "No gateway info changed";
+    }else{
+        qDebug() << "Need to set gateway";
+
+        QVariantMap newgw;
+        newgw.insert("username", _user["voip_username"]);
+        newgw.insert("password", _user["voip_password"]);
+        QVariantList serverlist = _user["servers"].toList();
+        QVariantMap server = serverlist[0].toMap();
+
+        newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
+        isettings->writeGateway(newgw);
+        isettings->saveToFile();
+        switch_sleep(1000000);
+    }
+
+    fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+    qDebug() << res;
+
+    delete isettings;
+    hide();
 //    emit Login();
 }
 
@@ -146,9 +180,9 @@ void LoginDialog::on_cancelLogin_clicked()
 void LoginDialog::onAuthenticated(QVariantMap map)
 {
     qDebug() << "Authenticated";
-    user = map;
+    _user = map;
     _authenticated = true;
-    hide();
+//    hide();
 }
 
 void LoginDialog::onAuthenticateError(QString reason)

@@ -97,6 +97,7 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 
 void FlashDialog::onLoadFinished(bool)
 {
+    return;
     QUrl url = ui->webView->url();
     if(url.toString().indexOf("/markspot.swf") < 0) {
         return;
@@ -155,15 +156,47 @@ void FlashDialog::on_btnTest_clicked()
 //    ui->webView->reload();
 //    ui->webView->page()->mainFrame()->evaluateJavaScript(js1);
 //    ui->webView->load(QUrl("http://localhost:8000/markspot.swf?product_type=eqenglish"));
-//    ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
-//    ui->webView->load(QUrl("http://www.eqenglish.com"));
-    ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
-}
+    static int f = 0;
 
+    if(f == 0) {
+        f++;
+        ui->webView->load(QUrl("http://www.eqenglish.com/user/keep_alive"));
+    } else if (f == 1) {
+        f++;
+//        ui->webView->load(QUrl("http://www.eqenglish.com/flex/interaction/trainer/interaction.swf?realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697"));
+        QString jsLoadFlash=QString("var vars='realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697';"
+                            "var url='http://www.eqenglish.com/flex/interaction/trainer/interaction.swf';%1").arg(js);
+        qDebug() << jsLoadFlash;
+        ui->webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
+    } else if( f==2){
+        f=0;
+
+//        ui->webView->load(QUrl("http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com"));
+
+        QWebFrame *frame = ui->webView->page()->mainFrame();
+        frame->addToJavaScriptWindowObject("mainWindow", this);
+        QWebElement e = frame->findFirstElement("embed");
+
+        QString s="this.FlashVars='product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=107261&base_url=http://www.eqenglish.com';"
+                  "alert(this);"
+                  "this.LoadMovie(0, 'http://www.eqenglish.com/flex/markspot/markspot.swf?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=http://www.eqenglish.com');";
+        qDebug() << s;
+        e.evaluateJavaScript("alert(movie_DoFSCommand);");
+        e.evaluateJavaScript(s);
+
+    }
+}
 
 void FlashDialog::onFSCommand(QString cmd, QString args)
 {
     qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
+    if(cmd == "saved" || cmd == "committedProblems"){
+        //finished = True
+        ui->webView->load(QUrl("about:blank"));
+        hide();
+    } else if(cmd == "log") {
+        qDebug() << "LOG: " << args;
+    }
 }
 
 void FlashDialog::on_btnFinish_clicked()

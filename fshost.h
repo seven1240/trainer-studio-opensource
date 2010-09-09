@@ -51,7 +51,9 @@ public:
     void generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level);
     void printEventHeaders(QSharedPointer<switch_event_t>event);
     bool isModuleLoaded(QString);
-    bool isRunning();
+    bool isRunning() { return _running; }
+    bool isReady() { return _ready; }
+    bool isSofiaReady() { return _sofia_ready; }
 
 protected:
     void run(void);
@@ -88,7 +90,9 @@ private slots:
     void minimalModuleLoaded(QString, QString);
 
 private:
-    bool running;
+    bool _running;
+    bool _ready;
+    bool _sofia_ready;
     /* Helper methods */
     void createFolders();
 

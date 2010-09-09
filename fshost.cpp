@@ -53,6 +53,9 @@ FSHost::FSHost(QObject *parent) :
     qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
 
     connect(this, SIGNAL(loadedModule(QString,QString)), this, SLOT(minimalModuleLoaded(QString,QString)));
+    _running = false;
+    _ready = false;
+    _sofia_ready = false;
 
 }
 
@@ -126,10 +129,6 @@ void FSHost::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_
     emit eventLog(node, level);
 }
 
-bool FSHost::isRunning(){
-    return running;
-}
-
 void FSHost::run(void)
 {
     switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT;
@@ -144,7 +143,7 @@ void FSHost::run(void)
     settings->saveToFile();
     delete settings;
 
-    running = true;
+    _running = true;
     /* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
     qDebug() << "Initializing core...";
     /* Initialize the core and load modules, that will startup FS completely */
@@ -166,6 +165,7 @@ void FSHost::run(void)
     }
 
     switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
+    _ready = true;
     emit ready();
 
     /* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
@@ -181,7 +181,7 @@ void FSHost::run(void)
     if (destroy_status == SWITCH_STATUS_SUCCESS)
     {
         qDebug() << "We have properly shutdown the core.";
-        running = false;
+        _running = false;
     }
 }
 
@@ -309,13 +309,17 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //            }
             break;
         }
-//    case SWITCH_EVENT_MODULE_LOAD:
-//        {
-//            QString modType = switch_event_get_header_nil(event.data(), "type");
-//            QString modKey = switch_event_get_header_nil(event.data(), "key");
+    case SWITCH_EVENT_MODULE_LOAD:
+        {
+            QString modType = switch_event_get_header_nil(event.data(), "type");
+            QString modKey = switch_event_get_header_nil(event.data(), "key");
+            qDebug() << "Module Loadded: " << modType << ": " << modKey;
+            if(modKey == "mod_sofia") {
+                _sofia_ready = true;
+            }
 //            emit loadedModule(modType, modKey);
-//            break;
-//        }
+            break;
+        }
     default:
         break;
     }
