@@ -26,17 +26,21 @@ private:
     bool _authenticated;
     bool _abort; //abort login
     QString _moduleLoadingMsg;
+
 public slots:
-    void onAuthenticated(QVariantMap);
-    void onAuthenticateError(QString);
 
 private slots:
+    void onAuthenticated(QVariantMap);
+    void onAuthenticateError(QString);
+    void onAuthenticateTimeout();
     void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
     void on_pushButton_clicked();
     void on_buttonBox_rejected();
     void on_buttonBox_accepted();
     void onFSModuleLoaded(QString, QString);
+    void doRegisterToVoIP();
+
 };
 
 #endif // LOGINDIALOG_H

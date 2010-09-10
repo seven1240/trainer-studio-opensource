@@ -313,7 +313,7 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
         {
             QString modType = switch_event_get_header_nil(event.data(), "type");
             QString modKey = switch_event_get_header_nil(event.data(), "key");
-            qDebug() << "Module Loadded: " << modType << ": " << modKey;
+//            qDebug() << "Module Loadded: " << modType << ": " << modKey;
             if(modKey == "mod_sofia") {
                 _sofia_ready = true;
             }

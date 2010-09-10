@@ -13,6 +13,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     qDebug() << "LoginDialog starting";
     ui->setupUi(this);
     ui->frmSplash->hide();
+    _authenticated = false;
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
     this->connect(fshost, SIGNAL(moduleLoaded(QString,QString)), this, SLOT(onFSModuleLoaded(QString, QString)));
@@ -110,31 +111,67 @@ void LoginDialog::on_btnLogin_clicked()
 
     tcp_client->write(json);
 
-    for(i=0; i<200 && (!_authenticated); i++) {
-        if(_abort) return;
-        QApplication::processEvents();
-        switch_sleep(100000);
-    }
-    if(i == 200) {
-        QMessageBox::critical( this, QApplication::applicationName(),
-                               QString("Authenticate Error:\nReason: NO RESPONSE!"));
+    QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
+
+//    emit Login();
+}
+
+void LoginDialog::on_cancelLogin_clicked()
+{
+    qDebug() << "Cancel";
+    tcp_client->close();
+    ui->frmSplash->hide();
+    _abort = true;
+}
+
+void LoginDialog::onAuthenticated(QVariantMap map)
+{
+    qDebug() << "Authenticated";
+    _user = map;
+    _authenticated = true;
+
+    QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
+
+//    hide();
+}
+
+void LoginDialog::onAuthenticateError(QString reason)
+{
+    QMessageBox::critical( this, QApplication::applicationName(),
+                           QString("Authenticate Error:\nReason: %1").arg(reason));
+    ui->frmSplash->hide();
+}
+
+void LoginDialog::onAuthenticateTimeout()
+{
+    if (_abort || _authenticated) return;
+    onAuthenticateError("Time out");
+}
+
+void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
+{
+    ui->teProgress->insertPlainText(QString("Loaded: [%1] %2\n")
+                            .arg(modType).arg(modKey));
+    ui->teProgress->textCursor().movePosition(QTextCursor::End);
+    ui->teProgress->ensureCursorVisible();
+}
+
+void LoginDialog::doRegisterToVoIP()
+{
+    if (_abort) return;
+
+    static int count = 0;
+    if (count++ == 20) {
+        //20 seconds past and FS still didn't load
+        QMessageBox::critical(this, QApplication::applicationName(),
+                              "Error loading VoIP");
         ui->frmSplash->hide();
+        count = 0;
         return;
     }
 
-    _moduleLoadingMsg = "Waiting VoIP module to be loaded...";
-
-    for(i=0; i<200 && (!fshost->isSofiaReady()); i++ ){
-        if(_abort) return;
-        ui->lbProgress->setText(_moduleLoadingMsg);
-        ui->lbProgress->repaint();
-        QApplication::processEvents();
-        switch_sleep(100000);
-    }
-    if(i == 200) {
-        QMessageBox::critical( this, QApplication::applicationName(),
-                               QString("Error Loading FreeSWITCH\nReason: NO RESPONSE!"));
-        ui->frmSplash->hide();
+    if (!fshost->isSofiaReady()) {
+        QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
         return;
     }
 
@@ -170,32 +207,4 @@ void LoginDialog::on_btnLogin_clicked()
 
     delete isettings;
     hide();
-//    emit Login();
-}
-
-void LoginDialog::on_cancelLogin_clicked()
-{
-    qDebug() << "Cancel";
-    tcp_client->close();
-    ui->frmSplash->hide();
-}
-
-void LoginDialog::onAuthenticated(QVariantMap map)
-{
-    qDebug() << "Authenticated";
-    _user = map;
-    _authenticated = true;
-//    hide();
-}
-
-void LoginDialog::onAuthenticateError(QString reason)
-{
-    QMessageBox::critical( this, QApplication::applicationName(),
-                           QString("Authenticate Error:\nReason: %1").arg(reason));
-    ui->frmSplash->hide();
-}
-
-void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
-{
-    _moduleLoadingMsg = QString("Loaded: [%1] %2").arg(modType).arg(modKey);
 }
