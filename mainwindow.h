@@ -45,6 +45,9 @@ private slots:
     void onLogin();
     void onAnswered();
     void onGatewayStateChange(QString state);
+    void onReservedForInteraction(QVariantMap);
+    void onSocketDisconnected();
+
 };
 
 #endif // MAINWINDOW_H

@@ -34,7 +34,7 @@ void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
     const char *cid_name = switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name");
     const char *cid_number = switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number");
     ui->lbCallerID->setText(QString("\"%1\" <%2>").arg(cid_name).arg(cid_number));
-    show();
+    exec();
 }
 
 void IncomingCallDialog::on_pushButton_2_clicked()

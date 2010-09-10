@@ -23,7 +23,6 @@ public slots:
 
 private slots:
     void on_btnReconnect_clicked();
-    void on_btnFinish_clicked();
     void on_btnTest_clicked();
     void on_btnDisconnect_clicked();
     void onReservedForInteraction(QVariantMap);

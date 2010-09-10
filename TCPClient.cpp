@@ -101,6 +101,7 @@ void TCPClient::onReadyRead()
         if (action == "LostConnection") {
             emit(lostConnection());
         } else if (action == "Reconnected") {
+            qDebug() << "hhh: " << action;
             emit(interactionReconnected());
         } else {
             qDebug() << "Unknown JSON";
@@ -127,8 +128,8 @@ void TCPClient::onDisconnected()
     _ping = false;
     _connected = false;
     qDebug() << "Disconnected, reconnecting in 10 seconds...";
-
-    QTimer::singleShot(10000, this, SLOT(onTimer()));
+//  Don't auto reconnect for now
+//    QTimer::singleShot(10000, this, SLOT(onTimer()));
 }
 
 void TCPClient::onTimer()

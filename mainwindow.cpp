@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
     this->connect(tcp_client, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
+    this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+    this->connect(tcp_client, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
     this->connect(incoming_call_dialog, SIGNAL(answered()), this, SLOT(onAnswered()));
     this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
 
@@ -152,4 +154,18 @@ void MainWindow::on_pushButton_4_clicked()
 {
     if(!settings_dialog) settings_dialog = new SettingsDialog();
     settings_dialog->show();
+}
+
+void MainWindow::onReservedForInteraction(QVariantMap data)
+{
+    ui->lbNotice->setText(QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString()));
+}
+
+void MainWindow::onSocketDisconnected()
+{
+    QMessageBox::critical(this,QApplication::applicationName(), "Socket Broken!!");
+    showLoginDialog();
+    this->hide();
+    delete flash_dialog;
+    flash_dialog = new FlashDialog(this);
 }

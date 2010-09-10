@@ -27,7 +27,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
     this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
     this->connect(tcp_client, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
-    this->connect(tcp_client, SIGNAL(interactionReconnected), this, SLOT(onInteractionReconnected()));
+    this->connect(tcp_client, SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
     this->connect(tcp_client, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
     this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
@@ -98,6 +98,9 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                                  );
     //Load movie useing js
     loadMovie(params);
+    ui->btnReconnect->setStyleSheet("background-color: ;");
+    ui->btnReconnect->setText("Reconnect");
+    ui->btnReconnect->setEnabled(true);
 }
 
 void FlashDialog::onLoadFinished(bool)
@@ -135,20 +138,20 @@ void FlashDialog::on_btnDisconnect_clicked()
 
 //  FlashVars does't work for this swf, Hmmm...
 
-    QString review_url = QString("%1/flex/markspot/markspot.swf?"
-                                     "product_type=eqenglish"
+    QString vars = QString("product_type=eqenglish"
                                      "&background_color=#F3F3F3"
                                      "&font_family=Arial"
                                      "&default_ui_language=en_US"
                                      "&ui_language=en_US"
                                      "&mode=trainer"
-                                     "&interaction_id=%2"
-                                     "&base_url=%3"
-                                     ).arg(url
+                                     "&interaction_id=%1"
+                                     "&base_url=%2"
                                      ).arg(_interactionID
                                      ).arg(url
                                      );
-    ui->webView->load(QUrl(review_url));
+    QString params = QString("var url='%1/flex/markspot/markspot.swf?%2';"
+                   "var vars='%2';").arg(url).arg(vars);
+    loadMovie(params);
     tcp_client->sendAction("Review");
 
 }
@@ -212,10 +215,6 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
     }
 }
 
-void FlashDialog::on_btnFinish_clicked()
-{
-    qDebug() << "Nothing";
-}
 
 void FlashDialog::on_btnReconnect_clicked()
 {
@@ -229,7 +228,7 @@ void FlashDialog::on_btnReconnect_clicked()
     if (ret == QMessageBox::No) return;
 
     tcp_client->write(QString("{\"action\": \"Reconnect\","
-                       "\"interaction_id\", \"%1\"").arg(_interactionID));
+                              "\"interaction_id\": \"%1\"}").arg(_interactionID));
     onLostConnection();
 }
 
@@ -242,6 +241,7 @@ void FlashDialog::onLostConnection()
 
 void FlashDialog::onInteractionReconnected()
 {
+    qDebug() << "onReconnected";
     ui->btnReconnect->setStyleSheet("background-color: ;");
     ui->btnReconnect->setText("Reconnect");
     ui->btnReconnect->setEnabled(true);
