@@ -207,7 +207,7 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
     if(cmd == "saved" || cmd == "committedProblems"){
         //finished = True
         ui->webView->reload();
-//        hide();
+        hide();
     } else if(cmd == "log") {
         qDebug() << "Flagh Log: " << args;
     } else {
