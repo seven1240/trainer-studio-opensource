@@ -57,6 +57,7 @@ void LoginDialog::on_btnLogin_clicked()
     QSettings settings;
     QString host = settings.value("General/trainer_server").toString();
     int port = settings.value("trainer_server_port").toInt();
+    host = host.isEmpty() ? "voip.idapted.com" : host;
     port = port == 0 ? 7000 : port;
 
     qDebug() << host << ": " << port;
