@@ -8,6 +8,7 @@ TCPClient *tcp_client;
 TCPClient::TCPClient()
 {
     _ping = false;
+    _connected = false;
     _tcpSocket = new QTcpSocket(this);
     connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
@@ -25,7 +26,7 @@ void TCPClient::run()
 //    ConnectToHost();
     for (;;) {
 
-        qDebug() << "TCPClient running: " << _tcpSocket->state();
+        qDebug() << "TCPClient running: " << _tcpSocket->state() << _connected;
         if(_connected && _ping) {
             //tcpSocket->write("{\"action\":\"Ping\"}");
         }
