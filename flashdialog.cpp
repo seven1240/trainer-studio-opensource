@@ -78,6 +78,15 @@ void FlashDialog::showEvent(QShowEvent *e)
     _timer->start();
 }
 
+void FlashDialog::closeEvent(QCloseEvent *e)
+{
+    //show warning
+
+    // Make sure mic unmuted
+    QString res;
+    fshost->sendCmd("pa", "flags on mouth", &res);
+}
+
 void FlashDialog::onTimerTimeout()
 {
 
@@ -238,12 +247,13 @@ void FlashDialog::on_btnTest_clicked()
     }
 }
 
+// Called from flash (the *finish* button)
 void FlashDialog::onFSCommand(QString cmd, QString args)
 {
     qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
     if(cmd == "saved" || cmd == "committedProblems"){
-        //finished = True
         _timer->stop();
+        // reset webview
         ui->webView->reload();
         hide();
     } else if(cmd == "log") {
@@ -305,4 +315,18 @@ void FlashDialog::onJSWindowObjectCleared()
     qDebug() << "Object Cleared!!!!";
 
     ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
+}
+
+void FlashDialog::on_tbMute_clicked()
+{
+    QString res;
+    if (ui->tbMute->isChecked()) {
+        fshost->sendCmd("pa", "flags off mouth", &res);
+        ui->tbMute->setText("Unmute");
+        ui->tbMute->setChecked(true);
+    } else {
+        fshost->sendCmd("pa", "flags on mouth", &res);
+        ui->tbMute->setText("Mute");
+        ui->tbMute->setChecked(false);
+    }
 }

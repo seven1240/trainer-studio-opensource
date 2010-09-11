@@ -18,12 +18,14 @@ public:
 protected:
     void changeEvent(QEvent *e);
     void showEvent(QShowEvent *e);
+    void closeEvent(QCloseEvent *e);
 
 public slots:
     void onFSCommand(QString cmd, QString args);
     void onJSWindowObjectCleared();
 
 private slots:
+    void on_tbMute_clicked();
     void on_btnReconnect_clicked();
     void on_btnTest_clicked();
     void on_btnDisconnect_clicked();

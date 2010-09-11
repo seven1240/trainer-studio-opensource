@@ -36,6 +36,7 @@ signals:
     void lostConnection();
     void interactionReconnected();
     void socketDisconnected();
+    void socketError(QString);
 
 private slots:
     void onReadyRead();

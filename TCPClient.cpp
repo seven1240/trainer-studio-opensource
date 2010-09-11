@@ -113,6 +113,8 @@ void TCPClient::onReadyRead()
 void TCPClient::onSocketError(QAbstractSocket::SocketError)
 {
     _connected = false;
+    // Let others know
+    emit socketError(_tcpSocket->errorString());
     qDebug() << "Socket Error: " << _tcpSocket->error() << " "
             << _tcpSocket->errorString();
 }
@@ -128,6 +130,8 @@ void TCPClient::onDisconnected()
 {
     _ping = false;
     _connected = false;
+    // Let others know
+    emit
     qDebug() << "Disconnected, reconnecting in 10 seconds...";
 //  Don't auto reconnect for now
 //    QTimer::singleShot(10000, this, SLOT(onTimer()));

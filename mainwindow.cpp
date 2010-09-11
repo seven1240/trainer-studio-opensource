@@ -62,7 +62,7 @@ void MainWindow::showLoginDialog()
 {
     if (!login_dialog) {
         login_dialog = new LoginDialog(this);
-        connect(login_dialog, SIGNAL(Login()), this, SLOT(onLogin()));
+        connect(login_dialog, SIGNAL(login()), this, SLOT(onLogin()));
     }
     login_dialog -> raise();
 //    login_dialog->setModal(true);

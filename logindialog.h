@@ -18,7 +18,7 @@ protected:
     void changeEvent(QEvent *e);
 
 signals:
-    void Login();
+    void login();
 
 private:
     Ui::LoginDialog *ui;
@@ -26,12 +26,17 @@ private:
     bool _authenticated;
     bool _abort; //abort login
 
+    void abortLogin();
+    void abortLogin(QString msg);
+
 public slots:
 
 private slots:
+    void on_pbSettings_clicked();
     void onAuthenticated(QVariantMap);
     void onAuthenticateError(QString);
     void onAuthenticateTimeout();
+    void onSocketError(QString);
     void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
     void onFSModuleLoaded(QString, QString);

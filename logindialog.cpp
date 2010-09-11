@@ -5,6 +5,8 @@
 #include <qmessagebox.h>
 #include "fshost.h"
 #include "isettings.h"
+#include "mainwindow.h"
+#include "SettingsDialog.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -12,6 +14,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     qDebug() << "LoginDialog starting";
     ui->setupUi(this);
+    ui->pbSettings->setVisible(false);
     ui->lePassword->setEchoMode(QLineEdit::Password);
     ui->frmSplash->hide();
     ui->frmLogin->move(QPoint(10, 10));
@@ -21,6 +24,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
+    this->connect(tcp_client, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
     this->connect(fshost, SIGNAL(moduleLoaded(QString,QString)), this, SLOT(onFSModuleLoaded(QString, QString)));
 }
 
@@ -41,6 +45,53 @@ void LoginDialog::changeEvent(QEvent *e)
     }
 }
 
+void LoginDialog::abortLogin()
+{
+    _abort = true;
+    ui->frmSplash->hide();
+    ui->pbSettings->setVisible(true);
+}
+
+void LoginDialog::abortLogin(QString msg)
+{
+    abortLogin();
+    QMessageBox::critical( this, QApplication::applicationName(), msg);
+}
+
+void LoginDialog::on_cancelLogin_clicked()
+{
+    qDebug() << "Cancel";
+    tcp_client->close();
+    abortLogin();
+}
+
+void LoginDialog::onAuthenticated(QVariantMap map)
+{
+    qDebug() << "Authenticated";
+    _user = map;
+    _authenticated = true;
+
+    // set timer to wait FreeSWITCH to be ready
+    QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
+}
+
+void LoginDialog::onAuthenticateError(QString reason)
+{
+    QString msg = QString("Authenticate Error:\nReason: %1").arg(reason);
+    abortLogin(msg);
+}
+
+void LoginDialog::onAuthenticateTimeout()
+{
+    if (_abort || _authenticated) return;
+    abortLogin("Authenticate Timed out!");
+}
+
+void LoginDialog::onSocketError(QString error)
+{
+    abortLogin(error);
+}
+
 void LoginDialog::on_btnLogin_clicked()
 {
     QSettings settings;
@@ -49,7 +100,7 @@ void LoginDialog::on_btnLogin_clicked()
     host = host.isEmpty() ? "voip.idapted.com" : host;
     port = port == 0 ? 7000 : port;
 
-    qDebug() << host << ": " << port;
+    qDebug() << host << ":" << port;
     ui->frmSplash->setGeometry( ui->frmLogin->geometry());
     ui->frmSplash->show();
     tcp_client->connectToHost(host, port);
@@ -85,13 +136,9 @@ void LoginDialog::on_btnLogin_clicked()
 
     if(i == 200) {
         // error socket connect
-        QMessageBox::critical( this, QApplication::applicationName(),
-                                  "Login Error, please try again!" );
-        ui->frmSplash->hide();
+        abortLogin("Login Error, Please Try again!");
         return;
-
     }
-
 
     //else connected
     ui->lbProgress->setText("Socket connected, authenticating...");
@@ -101,47 +148,6 @@ void LoginDialog::on_btnLogin_clicked()
 
     QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
 
-//    emit Login();
-}
-
-void LoginDialog::on_cancelLogin_clicked()
-{
-    qDebug() << "Cancel";
-    tcp_client->close();
-    ui->frmSplash->hide();
-    _abort = true;
-}
-
-void LoginDialog::onAuthenticated(QVariantMap map)
-{
-    qDebug() << "Authenticated";
-    _user = map;
-    _authenticated = true;
-
-    QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
-
-//    hide();
-}
-
-void LoginDialog::onAuthenticateError(QString reason)
-{
-    QMessageBox::critical( this, QApplication::applicationName(),
-                           QString("Authenticate Error:\nReason: %1").arg(reason));
-    ui->frmSplash->hide();
-}
-
-void LoginDialog::onAuthenticateTimeout()
-{
-    if (_abort || _authenticated) return;
-    onAuthenticateError("Time out");
-}
-
-void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
-{
-    ui->teProgress->insertPlainText(QString("Loaded: [%1] %2\n")
-                            .arg(modType).arg(modKey));
-    ui->teProgress->textCursor().movePosition(QTextCursor::End);
-    ui->teProgress->ensureCursorVisible();
 }
 
 void LoginDialog::doRegisterToVoIP()
@@ -151,14 +157,14 @@ void LoginDialog::doRegisterToVoIP()
     static int count = 0;
     if (count++ == 20) {
         //20 seconds past and FS still didn't load
-        QMessageBox::critical(this, QApplication::applicationName(),
-                              "Error loading VoIP");
-        ui->frmSplash->hide();
+        abortLogin("Error loading VoIP module, Please close and reopen!!");
         count = 0;
         return;
     }
 
     if (!fshost->isSofiaReady()) {
+        ui->lbProgress->setText("Loading VoIP modules...");
+        ui->lbProgress->repaint();
         QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
         return;
     }
@@ -194,6 +200,22 @@ void LoginDialog::doRegisterToVoIP()
     qDebug() << res;
 
     delete isettings;
-    ((QDialog*)parent())->show();
+    emit login(); // show maimWindow
     hide();
+}
+
+void LoginDialog::on_pbSettings_clicked()
+{
+    SettingsDialog *settings_dialog = new SettingsDialog(this);
+    // auto delete on close
+    settings_dialog->setAttribute(Qt::WA_DeleteOnClose);
+    settings_dialog->show();
+}
+
+void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
+{
+    ui->teProgress->insertPlainText(QString("Loaded: [%1] %2\n")
+                            .arg(modType).arg(modKey));
+    ui->teProgress->textCursor().movePosition(QTextCursor::End);
+    ui->teProgress->ensureCursorVisible();
 }
