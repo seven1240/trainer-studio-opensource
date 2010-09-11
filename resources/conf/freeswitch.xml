@@ -72,9 +72,8 @@
 
                 <configuration name="modules.conf" description="Modules">
                         <modules>
-                                <load module="mod_console"/>
+                                <!--<load module="mod_console"/>-->
                                 <load module="mod_logfile"/>
-                                <load module="mod_enum"/>
                                 <load module="mod_cdr_csv"/>
                                 <load module="mod_sofia"/>
                                 <load module="mod_loopback"/>
@@ -117,7 +116,7 @@
                       <settings>
                             <param name="nat-map" value="false"/>
                             <param name="listen-ip" value="127.0.0.1"/>
-                            <param name="listen-port" value="8022"/>
+                            <param name="listen-port" value="8023"/>
                             <param name="password" value="ClueCon"/>
                       </settings>
                 </configuration>
@@ -268,7 +267,7 @@
                                         <action application="export" data="origination_caller_id_number=${fscomm_caller_id_num}"/>
                                         <action application="export" data="origination_caller_id_name=${fscomm_caller_id_name}"/>
                                         <action application="info"/>
-                                        <action application="bridge" data="sofia/gateway/${default_gateway}/$1"/>
+                                        <action application="bridge" data="sofia/gateway/default/$1"/>
                                 </condition>
                         </extension>
                 </context>

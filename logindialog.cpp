@@ -12,8 +12,13 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     qDebug() << "LoginDialog starting";
     ui->setupUi(this);
+    ui->lePassword->setEchoMode(QLineEdit::Password);
     ui->frmSplash->hide();
+    ui->frmLogin->move(QPoint(10, 10));
+
+    this->setWindowTitle("Login");
     _authenticated = false;
+
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
     this->connect(fshost, SIGNAL(moduleLoaded(QString,QString)), this, SLOT(onFSModuleLoaded(QString, QString)));
@@ -34,23 +39,6 @@ void LoginDialog::changeEvent(QEvent *e)
     default:
         break;
     }
-}
-
-void LoginDialog::on_buttonBox_accepted()
-{
-
-
-}
-
-void LoginDialog::on_buttonBox_rejected()
-{
-    qDebug() << "Rejected";
-    this->show();
-}
-
-void LoginDialog::on_pushButton_clicked()
-{
-    emit Login();
 }
 
 void LoginDialog::on_btnLogin_clicked()
@@ -206,5 +194,6 @@ void LoginDialog::doRegisterToVoIP()
     qDebug() << res;
 
     delete isettings;
+    ((QDialog*)parent())->show();
     hide();
 }

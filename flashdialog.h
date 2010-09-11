@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <qvariant.h>
+#include <qdatetime.h>
 
 namespace Ui {
     class FlashDialog;
@@ -16,6 +17,7 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    void showEvent(QShowEvent *e);
 
 public slots:
     void onFSCommand(QString cmd, QString args);
@@ -30,7 +32,7 @@ private slots:
     void onLostConnection();
     void onInteractionReconnected();
     void onInvokeMessage(QString);
-
+    void onTimerTimeout();
 
 private:
     Ui::FlashDialog *ui;
@@ -38,7 +40,8 @@ private:
     QString _interactionID;
     QString _webTag; //track web activity
     void loadMovie(QString params);
-
+    int _tickCount; // last intraction/review time
+    QTimer *_timer;
 };
 
 #endif // FLASHDIALOG_H

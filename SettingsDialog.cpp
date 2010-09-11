@@ -74,7 +74,7 @@ void SettingsDialog::on_pbSaveGeneral_clicked()
     settings.setValue("url", ui->leURL->text());
     QStringList slServer = ui->leServer->text().split(":");
     settings.setValue("trainer_server", slServer.at(0));
-    settings.setValue("trainer_server_port", slServer.at(1) == "" ? "7000" : slServer.at(1) );
+    settings.setValue("trainer_server_port", slServer.at(1) == "" ? 7000 : slServer.at(1).toInt() );
     settings.endGroup();
 }
 

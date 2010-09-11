@@ -34,8 +34,8 @@ private:
     QVariantMap _user;
 
 private slots:
-    void on_pushButton_4_clicked();
-    void on_pushButton_3_clicked();
+    void on_pbEchoTest_clicked();
+    void on_actionPreferences_triggered();
     void on_btnState_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
@@ -47,6 +47,7 @@ private slots:
     void onGatewayStateChange(QString state);
     void onReservedForInteraction(QVariantMap);
     void onSocketDisconnected();
+    void on_actionAbout_triggered();
 
 };
 

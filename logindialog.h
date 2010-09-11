@@ -25,7 +25,6 @@ private:
     QVariantMap _user;
     bool _authenticated;
     bool _abort; //abort login
-    QString _moduleLoadingMsg;
 
 public slots:
 
@@ -35,9 +34,6 @@ private slots:
     void onAuthenticateTimeout();
     void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
-    void on_pushButton_clicked();
-    void on_buttonBox_rejected();
-    void on_buttonBox_accepted();
     void onFSModuleLoaded(QString, QString);
     void doRegisterToVoIP();
 

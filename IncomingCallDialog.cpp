@@ -37,7 +37,7 @@ void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
     show();
 }
 
-void IncomingCallDialog::on_pushButton_2_clicked()
+void IncomingCallDialog::on_pbAnswer_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "answer", &res);
@@ -45,7 +45,7 @@ void IncomingCallDialog::on_pushButton_2_clicked()
     hide();
 }
 
-void IncomingCallDialog::on_pushButton_clicked()
+void IncomingCallDialog::on_pbReject_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "hangup", &res);

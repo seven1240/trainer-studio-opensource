@@ -15,6 +15,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FlashDialog)
 {
+    // Enable plugins
     QWebSettings *websetting= QWebSettings::globalSettings();
     websetting->setAttribute(QWebSettings::JavascriptEnabled,true);
     websetting->setAttribute(QWebSettings::PluginsEnabled,true);
@@ -22,25 +23,27 @@ FlashDialog::FlashDialog(QWidget *parent) :
     ui->setupUi(this);
     setLayout(ui->verticalLayout);
 
-//    QWebSettings *settings = ui->webView->settings();
-//    settings->setAttribute(QWebSettings::PluginsEnabled, true);
-
+    _timer = new QTimer(this);
+    _timer->setInterval(1000);
+    // Signals
+    this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
     this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
     this->connect(tcp_client, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
     this->connect(tcp_client, SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
     this->connect(tcp_client, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
     this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
-
 //    ui->webView->load(QUrl("about:blank"));
+    // Load a blank HTML to avoid cross domain communication between JS and Flash
     QSettings settings;
     QString url = settings.value("General/url").toString();
     ui->webView->load(QUrl(QString("%1/user/keep_alive").arg(url)));
 
-    // Allow JS call AT callback using the mainWindow object
+    // Allow JS call QT callback using the mainWindow object
     ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
     this->connect(ui->webView->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(onJSWindowObjectCleared()));
 
+    // Read JS into memory
     QFile file;
     file.setFileName(":/resources/loadflash.js");
     file.open(QIODevice::ReadOnly);
@@ -50,6 +53,8 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
 FlashDialog::~FlashDialog()
 {
+    _timer->stop();
+    delete _timer;
     delete ui;
 }
 
@@ -63,6 +68,23 @@ void FlashDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void FlashDialog::showEvent(QShowEvent *e)
+{
+    qDebug() << e;
+    ui->lbTimer->setText("00:00:00");
+    _tickCount = 0;
+    _timer->start();
+}
+
+void FlashDialog::onTimerTimeout()
+{
+
+    QTime t(0,0,0);
+
+    t = t.addSecs(_tickCount);
+    ui->lbTimer->setText(t.toString("hh:mm:ss"));
 }
 
 void FlashDialog::onReservedForInteraction(QVariantMap data)
@@ -130,13 +152,26 @@ void FlashDialog::onLoadFinished(bool)
 
 void FlashDialog::on_btnDisconnect_clicked()
 {
+    _timer->stop();
+
     QSettings settings;
     QString url = settings.value("General/url").toString();
 
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
 
-//  FlashVars does't work for this swf, Hmmm...
+    if (_tickCount < 450 ) {
+        int ret = QMessageBox::warning(this, "Premature Ending",
+                                       "This call was ended prematurely.  Would you like to skip the review screen?",
+                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (ret == QMessageBox::Yes) {
+            ui->webView->reload();
+            hide();
+            return;
+        }
+    }
+
+//  FlashVars does't work for this swf, so need to set params in url. Hmmm...
 
     QString vars = QString("product_type=eqenglish"
                                      "&background_color=#F3F3F3"
@@ -154,6 +189,8 @@ void FlashDialog::on_btnDisconnect_clicked()
     loadMovie(params);
     tcp_client->sendAction("Review");
 
+    _tickCount = 0; //reset for review
+    _timer->start();
 }
 
 void FlashDialog::on_btnTest_clicked()
@@ -206,10 +243,11 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
     qDebug() << "--------FSCommand:\n\n" << cmd << ": " << args;
     if(cmd == "saved" || cmd == "committedProblems"){
         //finished = True
+        _timer->stop();
         ui->webView->reload();
         hide();
     } else if(cmd == "log") {
-        qDebug() << "Flagh Log: " << args;
+        qDebug() << "Flash Log: " << args;
     } else {
         qDebug() << "Unknown FS command: " << cmd;
     }
@@ -234,6 +272,8 @@ void FlashDialog::on_btnReconnect_clicked()
 
 void FlashDialog::onLostConnection()
 {
+    _timer->stop();
+
     ui->btnReconnect->setStyleSheet("background-color: red;");
     ui->btnReconnect->setText("Reconnecting...");
     ui->btnReconnect->setEnabled(false);
@@ -241,6 +281,8 @@ void FlashDialog::onLostConnection()
 
 void FlashDialog::onInteractionReconnected()
 {
+    _timer->start();
+
     qDebug() << "onReconnected";
     ui->btnReconnect->setStyleSheet("background-color: ;");
     ui->btnReconnect->setText("Reconnect");
@@ -260,11 +302,7 @@ void FlashDialog::loadMovie(QString params)
 
 void FlashDialog::onJSWindowObjectCleared()
 {
-    qDebug() << "Cleared!!!!";
-    qDebug() << "Cleared!!!!";
-    qDebug() << "Cleared!!!!";
-    qDebug() << "Cleared!!!!";
+    qDebug() << "Object Cleared!!!!";
 
     ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
-
 }

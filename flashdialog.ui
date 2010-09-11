@@ -21,13 +21,23 @@
     <rect>
      <x>0</x>
      <y>40</y>
-     <width>351</width>
-     <height>201</height>
+     <width>491</width>
+     <height>251</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="lbTimer">
+        <property name="styleSheet">
+         <string notr="true">background-color: #F00; color: #FFF;</string>
+        </property>
+        <property name="text">
+         <string>00:00:00</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="btnTest">
         <property name="text">
@@ -62,6 +72,8 @@
     </item>
    </layout>
   </widget>
+  <zorder>verticalLayoutWidget</zorder>
+  <zorder>webView</zorder>
  </widget>
  <customwidgets>
   <customwidget>

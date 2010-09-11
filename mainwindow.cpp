@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Trainer Studio - Idapted Ltd.");
+    statusBar()->addWidget(ui->lbStatus);
 
     tcp_client = new TCPClient();
     tcp_client->start();
@@ -58,15 +60,13 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::showLoginDialog()
 {
-        if (!login_dialog) {
-            login_dialog = new LoginDialog();
-            connect(login_dialog, SIGNAL(Login()), this, SLOT(onLogin()));
-    //        connect(preferences, SIGNAL(preprocessorsApplied(QStringList)), this, SLOT(applyPreprocessors(QStringList)));
-        }
+    if (!login_dialog) {
+        login_dialog = new LoginDialog(this);
+        connect(login_dialog, SIGNAL(Login()), this, SLOT(onLogin()));
+    }
     login_dialog -> raise();
 //    login_dialog->setModal(true);
     login_dialog -> show();
-
     login_dialog -> activateWindow();
 
 }
@@ -98,7 +98,7 @@ void MainWindow::onAuthenticated(QVariantMap user)
 {
     //remember user info
     _user = user;
-    show();
+//    show();
 }
 
 void MainWindow::on_btnState_clicked()
@@ -139,21 +139,7 @@ void MainWindow::onAnswered()
 
 void MainWindow::onGatewayStateChange(QString state)
 {
-    ui->lbStatus->setText(QString("SIP state: %1").arg(state));
-}
-
-void MainWindow::on_pushButton_3_clicked()
-{
-    ISettings *settings = new ISettings(this);
-    settings->resetGateway();
-    settings->saveToFile();
-    delete settings;
-}
-
-void MainWindow::on_pushButton_4_clicked()
-{
-    if(!settings_dialog) settings_dialog = new SettingsDialog();
-    settings_dialog->show();
+    ui->lbSIPStatus->setText(QString("SIP state: %1").arg(state));
 }
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
@@ -168,4 +154,23 @@ void MainWindow::onSocketDisconnected()
     this->hide();
     delete flash_dialog;
     flash_dialog = new FlashDialog(this);
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, QApplication::applicationName(),
+                             QString("Version: %1\n\nCopyright(c): Idapted Ltd.").arg(QApplication::applicationVersion()));
+}
+
+void MainWindow::on_actionPreferences_triggered()
+{
+    if(!settings_dialog) settings_dialog = new SettingsDialog();
+    settings_dialog->show();
+}
+
+void MainWindow::on_pbEchoTest_clicked()
+{
+    QString res;
+    ui->lbStatus->setText("Echo test");
+    fshost->sendCmd("pa", "call echo", &res);
 }

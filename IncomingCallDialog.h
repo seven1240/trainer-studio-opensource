@@ -19,10 +19,11 @@ protected:
 
 signals:
     void answered();
+
 private slots:
 
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
+    void on_pbReject_clicked();
+    void on_pbAnswer_clicked();
     void onIncomingCall(QSharedPointer<switch_event_t>event);
 
 private:
