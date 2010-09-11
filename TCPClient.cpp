@@ -79,31 +79,31 @@ void TCPClient::onReadyRead()
         qDebug() << "Got Pong";
     }else if(status == "Authenticated") {
         qDebug() << "blahh..... Authed";
-        emit(authenticated(result));
+        emit authenticated(result);
         //            ping = true;
     } else if (status == "AuthenticateError"){
-        emit (authenticateError(result["reason"].toString()));
+        emit authenticateError(result["reason"].toString());
     } else if (status== "Paused"){
-        emit(paused(true));
+        emit paused(true);
     } else if (status == "Unpaused"){
-        emit(paused(false));
+        emit paused(false);
     } else if (status == "ForcedPause"){
-        emit(forcedPause(result["reason"].toString()));
+        emit forcedPause(result["reason"].toString());
     } else if (status == "ReservedForInteraction"){
-        emit(reservedForInteraction(result));
+        emit reservedForInteraction(result);
         qDebug() << "ReservedForInteraction....";
     } else if (status == "Unregistered") {
 
     } else if (status == "Message") {
-        emit(invokeMessage(result["message"].toString()));
+        emit invokeMessage(result["message"].toString());
     } else {
         QString action = result["action"].toString();
 
         if (action == "LostConnection") {
-            emit(lostConnection());
+            emit lostConnection();
         } else if (action == "Reconnected") {
             qDebug() << "hhh: " << action;
-            emit(interactionReconnected());
+            emit interactionReconnected();
         } else {
             qDebug() << "Unknown JSON";
         }
@@ -173,7 +173,7 @@ bool TCPClient::isConnected()
 
 void TCPClient::pause(bool action)
 {
-	qDebug() << "Pause: " << action;
+    qDebug() << "Pause: " << action;
     if(action){
         sendAction("Pause");
     }else{

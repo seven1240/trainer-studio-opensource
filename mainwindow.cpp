@@ -12,17 +12,23 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Trainer Studio - Idapted Ltd.");
-    statusBar()->addWidget(ui->lbStatus);
+//    ui->lbSIPStatus->setMinimumSize(ui->lbSIPStatus->sizeHint());
+    statusBar()->addWidget(ui->lbSIPStatus);
+    ui->lbStatus->setIndent(5);
+    statusBar()->addWidget(ui->lbStatus, 1);
 
     tcp_client = new TCPClient();
     tcp_client->start();
 
     // We should not need set NULL manually, but without this,
     // flash_dialog is NULL but not login_dialog, weird
+    // Also, Mac & Win have different default value
     login_dialog = NULL;
     flash_dialog = new FlashDialog(this);
     incoming_call_dialog = new IncomingCallDialog();
     settings_dialog = NULL;
+    _sipStateReady = false;
+    ui->btnState->setChecked(false);
 
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
@@ -78,16 +84,6 @@ void MainWindow::on_pushButton_clicked()
     flash_dialog -> activateWindow();
 }
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    fshost = new FSHost();
-
-    qDebug() << "will start" << endl;
-    fshost->start();
-    qDebug() << "end start" << endl;
-
-}
-
 void MainWindow::onLogin()
 {
     qDebug() << "LoginSuccess";
@@ -103,12 +99,13 @@ void MainWindow::onAuthenticated(QVariantMap user)
 
 void MainWindow::on_btnState_clicked()
 {
-    if(ui->btnState->isChecked()){
-        tcp_client->pause(false);
-    }else{
-        tcp_client->pause(true);
+    if (!_sipStateReady) {
+        QMessageBox::warning(this, QApplication::applicationName(),
+                             "Cannot Pause, VoIP not ready!");
     }
-//    ui->btnState->toggle();
+    // why isChecked shows reversed?
+    qDebug() << ui->btnState->isChecked();
+    tcp_client->pause(!ui->btnState->isChecked());
 }
 
 void MainWindow::onPaused(bool state)
@@ -139,12 +136,24 @@ void MainWindow::onAnswered()
 
 void MainWindow::onGatewayStateChange(QString state)
 {
-    ui->lbSIPStatus->setText(QString("SIP state: %1").arg(state));
+    if (state == "REGED") {
+        if (!_sipStateReady) {
+            _sipStateReady = true;
+        }
+    } else if (state == "TRYING" || state == "REGISTER") {
+        // do nothing
+    } else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
+        if (_sipStateReady) {
+            _sipStateReady = false;
+            if (ui->btnState->isChecked()) tcp_client->pause(true); //force pause
+        }
+    }
+    ui->lbSIPStatus->setText(QString("SIP State: %1").arg(state));
 }
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
 {
-    ui->lbNotice->setText(QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString()));
+    ui->lbStatus->setText(QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString()));
 }
 
 void MainWindow::onSocketDisconnected()

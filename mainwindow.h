@@ -32,12 +32,12 @@ private:
     IncomingCallDialog *incoming_call_dialog;
     SettingsDialog *settings_dialog;
     QVariantMap _user;
+    bool _sipStateReady;
 
 private slots:
     void on_pbEchoTest_clicked();
     void on_actionPreferences_triggered();
     void on_btnState_clicked();
-    void on_pushButton_2_clicked();
     void on_pushButton_clicked();
     void onAuthenticated(QVariantMap);
     void onPaused(bool);

@@ -92,7 +92,7 @@ void FlashDialog::onTimerTimeout()
 
     QTime t(0,0,0);
 
-    t = t.addSecs(_tickCount);
+    t = t.addSecs(_tickCount++);
     ui->lbTimer->setText(t.toString("hh:mm:ss"));
 }
 
@@ -320,13 +320,12 @@ void FlashDialog::onJSWindowObjectCleared()
 void FlashDialog::on_tbMute_clicked()
 {
     QString res;
-    if (ui->tbMute->isChecked()) {
+    if (ui->tbMute->text() == "Mute") {
         fshost->sendCmd("pa", "flags off mouth", &res);
-        ui->tbMute->setText("Unmute");
-        ui->tbMute->setChecked(true);
+        ui->tbMute->setText("UnMute");
     } else {
         fshost->sendCmd("pa", "flags on mouth", &res);
         ui->tbMute->setText("Mute");
-        ui->tbMute->setChecked(false);
     }
+    qDebug() << res;
 }
