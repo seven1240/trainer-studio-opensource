@@ -77,6 +77,7 @@ void LoginDialog::onAuthenticated(QVariantMap map)
 
 void LoginDialog::onAuthenticateError(QString reason)
 {
+    tcp_client->close();
     QString msg = QString("Authenticate Error:\nReason: %1").arg(reason);
     abortLogin(msg);
 }

@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tabGeneral">
     <attribute name="title">
@@ -310,13 +310,13 @@ p, li { white-space: pre-wrap; }
       <string>...</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>90</x>
        <y>160</y>
        <width>263</width>
-       <height>21</height>
+       <height>32</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
