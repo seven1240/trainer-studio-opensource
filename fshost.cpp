@@ -81,7 +81,10 @@ void FSHost::createFolders()
         qDebug() << rootXML.exists(":conf/freeswitch.xml");
         QString dest = QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath());
         rootXML.copy(dest);
+        QFile destFile(dest);
+        destFile.setPermissions(QFile::WriteOwner);
     }
+
 
     /* Set all directories to the home user directory */
     if (conf_dir.cd(DOTDIR))
