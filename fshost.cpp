@@ -82,7 +82,7 @@ void FSHost::createFolders()
         QString dest = QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath());
         rootXML.copy(dest);
         QFile destFile(dest);
-        destFile.setPermissions(QFile::WriteOwner);
+        destFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
     }
 
 
@@ -316,7 +316,10 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
         {
             QString modType = switch_event_get_header_nil(event.data(), "type");
             QString modKey = switch_event_get_header_nil(event.data(), "key");
-//            qDebug() << "Module Loadded: " << modType << ": " << modKey;
+            QString modName = switch_event_get_header_nil(event.data(), "name");
+            QString modFilename = switch_event_get_header_nil(event.data(), "filename");
+            qDebug() << "Module Loadded: " << modType << ": " << modKey << " " << modName << " " << modFilename;
+
             if(modKey == "mod_sofia") {
                 _sofia_ready = true;
             }

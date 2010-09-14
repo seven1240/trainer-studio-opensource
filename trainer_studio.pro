@@ -11,7 +11,7 @@ INCLUDEPATH = $${FSPATH}/src/include \
     $${FSPATH}/libs/apr/include \
     $${FSPATH}/libs/libteletone/src \
     libs/qjson/src
-!win32:LIBS = -L/Applications/FreeSWITCH/lib \
+macx:LIBS = -L/Applications/TrainerStudio/FreeSWITCH/lib \
     -lfreeswitch \
     -lm \
     -Llibs/qjson/lib \
@@ -32,8 +32,8 @@ QT += network \
     webkit \
     xml \
     xmlpatterns \
-    multimedia \
-    testlib
+    multimedia
+
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
