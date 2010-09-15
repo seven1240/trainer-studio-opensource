@@ -39,7 +39,7 @@ private slots:
     void onSocketError(QString);
     void on_cancelLogin_clicked();
     void on_btnLogin_clicked();
-    void onFSModuleLoaded(QString, QString);
+    void onFSModuleLoaded(QString modType, QString modKey, QString modName);
     void doRegisterToVoIP();
 
 };

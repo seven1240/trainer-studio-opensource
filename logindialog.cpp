@@ -25,7 +25,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
     this->connect(tcp_client, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
-    this->connect(fshost, SIGNAL(moduleLoaded(QString,QString)), this, SLOT(onFSModuleLoaded(QString, QString)));
+    this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
 }
 
 LoginDialog::~LoginDialog()
@@ -213,10 +213,10 @@ void LoginDialog::on_pbSettings_clicked()
     settings_dialog->show();
 }
 
-void LoginDialog::onFSModuleLoaded(QString modType, QString modKey)
+void LoginDialog::onFSModuleLoaded(QString modType, QString modKey, QString modName)
 {
-    ui->teProgress->insertPlainText(QString("Loaded: [%1] %2\n")
-                            .arg(modType).arg(modKey));
+    ui->teProgress->insertPlainText(QString("Loaded: [%1] %2 %3\n")
+                            .arg(modType).arg(modKey).arg(modName));
     ui->teProgress->textCursor().movePosition(QTextCursor::End);
     ui->teProgress->ensureCursorVisible();
 }

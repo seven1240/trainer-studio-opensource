@@ -317,13 +317,13 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
             QString modType = switch_event_get_header_nil(event.data(), "type");
             QString modKey = switch_event_get_header_nil(event.data(), "key");
             QString modName = switch_event_get_header_nil(event.data(), "name");
-            QString modFilename = switch_event_get_header_nil(event.data(), "filename");
-            qDebug() << "Module Loadded: " << modType << ": " << modKey << " " << modName << " " << modFilename;
+//            QString modFilename = switch_event_get_header_nil(event.data(), "filename");
+//            qDebug() << "Module Loadded: " << modType << ": " << modKey << " " << modName << " " << modFilename;
 
             if(modKey == "mod_sofia") {
                 _sofia_ready = true;
             }
-            emit moduleLoaded(modType, modKey);
+            emit moduleLoaded(modType, modKey, modName);
             break;
         }
     default:
@@ -438,7 +438,7 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //void FSHost::eventRecvInfo(QSharedPointer<switch_event_t>event, QString uuid)
 //{}
 
-void FSHost::minimalModuleLoaded(QString modType, QString modKey)
+void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString modName)
 {
     if (modType == "endpoint")
     {

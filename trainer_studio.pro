@@ -11,7 +11,7 @@ INCLUDEPATH = $${FSPATH}/src/include \
     $${FSPATH}/libs/apr/include \
     $${FSPATH}/libs/libteletone/src \
     libs/qjson/src
-macx:LIBS = -L/Applications/TrainerStudio/FreeSWITCH/lib \
+macx:LIBS = -L/Applications/TrainerStudio.app/FreeSWITCH/lib \
     -lfreeswitch \
     -lm \
     -Llibs/qjson/lib \

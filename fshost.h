@@ -62,7 +62,7 @@ signals:
     /* Status signals */
     void coreLoadingError(QString);
     void loadingModules(QString, int, QColor);
-    void moduleLoaded(QString, QString);
+    void moduleLoaded(QString, QString, QString);
     void ready(void);
 
 
@@ -87,7 +87,7 @@ signals:
 private slots:
     /* We need to wait for the gateway deletion before reloading it */
 //    void accountReloadSlot(QSharedPointer<Account>);
-    void minimalModuleLoaded(QString, QString);
+    void minimalModuleLoaded(QString, QString, QString);
 
 private:
     bool _running;
