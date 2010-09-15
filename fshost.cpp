@@ -31,12 +31,6 @@
 #include "fshost.h"
 #include "isettings.h"
 
-#ifdef _WIN32
-#define DOTDIR "trainer_studio"
-#else
-#define DOTDIR ".trainer_studio"
-#endif
-
 /* Declare it globally */
 FSHost *fshost;
 

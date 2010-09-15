@@ -1,5 +1,5 @@
 APP=TrainerStudio.app
-RELEASE="release/Trainer Studio pre-Alpha Edition"
+RELEASE="../Trainer Studio pre-Alpha Edition"
 
 macdeployqt $APP
 mkdir -p $APP/Contents/Frameworks
@@ -11,12 +11,16 @@ cp libs/qjson/lib/libqjson.dylib $APP/Contents/Frameworks/
 install_name_tool -change @executable_path/../Frameworks/libfreeswitch.1.dylib \
 	/Applications/TrainerStudio.app/FreeSWITCH/lib/libfreeswitch.1.dylib \
 	$APP/Contents/MacOS/TrainerStudio
+rm -f $APP/Contents/Frameworks/libfreeswitch.1.dylib
 
-ln -sf /Applications $APP/Applications
-cp -R resources/{conf,images,loadflash.js} TrainerStudio.app/Contents/Resources/
-cp -R ../FreeSWITCH-RELEASE TrainerStudio.app/FreeSWITCH
+cp -R resources/* $APP/Contents/Resources/
+find $APP/Contents/Resources/ -name .svn -exec rm -rf {} \;
+cp -R ../FreeSWITCH-RELEASE $APP/FreeSWITCH
 
+# rm -rf $RELEASE #this is dengerous
 mkdir -p "$RELEASE"
 cp -R $APP "$RELEASE"
-cd release
+cd "$RELEASE"
 ln -sf /Applications .
+
+echo Done $RELEASE

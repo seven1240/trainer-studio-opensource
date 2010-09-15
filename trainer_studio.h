@@ -5,6 +5,11 @@
 #include <qsettings.h>
 
 
+#ifdef _WIN32
+#define DOTDIR "trainer_studio"
+#else
+#define DOTDIR ".trainer_studio"
+#endif
 
 
 

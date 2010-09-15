@@ -50,5 +50,4 @@ private slots:
     void on_actionAbout_triggered();
 
 };
-
 #endif // MAINWINDOW_H
