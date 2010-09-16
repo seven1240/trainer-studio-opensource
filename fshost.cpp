@@ -50,6 +50,7 @@ FSHost::FSHost(QObject *parent) :
     _running = false;
     _ready = false;
     _sofia_ready = false;
+    _active_calls = 0;
 
 }
 
@@ -141,6 +142,7 @@ void FSHost::run(void)
     delete settings;
 
     _running = true;
+
     /* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
     qDebug() << "Initializing core...";
     /* Initialize the core and load modules, that will startup FS completely */
@@ -185,15 +187,19 @@ void FSHost::run(void)
 void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 {
     QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
-
     emit newEvent(event);
 
     switch(event.data()->event_id) {
-//    case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
-//        {
+    case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
+        {
+            if (_active_calls > 0) {
+                QString res;
+                sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
+                qDebug() << "hangup " << res;
+            }
 //            eventChannelCreate(event, uuid);
-//            break;
-//        }
+            break;
+        }
 //    case SWITCH_EVENT_CHANNEL_ANSWER: /*2A - 31B*/
 //        {
 //            eventChannelAnswer(event, uuid);
@@ -244,11 +250,12 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //            eventChannelProgressMedia(event, uuid);
 //            break;
 //        }
-//    case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
-//        {
+    case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
+        {
+            _active_calls++;
 //            eventChannelBridge(event, uuid);
-//            break;
-//        }
+            break;
+        }
 //    /*32?*/
 //    /*case SWITCH_EVENT_RECV_INFO:
 //        {
@@ -260,11 +267,12 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 //            eventChannelHangup(event, uuid);
 //            break;
 //        }
-//    case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
-//        {
+    case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
+        {
+            if (--_active_calls < 0) _active_calls = 0;
 //            eventChannelUnbridge(event, uuid);
-//            break;
-//        }
+            break;
+        }
 //    case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:/*39/43B*/
 //        {
 //            eventChannelHangupComplete(event, uuid);
@@ -458,7 +466,7 @@ switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
 
 QSharedPointer<Call> FSHost::getCurrentActiveCall()
 {
-    foreach(QSharedPointer<Call> call, _active_calls.values())
+    foreach(QSharedPointer<Call> call, _activeCalls.values())
     {
         if (call.data()->isActive())
             return call;

@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+#define TAB_GENERAL 1
+#define TAB_AUDIO 1 << 1
+#define TAB_OTHER 1 << 2
+
 namespace Ui {
     class SettingsDialog;
 }
@@ -12,6 +16,7 @@ class SettingsDialog : public QDialog {
 public:
     SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
+    void setActiveTabs(unsigned int);
 
 protected:
     void changeEvent(QEvent *e);

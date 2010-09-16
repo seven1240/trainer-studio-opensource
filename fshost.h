@@ -54,6 +54,7 @@ public:
     bool isRunning() { return _running; }
     bool isReady() { return _ready; }
     bool isSofiaReady() { return _sofia_ready; }
+    bool isBusy() { return _active_calls > 0; }
 
 protected:
     void run(void);
@@ -93,6 +94,7 @@ private:
     bool _running;
     bool _ready;
     bool _sofia_ready;
+    int _active_calls;
     /* Helper methods */
     void createFolders();
 
@@ -122,8 +124,8 @@ private:
 
     /* Structures to keep track of things */
     QList<QString> _loadedModules;
-    QHash<QString, QSharedPointer<Call> > _active_calls;
-    QHash<QString, QSharedPointer<Channel> > _channels;
+    QHash<QString, QSharedPointer<Call> > _activeCalls;
+    QHash<QString, QSharedPointer<Channel> > _activeChannels;
 };
 
 extern FSHost *fshost;

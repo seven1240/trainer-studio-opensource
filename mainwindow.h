@@ -7,6 +7,7 @@
 #include <IncomingCallDialog.h>
 #include <SettingsDialog.h>
 #include "trainer_studio.h"
+#include <QKeyEvent>
 
 
 namespace Ui {
@@ -34,7 +35,11 @@ private:
     QVariantMap _user;
     bool _sipStateReady;
 
+    void keyPressEvent(QKeyEvent *event);
+
+
 private slots:
+    void on_pbConference_clicked();
     void on_pbEchoTest_clicked();
     void on_actionPreferences_triggered();
     void on_btnState_clicked();

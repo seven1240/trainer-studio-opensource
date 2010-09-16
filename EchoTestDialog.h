@@ -2,6 +2,7 @@
 #define ECHOTESTDIALOG_H
 
 #include <QDialog>
+#include "fshost.h"
 
 namespace Ui {
     class EchoTestDialog;
@@ -18,6 +19,12 @@ protected:
 
 private:
     Ui::EchoTestDialog *ui;
+
+private slots:
+    void on_pbAdvanced_clicked();
+    void on_pbSkip_clicked();
+    void on_pbEchoTest_clicked();
+    void onNewEvent(QSharedPointer<switch_event_t>);
 };
 
 #endif // ECHOTESTDIALOG_H

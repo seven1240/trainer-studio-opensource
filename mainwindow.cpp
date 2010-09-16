@@ -183,3 +183,25 @@ void MainWindow::on_pbEchoTest_clicked()
     ui->lbStatus->setText("Echo test");
     fshost->sendCmd("pa", "call echo", &res);
 }
+
+void MainWindow::on_pbConference_clicked()
+{
+    QString res;
+    ui->lbStatus->setText("Conference");
+    fshost->sendCmd("pa", "call conf", &res);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (false) return; // if in call?
+
+    if (event->key() == 35 || event->key() == Qt::Key_Asterisk || //# *
+        event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 || //0 - 9
+        event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) {// A-D
+
+        QString params = QString("dtmf %1").arg((char)(event->key()));
+        QString res;
+        fshost->sendCmd("pa", params.toAscii(), &res);
+    }
+    qDebug() << "Key pressed: " << event->key();
+}

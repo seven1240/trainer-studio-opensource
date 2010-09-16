@@ -26,7 +26,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     ignore_change_event = true;
     updateDevlist();
-
 }
 
 SettingsDialog::~SettingsDialog()
@@ -210,4 +209,15 @@ void SettingsDialog::on_cbRing_currentIndexChanged(int index)
     QString res;
     if(ignore_change_event) return;
     fshost->sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
+}
+
+void SettingsDialog::setActiveTabs(unsigned int tabs)
+{
+    for(int i=0; i<ui->tabWidget->count(); i++) {
+        if (tabs & (1<< i)) {
+            ui->tabWidget->setTabEnabled(i, true);
+        } else {
+            ui->tabWidget->setTabEnabled(i, false);
+        }
+    }
 }

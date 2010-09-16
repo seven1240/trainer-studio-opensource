@@ -22,6 +22,7 @@ void myMessageHandler(QtMsgType type, const char *msg)
         fprintf(logFile, "Fatal: %s\n", msg);
         abort();
     }
+    fflush(logFile);
 }
 
 bool setDefaultSettings()
@@ -46,8 +47,8 @@ int main(int argc, char *argv[])
     }
     QFile log(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
 
-    if (!(logFile = fopen(log.fileName().toAscii(), "wb"))) {
-        fprintf(stderr, "Error opening log file %s\n", log.fileName());
+    if (!(logFile = fopen(log.fileName().toAscii(), "w+"))) {
+        fprintf(stderr, "Error opening log file %s\n", log.fileName().toAscii());
     } else {
         qInstallMsgHandler(myMessageHandler);
     }
@@ -75,7 +76,9 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.showLoginDialog();
-//    w.show();
+    //We have to show the mainwindow as well,
+    //Because there are no icon on taskbar if not
+    w.show();
 
     return a.exec();
 

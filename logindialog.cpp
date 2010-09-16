@@ -7,6 +7,7 @@
 #include "isettings.h"
 #include "mainwindow.h"
 #include "SettingsDialog.h"
+#include "EchoTestDialog.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -201,8 +202,11 @@ void LoginDialog::doRegisterToVoIP()
     qDebug() << res;
 
     delete isettings;
-    emit login(); // show maimWindow
+//    emit login(); // show maimWindow
     hide();
+    EchoTestDialog *etd = new EchoTestDialog((QWidget*)this->parent());
+    etd->setAttribute(Qt::WA_DeleteOnClose);
+    etd->show();
 }
 
 void LoginDialog::on_pbSettings_clicked()

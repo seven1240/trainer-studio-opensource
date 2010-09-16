@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>561</width>
+    <height>133</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,21 +16,24 @@
   <widget class="QPushButton" name="pbEchoTest">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>60</y>
-     <width>113</width>
+     <x>390</x>
+     <y>80</y>
+     <width>131</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
-    <string>Start echo test</string>
+    <string>Start Echo Test</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pbSkip">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>120</y>
+     <x>150</x>
+     <y>80</y>
      <width>113</width>
      <height>32</height>
     </rect>
@@ -42,14 +45,27 @@
   <widget class="QPushButton" name="pbAdvanced">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>180</y>
+     <x>20</x>
+     <y>80</y>
      <width>113</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
-    <string>Advanced</string>
+    <string>Advanced...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbMessage">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>521</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Click &quot;Start echo test&quot; to do a echo test, you should hear yourself in realtime</string>
    </property>
   </widget>
  </widget>
