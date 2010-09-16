@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qdebug.h"
-#include "fshost.h"
 #include "TcpClient.h"
 #include "isettings.h"
 #include "qmessagebox.h"
@@ -179,16 +178,20 @@ void MainWindow::on_actionPreferences_triggered()
 
 void MainWindow::on_pbEchoTest_clicked()
 {
+    if (!_activeUUID.isEmpty()) return;
     QString res;
     ui->lbStatus->setText("Echo test");
     fshost->sendCmd("pa", "call echo", &res);
+    parseCallResult(res);
 }
 
 void MainWindow::on_pbConference_clicked()
 {
+    if (!_activeUUID.isEmpty()) return;
     QString res;
     ui->lbStatus->setText("Conference");
     fshost->sendCmd("pa", "call conf", &res);
+    parseCallResult(res);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -204,4 +207,39 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         fshost->sendCmd("pa", params.toAscii(), &res);
     }
     qDebug() << "Key pressed: " << event->key();
+}
+
+void MainWindow::onNewEvent(QSharedPointer<switch_event_t> spEvent)
+{
+    switch_event_t *event = spEvent.data();
+
+    QString uuid = switch_event_get_header_nil(event, "Unique-ID");
+
+    if (uuid != _activeUUID )  return;
+
+    QString eventName = switch_event_get_header_nil(event, "Event-Name");
+    QString eventSubclass = switch_event_get_header_nil(event, "Event-Subclass");
+    ui->lbStatus->setText(eventName + "::" + eventSubclass);
+
+    switch(event->event_id) {
+    case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
+        {
+            _activeUUID = "";
+        }
+    }
+}
+
+void MainWindow::parseCallResult(QString res)
+{
+    qDebug() << "Parse: " << res;
+    QStringList sl = res.split(":");
+    if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
+        _activeUUID = sl.at(2).trimmed();
+        this->connect(fshost, SIGNAL(newEvent(QSharedPointer<switch_event_t>)),
+                      this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+    } else {
+        _activeUUID = "";
+        this->disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+        ui->lbStatus->setText(res.trimmed());
+    }
 }

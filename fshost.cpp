@@ -136,10 +136,10 @@ void FSHost::run(void)
 
     createFolders();
 
-    ISettings *settings = new ISettings();
-    settings->resetGateway();
-    settings->saveToFile();
-    delete settings;
+//    ISettings *settings = new ISettings();
+//    settings->resetGateway();
+//    settings->saveToFile();
+//    delete settings;
 
     _running = true;
 
@@ -187,7 +187,6 @@ void FSHost::run(void)
 void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
 {
     QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
-    emit newEvent(event);
 
     switch(event.data()->event_id) {
     case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
@@ -331,6 +330,8 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
     default:
         break;
     }
+
+    emit newEvent(event);
 }
 
 //void FSHost::eventChannelCreate(QSharedPointer<switch_event_t>event, QString uuid)

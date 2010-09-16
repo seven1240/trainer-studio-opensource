@@ -8,6 +8,7 @@
 #include <SettingsDialog.h>
 #include "trainer_studio.h"
 #include <QKeyEvent>
+#include "fshost.h"
 
 
 namespace Ui {
@@ -34,8 +35,10 @@ private:
     SettingsDialog *settings_dialog;
     QVariantMap _user;
     bool _sipStateReady;
+    QString _activeUUID;
 
     void keyPressEvent(QKeyEvent *event);
+    void parseCallResult(QString res);
 
 
 private slots:
@@ -44,6 +47,7 @@ private slots:
     void on_actionPreferences_triggered();
     void on_btnState_clicked();
     void on_pushButton_clicked();
+    void on_actionAbout_triggered();
     void onAuthenticated(QVariantMap);
     void onPaused(bool);
     void onForcedPause(QString reason);
@@ -52,7 +56,7 @@ private slots:
     void onGatewayStateChange(QString state);
     void onReservedForInteraction(QVariantMap);
     void onSocketDisconnected();
-    void on_actionAbout_triggered();
+    void onNewEvent(QSharedPointer<switch_event_t>);
 
 };
 #endif // MAINWINDOW_H
