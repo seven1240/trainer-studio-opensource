@@ -14,9 +14,14 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
     ui->pbAdvanced->setVisible(false);
 
     QVariantMap user = ((MainWindow *)this->parent())->getUser();
+    qDebug() << user;
     if (user["skip_echo_test"].toString() == "true") {
+        ui->pbSkip->setVisible(true);
+    } else {
         ui->pbSkip->setVisible(false);
     }
+
+    this->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 }
 
 EchoTestDialog::~EchoTestDialog()
@@ -34,6 +39,13 @@ void EchoTestDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void EchoTestDialog::closeEvent(QCloseEvent *e)
+{
+    //ESC cannot be caught by this???
+    QString res;
+    fshost->sendCmd("hupall", "", &res);
 }
 
 void EchoTestDialog::on_pbEchoTest_clicked()

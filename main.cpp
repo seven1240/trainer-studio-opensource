@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     }
     QFile log(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
 
-    if (!(logFile = fopen(log.fileName().toAscii(), "w+"))) {
+    if (!(logFile = fopen(log.fileName().toAscii(), "a+"))) {
         fprintf(stderr, "Error opening log file %s\n", log.fileName().toAscii());
     } else {
         qInstallMsgHandler(myMessageHandler);

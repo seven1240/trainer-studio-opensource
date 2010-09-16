@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <qvariant.h>
+#include <QKeyEvent>
 
 namespace Ui {
     class LoginDialog;
@@ -16,6 +17,8 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    void closeEvent(QCloseEvent *);
+    void KeyPressEvent(QKeyEvent *e);
 
 signals:
     void login();

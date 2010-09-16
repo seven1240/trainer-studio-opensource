@@ -19,6 +19,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->lePassword->setEchoMode(QLineEdit::Password);
     ui->frmSplash->hide();
     ui->frmLogin->move(QPoint(10, 10));
+    this->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
     this->setWindowTitle("Login");
     _authenticated = false;
@@ -27,6 +28,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
     this->connect(tcp_client, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
     this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
+
+    QSettings settings;
+    ui->leUsername->setText(settings.value("StoredData/Username", "").toString());
 }
 
 LoginDialog::~LoginDialog()
@@ -44,6 +48,17 @@ void LoginDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void LoginDialog::closeEvent(QCloseEvent *e)
+{
+//    qDebug() << "Close Event" << e;
+}
+
+void LoginDialog::KeyPressEvent(QKeyEvent *e)
+{
+    //ignore ESC ? Why it doesn't work?
+    if (e->key() == Qt::Key_Escape ) return;
 }
 
 void LoginDialog::abortLogin()
@@ -97,6 +112,7 @@ void LoginDialog::onSocketError(QString error)
 void LoginDialog::on_btnLogin_clicked()
 {
     QSettings settings;
+    settings.setValue("StoredData/Username", ui->leUsername->text());
     QString host = settings.value("General/trainer_server").toString();
     int port = settings.value("trainer_server_port").toInt();
     host = host.isEmpty() ? "voip.idapted.com" : host;

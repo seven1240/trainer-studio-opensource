@@ -16,6 +16,7 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    void closeEvent(QCloseEvent *e);
 
 private:
     Ui::EchoTestDialog *ui;
