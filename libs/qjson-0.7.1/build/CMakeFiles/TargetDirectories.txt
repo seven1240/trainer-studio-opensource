@@ -1,8 +1,0 @@
-D:/Qt/qjson-0.7.1/qjson/build/CMakeFiles/ALL_BUILD.dir
-D:/Qt/qjson-0.7.1/qjson/build/CMakeFiles/ZERO_CHECK.dir
-D:/Qt/qjson-0.7.1/qjson/build/tests/CMakeFiles/cmdline_tester.dir
-D:/Qt/qjson-0.7.1/qjson/build/src/CMakeFiles/qjson.dir
-D:/Qt/qjson-0.7.1/qjson/build/tests/CMakeFiles/qjson_test_support.dir
-D:/Qt/qjson-0.7.1/qjson/build/tests/CMakeFiles/testparser.dir
-D:/Qt/qjson-0.7.1/qjson/build/tests/CMakeFiles/testqobjecthelper.dir
-D:/Qt/qjson-0.7.1/qjson/build/tests/CMakeFiles/testserializer.dir
