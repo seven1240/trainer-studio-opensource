@@ -1,6 +1,7 @@
 #include "TCPClient.h"
 #include "parser.h"
 #include "switch.h"
+#include "qJSON.h"
 
 
 TCPClient *tcp_client;
@@ -58,23 +59,23 @@ void TCPClient::onReadyRead()
     }
 
     QString s(ba);
-    qDebug() << s;
+    qDebug() << ba.data();
 
-    QJson::Parser parser;
+    qJSON *qjson = new qJSON();
     bool ok;
     QVariantMap result;
-    result = parser.parse (ba, &ok).toMap();
-    qDebug() << result;
-    QString status = result["status"].toString();
-
-    qDebug() << status << "---- ---- ";
+    qjson->parse(ba.data(), &ok);
 
     if(!ok) {
         qDebug() << "Invalid JSON! " << ba;
         return;
     }
+    result = qjson->toMap();
 
+    qDebug() << result;
+    QString status = result["status"].toString();
     qDebug() << status;
+
     if(status == "Pong") {
         qDebug() << "Got Pong";
     }else if(status == "Authenticated") {

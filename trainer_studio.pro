@@ -13,14 +13,12 @@ INCLUDEPATH = $${FSPATH}/src/include \
     libs/qjson/src
 macx:LIBS = -L/Applications/TrainerStudio.app/FreeSWITCH/lib \
     -lfreeswitch \
-    -lm \
-    -Llibs/qjson/lib \
-    -lqjson
+    -lm
+
 win32:LIBS = -L../freeswitch/ \
     -L../freeswitch/w32/Library/Debug \
-    -lfreeswitchcore \
-    -L../trainer_studio/libs/qjson/lib \
-    -lqjson0
+    -lfreeswitchcore
+
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
@@ -33,7 +31,6 @@ QT += network \
     xml \
     xmlpatterns \
     multimedia
-
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -46,7 +43,9 @@ SOURCES += main.cpp \
     isettings.cpp \
     IncomingCallDialog.cpp \
     SettingsDialog.cpp \
-    EchoTestDialog.cpp
+    EchoTestDialog.cpp \
+    cjson.c \
+    qJSON.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
@@ -58,7 +57,9 @@ HEADERS += mainwindow.h \
     isettings.h \
     IncomingCallDialog.h \
     SettingsDialog.h \
-    EchoTestDialog.h
+    EchoTestDialog.h \
+    cjson.h \
+    qJSON.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
     logindialog.ui \

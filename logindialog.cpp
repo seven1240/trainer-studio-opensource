@@ -8,6 +8,7 @@
 #include "mainwindow.h"
 #include "SettingsDialog.h"
 #include "EchoTestDialog.h"
+#include "cjson.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -111,6 +112,7 @@ void LoginDialog::onSocketError(QString error)
 
 void LoginDialog::on_btnLogin_clicked()
 {
+
     QSettings settings;
     settings.setValue("StoredData/Username", ui->leUsername->text());
     QString host = settings.value("General/trainer_server").toString();
@@ -123,22 +125,24 @@ void LoginDialog::on_btnLogin_clicked()
     ui->frmSplash->show();
     tcp_client->connectToHost(host, port);
 
-    QVariantList system;
+    char *json = NULL;
 
-    QVariantMap info;
-    info.insert("memory", 100);
-    system << info;
+    cJSON *info = cJSON_CreateArray();
 
-    QVariantMap user;
-    user.insert("username", ui->leUsername->text());
-    user.insert("password", ui->lePassword->text());
+    cJSON *item;
+    item = cJSON_CreateObject();
+    cJSON_AddItemToObject(item, "memory", cJSON_CreateNumber(100));
+    cJSON_AddItemToArray(info, item);
 
-    user.insert("action", "Authenticate");
-    user.insert("system_info", system);
+    cJSON *cj = cJSON_CreateObject();
 
-    QJson::Serializer serializer;
+    cJSON_AddItemToObject(cj, "username", cJSON_CreateString(ui->leUsername->text().toAscii().data()));
+    cJSON_AddItemToObject(cj, "password", cJSON_CreateString(ui->lePassword->text().toAscii().data()));
+    cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
+    cJSON_AddItemToObject(cj, "system_info", info);
 
-    QByteArray json = serializer.serialize(user);
+    json = cJSON_Print(cj);
+    cJSON_Delete(cj);
 
     qDebug() << json;
 

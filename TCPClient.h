@@ -5,7 +5,6 @@
 #include <QThread>
 #include <qtcpsocket.h>
 #include "trainer_studio.h"
-#include "serializer.h"
 
 
 class TCPClient : public QThread
