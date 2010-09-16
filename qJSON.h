@@ -1,3 +1,8 @@
+/*
+ * A QT class wrapper for the cJSON parser, no serializer included
+ * Author: Seven Du <seven@idapted.com>
+ */
+
 #ifndef QJSON_H
 #define QJSON_H
 
