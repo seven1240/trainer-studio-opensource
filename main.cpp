@@ -29,7 +29,7 @@ bool setDefaultSettings()
 {
     QSettings settings;
     settings.beginGroup("General");
-    settings.setValue("url", "http://www.eqenglish.com");
+    settings.setValue("url", "http://www.idapted.com");
     settings.setValue("trainer_server", "voip.idapted.com");
     settings.setValue("trainer_server_port", 7000);
     settings.endGroup();

@@ -13,6 +13,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->cbTemplate->addItem("EQEnglish Trainer");
+    ui->cbTemplate->addItem("EQEnglish Trainer (China)");
     ui->cbTemplate->addItem("Test Server");
     ui->cbTemplate->addItem("Developer");
     ui->cbTemplate->setCurrentIndex(-1);
@@ -50,14 +51,18 @@ void SettingsDialog::on_pushButton_clicked()
     switch(ui->cbTemplate->currentIndex()) {
 
     case 0:
-        ui->leURL->setText("http://www.eqenglish.com");
-        ui->leServer->setText("voip.idapted.com:7000");
-        break;
-    case 1:
         ui->leURL->setText("http://www.idapted.com");
         ui->leServer->setText("voip.idapted.com:7000");
         break;
+    case 1:
+        ui->leURL->setText("http://www.eqenglish.com");
+        ui->leServer->setText("voip.idapted.com:7000");
+        break;
     case 2:
+        ui->leURL->setText("http://www.veecue.com");
+        ui->leServer->setText("voip.veecue.com:7000");
+        break;
+    case 3:
         ui->leURL->setText("http://www.veecue.com");
         ui->leServer->setText("voip.veecue.com:7000");
         break;
@@ -75,6 +80,9 @@ void SettingsDialog::on_pbSaveGeneral_clicked()
     settings.setValue("trainer_server", slServer.at(0));
     settings.setValue("trainer_server_port", slServer.at(1) == "" ? 7000 : slServer.at(1).toInt() );
     settings.endGroup();
+    QDateTime t = QDateTime::currentDateTime();
+    ui->lbMessage->setText("Saved at " + t.toString("yyyy-MM-dd hh:mm:ss"));
+    ui->lbMessage->setStyleSheet("color:red");
 }
 
 void SettingsDialog::updateDevlist()
