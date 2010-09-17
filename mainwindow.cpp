@@ -113,6 +113,7 @@ void MainWindow::onPaused(bool state)
     if(state){
         ui->btnState->setText("> Start Working");
         ui->btnState->setChecked(false);
+        QApplication::alert(this, 0);
     }else{
         ui->btnState->setText("|| Pause");
         ui->btnState->setChecked(true);
@@ -123,8 +124,7 @@ void MainWindow::onForcedPause(QString reason)
 {
     QMessageBox::warning(this, QApplication::applicationName(),
                           reason);
-    ui->btnState->setText("> Start Working");
-    ui->btnState->setChecked(false);
+    onPaused(true);
 }
 
 void MainWindow::onAnswered()
