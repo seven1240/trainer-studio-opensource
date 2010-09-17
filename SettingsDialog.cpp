@@ -104,6 +104,9 @@ void SettingsDialog::updateDevlist()
     ui->cbInput->clear();
     ui->cbOutput->clear();
     ui->cbRing->clear();
+    ui->cbInput->addItem("Default Device", "");
+    ui->cbOutput->addItem("Default Device", "");
+    ui->cbRing->addItem("Default Device", "");
 
     QStringList devlist = devices.split("\n");
     for(int i=0; i<devlist.count(); i++) {
@@ -128,19 +131,19 @@ void SettingsDialog::updateDevlist()
             QStringList flaglist = flag.split(",");
             if(flaglist.count() > 1) {
                 if("r" == flaglist.at(0) || "r" == flaglist.at(1)) {
-                    ui->cbRing->setCurrentIndex(ui->cbRing->count() - 1);
+                    ui->cbRing->setCurrentIndex(ui->cbRing->count() -1);
                 }
                 if ("o" == flaglist.at(0) || "o" == flaglist.at(1)) {
-                    ui->cbOutput->setCurrentIndex(ui->cbOutput->count() - 1);
+                    ui->cbOutput->setCurrentIndex(ui->cbOutput->count() -1);
                 }
                 if ("i" == flaglist.at(0) || "i" == flaglist.at(1)) {
-                    ui->cbInput->setCurrentIndex(ui->cbInput->count() - 1);
+                    ui->cbInput->setCurrentIndex(ui->cbInput->count() -1);
                 }
             } else {
                 if("r" == flag) {
-                    ui->cbRing->setCurrentIndex(ui->cbRing->count() - 1);
+                    ui->cbRing->setCurrentIndex(ui->cbRing->count() -1);
                 } else if("o" == flag) {
-                    ui->cbOutput->setCurrentIndex(ui->cbOutput->count() - 1);
+                    ui->cbOutput->setCurrentIndex(ui->cbOutput->count() -1);
                 } else if("i" == flag) {
                     ui->cbInput->setCurrentIndex(ui->cbInput->count() -1);
                 }
