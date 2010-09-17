@@ -11,16 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-#ifdef Q_WS_MAC
-//    this->setWindowIcon(QIcon(":/images/application.icns"));
-#elif Q_WS_WIN
-
-#elif Q_WS_X11
-
-#endif
-
-
-
     setWindowTitle("Trainer Studio - Idapted Ltd.");
 //    ui->lbSIPStatus->setMinimumSize(ui->lbSIPStatus->sizeHint());
     statusBar()->addWidget(ui->lbSIPStatus);

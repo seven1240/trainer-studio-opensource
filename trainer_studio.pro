@@ -71,4 +71,5 @@ OTHER_FILES += resources/loadflash.js \
     resources/conf/freeswitch.xml \
     resources/conf/tsconf.xml
 
- macx:ICON = resources/application.icns
+macx:ICON = resources/application.icns
+win32:RC_FILE=resources.rc
