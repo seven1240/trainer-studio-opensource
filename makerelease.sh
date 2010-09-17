@@ -1,5 +1,5 @@
 APP=TrainerStudio.app
-RELEASE="../Trainer Studio pre-Alpha Edition"
+RELEASE="../Trainer Studio Alpha Edition RC1"
 
 macdeployqt $APP
 mkdir -p $APP/Contents/Frameworks
@@ -16,8 +16,11 @@ cp -R resources/* $APP/Contents/Resources/
 find $APP/Contents/Resources/ -name .svn -exec rm -rf {} \;
 cp -R ../FreeSWITCH-RELEASE $APP/FreeSWITCH
 
+mkdir -p "$RELEASE/FlashPlugin"
+cp "/Library/Internet Plug-Ins/flashplayer.xpt" "$RELEASE/FlashPlugin"
+cp -R "/Library/Internet Plug-Ins/Flash Player.plugin/" "$RELEASE/FlashPlugin"
+
 # rm -rf $RELEASE #this is dengerous
-mkdir -p "$RELEASE"
 cp -R $APP "$RELEASE"
 cd "$RELEASE"
 ln -sf /Applications .
