@@ -70,3 +70,5 @@ RESOURCES += resources.qrc
 OTHER_FILES += resources/loadflash.js \
     resources/conf/freeswitch.xml \
     resources/conf/tsconf.xml
+
+ macx:ICON = resources/application.icns
