@@ -3,7 +3,6 @@ RELEASE="../Trainer Studio pre-Alpha Edition"
 
 macdeployqt $APP
 mkdir -p $APP/Contents/Frameworks
-cp libs/qjson/lib/libqjson.dylib $APP/Contents/Frameworks/
 
 #change back, or it will throw with no reason
 # Assertion failed: (BLOCK != ((void *)0)), function switch_event_bind_removable, file src/switch_event.c, line 1392.

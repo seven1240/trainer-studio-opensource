@@ -70,7 +70,7 @@ void EchoTestDialog::on_pbEchoTest_clicked()
     }
 
     QString res;
-    fshost->sendCmd("pa", "call 9196", &res);
+    fshost->sendCmd("pa", "call echo", &res);
     qDebug() << res;
 }
 
