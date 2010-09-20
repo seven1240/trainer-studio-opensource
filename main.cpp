@@ -3,6 +3,9 @@
 #include "fshost.h"
 #include <stdio.h>
 #include <stdlib.h>
+//#include <qmessagebox.h>
+//#include <QtGlobal>
+//#include <QtSingleApplication>
 
 FILE *logFile;
 
@@ -38,6 +41,31 @@ bool setDefaultSettings()
 
 int main(int argc, char *argv[])
 {
+
+//    QtSingleApplication a(argc, argv);
+    QApplication a(argc, argv);
+    QApplication::setApplicationName("Trainer Studio");
+    QApplication::setApplicationVersion("3.0.1");
+    QApplication::setOrganizationName("Idapted Ltd.");
+    QApplication::setOrganizationDomain("idapted.com");
+
+//    if (a.isRunning()) {
+//        QMessageBox::critical(NULL, QApplication::applicationName()
+//                              "Another instance of " + QApplication::applicationName() +
+//                              " running, you can only run one instance a time.\n"
+//                              "If the already running instance stopped responding, "
+//                              "try to kill it by press "
+//#ifdef Q_WS_WIN
+//                              "Ctrl + Alt + Del"
+//#endif
+//#ifdef Q_WS_MAC
+//                              "Command + Option + ESC"
+//#endif
+//                              " at the same time."
+//                              );
+//        exit(2);
+//    }
+
     QDir home = QDir::home();
 
     if (!home.exists(DOTDIR "/log")) {
@@ -52,12 +80,6 @@ int main(int argc, char *argv[])
     } else {
         qInstallMsgHandler(myMessageHandler);
     }
-
-    QApplication a(argc, argv);
-    QApplication::setApplicationName("Trainer Studio");
-    QApplication::setApplicationVersion("3.0.1");
-    QApplication::setOrganizationName("Idapted Ltd.");
-    QApplication::setOrganizationDomain("idapted.com");
 
     //start fs in background
 
