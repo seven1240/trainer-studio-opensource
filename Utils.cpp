@@ -3,6 +3,8 @@
 #include <QtGui/QApplication>
 #include <QtGlobal>
 #include <QSysInfo>
+#include <QProcess>
+#include <QDesktopWidget>
 
 namespace Utils {
     void msgbox(QString msg)
@@ -14,6 +16,9 @@ namespace Utils {
     {
         QVariantMap map;
         QString os;
+        QString memory = "0";
+        QString screen_res = "Unknown";
+        QString flash_player_version = "Unknown";
 
 #ifdef Q_WS_WIN
         switch (QSysInfo::WindowsVersion) {
@@ -33,8 +38,24 @@ namespace Utils {
         case QSysInfo::MV_SNOWLEOPARD: os = "Mac Snow Leopard";     break;
         default:                     os = "Mac Unknown(unsupported)";
         }
+
+        QProcess p;
+        p.start("sysctl hw.memsize");
+        if(p.waitForFinished()) {
+            QByteArray ba = p.readAll();
+            if (ba.startsWith("hw.memsize: ")) {
+                ba = ba.trimmed().right(ba.length() - 13);
+                memory = QString(ba);
+            }
+        }
+
 #endif
+        screen_res = QString("%1x%2").arg(QApplication::desktop()->width())
+                     .arg(QApplication::desktop()->height());
         map.insert("os", os);
+        map.insert("memory", memory);
+        map.insert("screen_res", screen_res);
+        map.insert("flash_player_version", flash_player_version);
         return map;
     }
 
