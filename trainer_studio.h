@@ -3,6 +3,7 @@
 
 #include "qdebug.h"
 #include <qsettings.h>
+#include <QSystemTrayIcon>
 
 
 #ifdef _WIN32
@@ -11,7 +12,7 @@
 #define DOTDIR ".trainer_studio"
 #endif
 
-
+extern QSystemTrayIcon *sysTray;
 
 
 

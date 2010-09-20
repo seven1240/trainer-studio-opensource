@@ -14,11 +14,9 @@ INCLUDEPATH = $${FSPATH}/src/include \
 macx:LIBS = -L/Applications/TrainerStudio.app/FreeSWITCH/lib \
     -lfreeswitch \
     -lm
-
 win32:LIBS = -L../freeswitch/ \
     -L../freeswitch/w32/Library/Debug \
     -lfreeswitchcore
-
 !win32:!macx { 
     # This is here to comply with the default freeswitch installation
     QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
@@ -45,7 +43,8 @@ SOURCES += main.cpp \
     SettingsDialog.cpp \
     EchoTestDialog.cpp \
     cjson.c \
-    qJSON.cpp
+    qJSON.cpp \
+    Utils.cpp
 HEADERS += mainwindow.h \
     flashdialog.h \
     fshost.h \
@@ -59,7 +58,8 @@ HEADERS += mainwindow.h \
     SettingsDialog.h \
     EchoTestDialog.h \
     cjson.h \
-    qJSON.h
+    qJSON.h \
+    Utils.h
 FORMS += mainwindow.ui \
     flashdialog.ui \
     logindialog.ui \
@@ -70,6 +70,5 @@ RESOURCES += resources.qrc
 OTHER_FILES += resources/loadflash.js \
     resources/conf/freeswitch.xml \
     resources/conf/tsconf.xml
-
 macx:ICON = resources/application.icns
-win32:RC_FILE=resources.rc
+win32:RC_FILE = resources.rc

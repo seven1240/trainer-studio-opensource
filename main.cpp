@@ -7,6 +7,7 @@
 //#include <QtGlobal>
 //#include <QtSingleApplication>
 
+
 FILE *logFile;
 
 void myMessageHandler(QtMsgType type, const char *msg)

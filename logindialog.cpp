@@ -9,6 +9,7 @@
 #include "SettingsDialog.h"
 #include "EchoTestDialog.h"
 #include "cjson.h"
+#include "Utils.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -125,6 +126,8 @@ void LoginDialog::on_btnLogin_clicked()
     ui->frmSplash->show();
     tcp_client->connectToHost(host, port);
 
+    QVariantMap map = Utils::getSystemInfos();
+
     char *json = NULL;
 
     cJSON *info = cJSON_CreateArray();
@@ -132,6 +135,9 @@ void LoginDialog::on_btnLogin_clicked()
     cJSON *item;
     item = cJSON_CreateObject();
     cJSON_AddItemToObject(item, "memory", cJSON_CreateNumber(100));
+    cJSON_AddItemToArray(info, item);
+    item = cJSON_CreateObject();
+    cJSON_AddItemToObject(item, "os", cJSON_CreateString(map["os"].toString().toAscii().data()));
     cJSON_AddItemToArray(info, item);
 
     cJSON *cj = cJSON_CreateObject();

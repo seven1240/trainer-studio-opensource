@@ -5,6 +5,8 @@
 #include "isettings.h"
 #include "qmessagebox.h"
 
+QSystemTrayIcon *sysTray;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -29,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     settings_dialog = NULL;
     _sipStateReady = false;
     ui->btnState->setChecked(false);
+
+    sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
+    sysTray->setToolTip(QApplication::applicationName());
+    sysTray->show();
+    sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 5000);
 
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
