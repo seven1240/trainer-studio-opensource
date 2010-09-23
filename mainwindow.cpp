@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     settings_dialog = NULL;
     _sipStateReady = false;
     ui->btnState->setChecked(false);
+    _timer = new QTimer(this);
+    _timer->setInterval(20000);
 
     sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
     sysTray->setToolTip(QApplication::applicationName());
@@ -44,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
     this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
     this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
+    this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 
 }
 
@@ -57,6 +60,7 @@ MainWindow::~MainWindow()
     if(settings_dialog) delete settings_dialog;
     if(tcp_client) delete tcp_client;
     if(fshost) delete fshost;
+    delete(_timer);
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -121,9 +125,11 @@ void MainWindow::onPaused(bool state)
         ui->btnState->setText("> Start Working");
         ui->btnState->setChecked(false);
         QApplication::alert(this, 0);
+        _timer->start();
     }else{
         ui->btnState->setText("|| Pause");
         ui->btnState->setChecked(true);
+        _timer->stop();
     }
 }
 
@@ -263,4 +269,9 @@ void MainWindow::on_pbHupall_clicked()
 {
     QString res;
     fshost->sendCmd("hupall", "", &res);
+}
+
+void MainWindow::onTimerTimeout()
+{
+    sysTray->showMessage(QApplication::applicationName(), "Trainer Studio Paused!", QSystemTrayIcon::Information, 1000);
 }

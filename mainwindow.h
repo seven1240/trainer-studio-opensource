@@ -40,6 +40,8 @@ private:
     void keyPressEvent(QKeyEvent *event);
     void parseCallResult(QString res);
 
+    QTimer *_timer;
+
 
 private slots:
     void on_pbHupall_clicked();
@@ -58,6 +60,7 @@ private slots:
     void onReservedForInteraction(QVariantMap);
     void onSocketDisconnected();
     void onNewEvent(QSharedPointer<switch_event_t>);
+    void onTimerTimeout();
 
 };
 #endif // MAINWINDOW_H
