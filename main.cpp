@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     qDebug() << "\n\n============================================\n"
                 "TS starting at:"
                 << now.toString("yyyy-MM-dd hh:mm:ss")
-                << "============================================\n";
+                << "\n============================================\n";
 
     //start fs in background
 
