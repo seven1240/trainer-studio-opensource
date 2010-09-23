@@ -128,6 +128,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 
 void EchoTestDialog::on_pbSkip_clicked()
 {
+    tcp_client->sendAction("Pause");
     close();
 }
 

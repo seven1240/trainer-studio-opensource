@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
     sysTray->setToolTip(QApplication::applicationName());
     sysTray->show();
-    sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 5000);
+    sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
     this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
     this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
@@ -160,7 +160,9 @@ void MainWindow::onGatewayStateChange(QString state)
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
 {
-    ui->lbStatus->setText(QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString()));
+    QString msg = QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString());
+    ui->lbStatus->setText(msg);
+    sysTray->showMessage(QApplication::applicationName(),msg, QSystemTrayIcon::Information, 3000);
 }
 
 void MainWindow::onSocketDisconnected()

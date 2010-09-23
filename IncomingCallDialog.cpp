@@ -7,6 +7,7 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
     ui(new Ui::IncomingCallDialog)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->connect(fshost, SIGNAL(incomingCall(QSharedPointer<switch_event_t>)), this, SLOT(onIncomingCall(QSharedPointer<switch_event_t>)));
 
 }
@@ -35,6 +36,7 @@ void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
     const char *cid_number = switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number");
     ui->lbCallerID->setText(QString("\"%1\" <%2>").arg(cid_name).arg(cid_number));
     show();
+    raise();
 }
 
 void IncomingCallDialog::on_pbAnswer_clicked()
@@ -49,4 +51,5 @@ void IncomingCallDialog::on_pbReject_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
+    hide();
 }

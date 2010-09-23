@@ -22,6 +22,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
     ui->setupUi(this);
     setLayout(ui->verticalLayout);
+    this->setWindowFlags(Qt::Window);
 
     _timer = new QTimer(this);
     _timer->setInterval(1000);
@@ -85,6 +86,7 @@ void FlashDialog::closeEvent(QCloseEvent *e)
     // Make sure mic unmuted
     QString res;
     fshost->sendCmd("pa", "flags on mouth", &res);
+    ui->webView->reload();
 }
 
 void FlashDialog::onTimerTimeout()

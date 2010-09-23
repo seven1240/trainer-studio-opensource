@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Start Work</string>
+     <string>Click to Pause</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
