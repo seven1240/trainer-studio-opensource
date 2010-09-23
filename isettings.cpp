@@ -152,8 +152,11 @@ void ISettings::writeGateway(QVariantMap newgw)
         nGw.setAttribute("name","default");
 
         /* Set each one of the parameters */
-        setParam(nGw, "username", newgw["username"].toString());
-        setParam(nGw, "password", newgw["password"].toString());
+        setParam(nGw, "username", newgw.value("username").toString());
+        setParam(nGw, "password", newgw.value("password").toString());
+        if (newgw.value("sip_transport").toString() == "tcp") {
+            setParam(nGw, "sip_transport", newgw.value("sip_transport").toString());
+        }
         setParam(nGw, "register", "true");
         setParam(nGw, "realm", newgw["realm"].toString());
         setParam(nGw, "expire-seconds", "600");

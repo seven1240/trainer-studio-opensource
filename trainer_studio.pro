@@ -23,6 +23,10 @@ win32:LIBS = -L../freeswitch/ \
     LIBS += -lcrypt \
         -lrt
 }
+
+macx:QMAKE_CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
+macx:QMAKE_CXXFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
+
 CONFIG += x86 # 32bit binary
 QT += network \
     webkit \

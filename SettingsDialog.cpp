@@ -23,6 +23,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->leURL->setText(settings.value("url").toString());
     ui->leServer->setText(settings.value("trainer_server").toString() +
                           ":" + settings.value("trainer_server_port").toString());
+    if (settings.value("sip_transport").toString() == "tcp") {
+        ui->cbSIPTransport->setChecked(true);
+    }
     settings.endGroup();
 
     ignore_change_event = true;
@@ -79,6 +82,7 @@ void SettingsDialog::on_pbSaveGeneral_clicked()
     QStringList slServer = ui->leServer->text().split(":");
     settings.setValue("trainer_server", slServer.at(0));
     settings.setValue("trainer_server_port", slServer.at(1) == "" ? 7000 : slServer.at(1).toInt() );
+    settings.setValue("sip_transport", ui->cbSIPTransport->isChecked() ? "tcp" : "auto");
     settings.endGroup();
     QDateTime t = QDateTime::currentDateTime();
     ui->lbMessage->setText("Saved at " + t.toString("yyyy-MM-dd hh:mm:ss"));

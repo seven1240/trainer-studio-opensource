@@ -135,14 +135,8 @@ void LoginDialog::on_btnLogin_clicked()
     cJSON *item;
     item = cJSON_CreateObject();
     cJSON_AddItemToObject(item, "os", cJSON_CreateString(map["os"].toString().toAscii().data()));
-    cJSON_AddItemToArray(info, item);
-    item = cJSON_CreateObject();
     cJSON_AddItemToObject(item, "memory", cJSON_CreateString(map["memory"].toString().toAscii().data()));
-    cJSON_AddItemToArray(info, item);
-    item = cJSON_CreateObject();
     cJSON_AddItemToObject(item, "screen_res", cJSON_CreateString(map["screen_res"].toString().toAscii().data()));
-    cJSON_AddItemToArray(info, item);
-    item = cJSON_CreateObject();
     cJSON_AddItemToObject(item, "flash_player_version", cJSON_CreateString(map["flash_player_version"].toString().toAscii().data()));
     cJSON_AddItemToArray(info, item);
 
@@ -227,6 +221,10 @@ void LoginDialog::doRegisterToVoIP()
         QVariantMap server = serverlist[0].toMap();
 
         newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
+        QSettings qsettings;
+        if (qsettings.value("sip_transport").toString() == "tcp") {
+            newgw.insert("register-transport", "tcp");
+        }
         isettings->writeGateway(newgw);
         isettings->saveToFile();
         switch_sleep(1000000);
@@ -236,8 +234,8 @@ void LoginDialog::doRegisterToVoIP()
     qDebug() << res;
 
     delete isettings;
-//    emit login(); // show maimWindow
     hide();
+
     EchoTestDialog *etd = new EchoTestDialog((QWidget*)this->parent());
     etd->setAttribute(Qt::WA_DeleteOnClose);
     etd->show();

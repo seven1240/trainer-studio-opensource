@@ -3,6 +3,7 @@
 #include <qmessagebox.h>
 #include "SettingsDialog.h"
 #include "mainwindow.h"
+#include "TCPClient.h"
 
 
 EchoTestDialog::EchoTestDialog(QWidget *parent) :
@@ -110,6 +111,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
                                   "Test call finished, Did you hear yourself?",
                                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
             if (ret == QMessageBox::Yes) {
+                tcp_client->sendAction("Pause");
                 close();
                 return;
             } else {
