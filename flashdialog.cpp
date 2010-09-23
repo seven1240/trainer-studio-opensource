@@ -86,7 +86,10 @@ void FlashDialog::closeEvent(QCloseEvent *e)
     // Make sure mic unmuted
     QString res;
     fshost->sendCmd("pa", "flags on mouth", &res);
+    fshost->sendCmd("hupall", "", &res);
     ui->webView->reload();
+    lower();
+    qDebug() << "FlashDialog closing...";
 }
 
 void FlashDialog::onTimerTimeout()
@@ -177,6 +180,7 @@ void FlashDialog::on_btnDisconnect_clicked()
                                        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (ret == QMessageBox::Yes) {
             ui->webView->reload();
+            lower();
             hide();
             return;
         }
@@ -257,6 +261,7 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
         _timer->stop();
         // reset webview
         ui->webView->reload();
+        lower();
         hide();
     } else if(cmd == "log") {
         qDebug() << "Flash Log: " << args;

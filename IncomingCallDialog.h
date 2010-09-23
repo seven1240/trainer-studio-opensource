@@ -18,7 +18,7 @@ protected:
     void changeEvent(QEvent *e);
 
 signals:
-    void answered();
+    void answered(QString cid_name, QString cid_number);
 
 private slots:
 
@@ -28,6 +28,9 @@ private slots:
 
 private:
     Ui::IncomingCallDialog *ui;
+
+    QString _cid_name;
+    QString _cid_number;
 };
 
 #endif // INCOMINGCALLDIALOG_H

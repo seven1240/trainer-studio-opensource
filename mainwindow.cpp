@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(tcp_client, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
     this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
     this->connect(tcp_client, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
-    this->connect(incoming_call_dialog, SIGNAL(answered()), this, SLOT(onAnswered()));
+    this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
     this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
 
 }
@@ -134,11 +134,16 @@ void MainWindow::onForcedPause(QString reason)
     onPaused(true);
 }
 
-void MainWindow::onAnswered()
+void MainWindow::onAnswered(QString cid_name, QString cid_number)
 {
-    flash_dialog -> raise();
-    flash_dialog -> show();
-    flash_dialog -> activateWindow();
+    if (cid_name.left(2) == "IT") {
+        //Interaction
+        flash_dialog -> raise();
+        flash_dialog -> show();
+        flash_dialog -> activateWindow();
+    } else {
+        //Other
+    }
 }
 
 void MainWindow::onGatewayStateChange(QString state)
@@ -252,4 +257,10 @@ void MainWindow::parseCallResult(QString res)
         this->disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
         ui->lbStatus->setText(res.trimmed());
     }
+}
+
+void MainWindow::on_pbHupall_clicked()
+{
+    QString res;
+    fshost->sendCmd("hupall", "", &res);
 }

@@ -7,7 +7,7 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
     ui(new Ui::IncomingCallDialog)
 {
     ui->setupUi(this);
-    this->setWindowFlags(Qt::WindowStaysOnTopHint);
+//    this->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->connect(fshost, SIGNAL(incomingCall(QSharedPointer<switch_event_t>)), this, SLOT(onIncomingCall(QSharedPointer<switch_event_t>)));
 
 }
@@ -32,18 +32,21 @@ void IncomingCallDialog::changeEvent(QEvent *e)
 void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
 {
     qDebug() << "incoming call";
-    const char *cid_name = switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name");
-    const char *cid_number = switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number");
-    ui->lbCallerID->setText(QString("\"%1\" <%2>").arg(cid_name).arg(cid_number));
+    _cid_name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+    _cid_number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+    ui->lbCallerID->setText(QString("\"%1\" <%2>").arg(_cid_name).arg(_cid_number));
     show();
     raise();
+    activateWindow();
 }
 
 void IncomingCallDialog::on_pbAnswer_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "answer", &res);
-    emit(answered());
+
+    emit(answered(_cid_name, _cid_number));
+    lower();
     hide();
 }
 
@@ -51,5 +54,6 @@ void IncomingCallDialog::on_pbReject_clicked()
 {
     QString res;
     fshost->sendCmd("pa", "hangup", &res);
+    lower();
     hide();
 }

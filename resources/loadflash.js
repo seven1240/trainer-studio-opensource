@@ -11,13 +11,16 @@ function idp_xx_movie_DoFSCommand(cmd, args) {
 }
 
 // If the movie already there
-var obj;
-if( obj = document.getElementById("idp_xx_movie") ) {
-    //found
-    obj.FlashVars = vars;
-    obj.LoadMovie(0, url);
-    return;
-}
+//var obj;
+//if(obj = document.getElementById("idp_xx_movie") ) {
+//    //found
+//    mainWindow.onFSCommand("log", "FlashVars: " + vars);
+//    mainWindow.onFSCommand("log", "Url: " + url);
+//    obj.Stop();
+//    obj.FlashVars = vars;
+//    obj.LoadMovie(0, url);
+//    return;
+//}
 
 // Create movie
 var t = '';
@@ -28,4 +31,6 @@ t += 'play="true" loop="false"  allowScriptAccess="sameDomain" type="application
 t += 'pluginspage="http://www.adobe.com/go/getflashplayer" ';
 t += 'flashvars="' + vars + '"></embed>';
 
+document.close();
+// document.write will open a new document
 document.write(t);

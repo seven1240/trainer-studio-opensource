@@ -42,6 +42,7 @@ private:
 
 
 private slots:
+    void on_pbHupall_clicked();
     void on_pbConference_clicked();
     void on_pbEchoTest_clicked();
     void on_actionPreferences_triggered();
@@ -52,7 +53,7 @@ private slots:
     void onPaused(bool);
     void onForcedPause(QString reason);
     void onLogin();
-    void onAnswered();
+    void onAnswered(QString cid_name, QString cid_number);
     void onGatewayStateChange(QString state);
     void onReservedForInteraction(QVariantMap);
     void onSocketDisconnected();
