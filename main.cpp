@@ -82,6 +82,12 @@ int main(int argc, char *argv[])
         qInstallMsgHandler(myMessageHandler);
     }
 
+    QDateTime now = QDateTime::currentDateTimeUtc();
+    qDebug() << "\n\n============================================\n"
+                "TS starting at:"
+                << now.toString("yyyy-MM-dd hh:mm:ss")
+                << "============================================\n";
+
     //start fs in background
 
     fshost = new FSHost();

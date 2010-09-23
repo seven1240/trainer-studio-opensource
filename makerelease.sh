@@ -1,5 +1,5 @@
 APP=TrainerStudio.app
-RELEASE="../Trainer Studio Alpha Edition RC1"
+RELEASE="../Trainer Studio Alpha Edition RC2"
 
 macdeployqt $APP
 mkdir -p $APP/Contents/Frameworks
