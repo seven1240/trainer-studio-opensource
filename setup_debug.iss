@@ -18,7 +18,7 @@ DefaultGroupName=Idapted Trainer Studio
 AllowNoIcons=yes
 LicenseFile=license.txt
 OutputDir=.
-OutputBaseFilename=trainer-studio-setup-beta
+OutputBaseFilename=trainer-studio-setup-beta-debug
 Compression=lzma
 SolidCompression=yes
 

@@ -18,7 +18,7 @@ DefaultGroupName=Idapted Trainer Studio
 AllowNoIcons=yes
 LicenseFile=license.txt
 OutputDir=.
-OutputBaseFilename=trainer-studio-setup-beta
+OutputBaseFilename=trainer-studio-setup-beta-release
 Compression=lzma
 SolidCompression=yes
 
@@ -30,6 +30,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "D:\trainer_studio\trainer_studio\Release\TrainerStudio.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\FreeSwitch.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\fs_cli.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\dwmapi.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\FreeSwitch.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\libapr.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -38,16 +40,17 @@ Source: "D:\trainer_studio\trainer_studio\Release\dlls\libeay32.dll"; DestDir: "
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\libspandsp.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\libteletone.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\msvcr90.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\msvcr90d.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\Microsoft.VC90.DebugCRT.manifest"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\pthreadVC2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\qjson0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\phonond4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtCored4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtGuid4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtNetworkd4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtWebKitd4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtXmld4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtXmlPatternsd4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\phonon4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtNetwork4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtWebKit4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtXml4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\trainer_studio\trainer_studio\Release\dlls\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\trainer_studio\trainer_studio\Release\dlls\NPSWF32.dll"; DestDir: "{sys}\Macromed\Flash";
 Source: "D:\trainer_studio\trainer_studio\Release\mod\*"; DestDir: "{app}/mod"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
