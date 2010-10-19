@@ -6,23 +6,25 @@ contains(QT_VERSION, ^4\\.[0-5]\\..*) {
     error("Use at least Qt 4.6.")
 }
 TARGET = TrainerStudio
-FSPATH = ../freeswitch
-INCLUDEPATH = $${FSPATH}/src/include \
-    $${FSPATH}/libs/apr/include \
-    $${FSPATH}/libs/libteletone/src \
-    libs/qjson/src
+#FSPATH = ../freeswitch
+#INCLUDEPATH = $${FSPATH}/src/include \
+#    $${FSPATH}/libs/apr/include \
+#    $${FSPATH}/libs/libteletone/src \
+#    libs/qjson/src
+FSPATH = /Applications/TrainerStudio.app/FreeSWITCH
+INCLUDEPATH = $${FSPATH}/include
 macx:LIBS = -L/Applications/TrainerStudio.app/FreeSWITCH/lib \
     -lfreeswitch \
     -lm
 win32:LIBS = -L../freeswitch/ \
     -L../freeswitch/w32/Library/Debug \
     -lfreeswitchcore
-!win32:!macx { 
-    # This is here to comply with the default freeswitch installation
-    QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
-    LIBS += -lcrypt \
-        -lrt
-}
+#!win32:!macx {
+#    # This is here to comply with the default freeswitch installation
+#    QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
+#    LIBS += -lcrypt \
+#        -lrt
+#}
 
 macx:QMAKE_CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
 macx:QMAKE_CXXFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
