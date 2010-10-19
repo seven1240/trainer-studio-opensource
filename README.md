@@ -47,10 +47,11 @@ Win: <http://www.dependencywalker.com/> dll checker
 
 
 Mac:
+
 ```
-otool -L xxx.dylib
-otool -l xxxx.dylib
-nm -gfj xxxxx.dylib
-file TrainerStudio
-install_name_tool
+ otool -L xxx.dylib
+ otool -l xxxx.dylib
+ nm -gfj xxxxx.dylib
+ file TrainerStudio
+ install_name_tool
 ```
