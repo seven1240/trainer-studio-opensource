@@ -6,19 +6,22 @@ contains(QT_VERSION, ^4\\.[0-5]\\..*) {
     error("Use at least Qt 4.6.")
 }
 TARGET = TrainerStudio
-#FSPATH = ../freeswitch
 #INCLUDEPATH = $${FSPATH}/src/include \
 #    $${FSPATH}/libs/apr/include \
 #    $${FSPATH}/libs/libteletone/src \
 #    libs/qjson/src
-FSPATH = /Applications/TrainerStudio.app/FreeSWITCH
+
+PROJECT_DIRECTORY = $$system(pwd)
+message("Project $${PROJECT_DIRECTORY}")
+exists(/Applications/TrainerStudio.app/FreeSWITCH/include/switch.h) { FSPATH = /Applications/TrainerStudio.app/FreeSWITCH }
+exists($${PROJECT_DIRECTORY}/../freeswitch-install/include/switch.h) { FSPATH = $${PROJECT_DIRECTORY}/../freeswitch-install }
+exists($${PROJECT_DIRECTORY}/../freeswitch/include/switch.h) { FSPATH = $${PROJECT_DIRECTORY}/../freeswitch }
+message("Using $${FSPATH}")
+
 INCLUDEPATH = $${FSPATH}/include
-macx:LIBS = -L/Applications/TrainerStudio.app/FreeSWITCH/lib \
-    -lfreeswitch \
-    -lm
-win32:LIBS = -L../freeswitch/ \
-    -L../freeswitch/w32/Library/Debug \
-    -lfreeswitchcore
+macx:LIBS = -L$${FSPATH}/lib -lfreeswitch -lm
+win32:LIBS = -L../freeswitch/ -L../freeswitch/w32/Library/Debug -lfreeswitchcore
+
 #!win32:!macx {
 #    # This is here to comply with the default freeswitch installation
 #    QMAKE_LFLAGS += -Wl,-rpath,/usr/local/freeswitch/lib
