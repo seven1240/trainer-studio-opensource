@@ -1,0 +1,12 @@
+To install, you just need to
+
+   Drag and drop TrainerStudio into Applications
+
+
+If you cannot see flash, you need to install the Flash Plugin, then drag all files in FlashPlugin  to
+
+Library ->  Internet Plug-Ins 
+
+in your home directory.
+
+We will make tools to make this step easier in future releases. 
