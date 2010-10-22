@@ -32,7 +32,11 @@ win32:LIBS = -L../freeswitch/ -L../freeswitch/w32/Library/Debug -lfreeswitchcore
 macx:QMAKE_CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
 macx:QMAKE_CXXFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
 
-CONFIG += x86 # 32bit binary
+# So, on my machine 32b FS never builds (I can download one... though...
+# I like using the one that I've compiled and am using the headers for...)
+!exists(/Users/jlewallen/.bashrc) {
+  CONFIG += x86 # 32bit binary
+}
 QT += network \
     webkit \
     xml \
