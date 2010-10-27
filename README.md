@@ -64,9 +64,13 @@ It is also possible to build in VS Express with the .sln. Deprecated though.
 
 ### Known issues
 
+* ESC key make login dialog disappear, should catch it.
+
 Moria collected some issues, sent to Jacob via email.
 
 ### Todo
+
+* End an interaction if SIP broken.
 
 * Webkit cache. Will need this to speed up flash loading and give better experience for trainers who has slow internet.
 
@@ -80,7 +84,7 @@ Moria collected some issues, sent to Jacob via email.
 
 * makerelease.sh can auto gen .dmg
 
-## Releaseing
+## Releasing
 
 There's different ways to release
 
