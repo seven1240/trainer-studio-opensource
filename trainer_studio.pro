@@ -11,16 +11,27 @@ TARGET = TrainerStudio
 #    $${FSPATH}/libs/libteletone/src \
 #    libs/qjson/src
 
-PROJECT_DIRECTORY = $$system(pwd)
+PROJECT_DIRECTORY = $${PWD}
 message("Project $${PROJECT_DIRECTORY}")
 exists(/Applications/TrainerStudio.app/FreeSWITCH/include/switch.h) { FSPATH = /Applications/TrainerStudio.app/FreeSWITCH }
 exists($${PROJECT_DIRECTORY}/../freeswitch-install/include/switch.h) { FSPATH = $${PROJECT_DIRECTORY}/../freeswitch-install }
 exists($${PROJECT_DIRECTORY}/../freeswitch/include/switch.h) { FSPATH = $${PROJECT_DIRECTORY}/../freeswitch }
-message("Using $${FSPATH}")
+exists($${PROJECT_DIRECTORY}/../freeswitch/src/include/switch.h) { FSPATH = $${PROJECT_DIRECTORY}/../freeswitch/src }
 
-INCLUDEPATH = $${FSPATH}/include
-macx:LIBS = -L$${FSPATH}/lib -lfreeswitch -lm
-win32:LIBS = -L../freeswitch/ -L../freeswitch/w32/Library/Debug -lfreeswitchcore
+message("FreeSwitch: $${FSPATH}")
+INCLUDEPATH += $${FSPATH}/include
+
+win32 {
+  exists($${PROJECT_DIRECTORY}/../freeswitch/w32/Library/Debug/freeswitchcore.lib) {
+    LIBS = -L../freeswitch/ -L../freeswitch/w32/Library/Debug -lfreeswitchcore
+  }
+  else {
+    LIBS = -L../freeswitch/ -L../freeswitch/Win32/Debug -lfreeswitch
+  }
+}
+macx {
+  LIBS = -L$${FSPATH}/lib -lfreeswitch -lm
+}
 
 #!win32:!macx {
 #    # This is here to comply with the default freeswitch installation
@@ -33,7 +44,7 @@ macx:QMAKE_CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-m
 macx:QMAKE_CXXFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
 
 # So, on my machine 32b FS never builds (I can download one... though...
-# I like using the one that I've compiled and am using the headers for...)
+# I like using the one that I have compiled and am using the headers for...)
 !exists(/Users/jlewallen/.bashrc) {
   CONFIG += x86 # 32bit binary
 }
