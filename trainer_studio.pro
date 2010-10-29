@@ -21,7 +21,7 @@ win32 {
     LIBS = -L../freeswitch/ -L../freeswitch/w32/Library/Debug -lfreeswitchcore
   }
   else {
-    LIBS = -L../freeswitch/ -L../freeswitch/Win32/Debug -lfreeswitch
+    LIBS = -L$${PROJECT_DIRECTORY}/../freeswitch/Win32/Debug -L../freeswitch/ -L../freeswitch/Win32/Debug -lfreeswitch
   }
 }
 macx {
