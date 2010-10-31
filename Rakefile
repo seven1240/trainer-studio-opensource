@@ -1,14 +1,14 @@
 require 'pathname'
-
-namespace :win32 do
-end
-
-namespace :macx do
-end
+require 'rbconfig'
+$Win32 = Config::CONFIG['host_os'] =~ /mswin|mingw/
 
 class Paths
   def self.QT
     Pathname.new("C:/QT/4.7.0/bin")
+  end
+
+  def self.jom
+    Paths.QT.join("../../2010.05/bin/jom.exe") 
   end
 
   def self.freeswitch
@@ -18,46 +18,69 @@ class Paths
   def self.build
     Pathname.new("../trainer-studio-build-desktop/debug")
   end
+
+  def self.qmake
+    if $Win32
+      Paths.QT.join("qmake.exe -r -spec win32-msvc2008") 
+    else
+      "qmake -r -spec macx-g++"
+    end
+  end
+
+  def self.make
+    if $Win32
+      jom
+    else
+      "make"
+    end
+  end
 end
 
 def qmake(*args)
-  path = Paths.QT.join("qmake.exe") 
-  sh "#{path} #{args}"
+  sh "#{Paths.qmake} #{args}"
 end
 
-def jom(*args)
-  path = Paths.QT.join("../../2010.05/bin/jom.exe") 
-  sh "#{path} #{args}"
+def make(*args)
+  sh "#{Paths.make} #{args}"
 end
 
-task :default => :build do
+task :platform_env do
 end
 
-task :env do
+task :platform_deps do
+  if $Win32
+    # I'd like this to be in the qmake file... -jlewallen
+    libraries = []
+    libraries << [ "QtCored4.dll", "QtWebKitd4.dll", "QtGuid4.dll", "QtNetworkd4.dll", "QtXmld4.dll", "phonond4.dll" ].map do |name|
+      Paths.QT.join(name)
+    end
+    libraries << [ "FreeSwitch.dll", "libteletone.dll", "libapr.dll", "libaprutil.dll" ].map do |name|
+      Paths.freeswitch.join("Win32/Debug").join(name)
+    end
+    libraries.flatten!
+    cp libraries, Paths.build, :verbose => true
+  end
+end
+
+task :env => :platform_env do
   mkdir_p "../trainer-studio-build-desktop"
 end
 
-task :deps => :env do
-  libraries = []
-  libraries << [ "QtCored4.dll", "QtWebKitd4.dll", "QtGuid4.dll", "QtNetworkd4.dll", "QtXmld4.dll", "phonond4.dll" ].map do |name|
-    Paths.QT.join(name)
-  end
-  libraries << [ "FreeSwitch.dll", "libteletone.dll", "libapr.dll", "libaprutil.dll" ].map do |name|
-    Paths.freeswitch.join("Win32/Debug").join(name)
-  end
-  libraries.flatten!
-  cp libraries, Paths.build, :verbose => true
+task :deps => [ :env, :platform_deps ] do
 end
 
 task :build => :env do
   Dir.chdir "../trainer-studio-build-desktop" do
-    qmake "../trainer-studio/trainer_studio.pro -r -spec win32-msvc2008"
-    jom
+    qmake "../trainer-studio/trainer_studio.pro"
+    make
   end
 end
 
 task :clean => :env do
   Dir.chdir "../trainer-studio-build-desktop" do
-    jom "clean"
+    make "clean"
   end
+end
+
+task :default => :build do
 end
