@@ -28,11 +28,7 @@ macx {
   LIBS = -L$${FSPATH}/lib -lfreeswitch -lm
   QMAKE_CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
   QMAKE_CXXFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
-  # So, on my machine 32b FS never builds (I can download one... though...
-  # I like using the one that I have compiled and am using the headers for...)
-  !exists(/Users/jlewallen/.bashrc) {
-    CONFIG += x86 # 32bit binary
-  }
+  CONFIG += x86
 }
 
 QT += network \
