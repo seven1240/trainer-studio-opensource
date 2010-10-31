@@ -15,8 +15,20 @@ class Paths
     Pathname.new("../freeswitch")
   end
 
+  def self.project
+    Pathname.new(__FILE__).dirname
+  end
+
+  def self.project_file
+    project.join("trainer_studio.pro")
+  end
+
   def self.build
-    Pathname.new("../trainer-studio-build-desktop/debug")
+    Pathname.new("../trainer-studio-build-desktop")
+  end
+
+  def self.debug
+    build.join("debug")
   end
 
   def self.qmake
@@ -58,7 +70,7 @@ task :platform_deps do
       Paths.freeswitch.join("Win32/Debug").join(name)
     end
     libraries.flatten!
-    cp libraries, Paths.build, :verbose => true
+    cp libraries, Paths.debug, :verbose => true
   end
 end
 
@@ -70,15 +82,20 @@ task :deps => [ :env, :platform_deps ] do
 end
 
 task :build => :env do
-  Dir.chdir "../trainer-studio-build-desktop" do
-    qmake "../trainer-studio/trainer_studio.pro"
+  Dir.chdir(Paths.build) do
+    qmake Paths.project
     make
   end
 end
 
 task :clean => :env do
-  Dir.chdir "../trainer-studio-build-desktop" do
-    make "clean"
+  Dir.chdir(Paths.build) { make "clean" }
+end
+
+task :run => :build do
+  if $Win32
+  else
+    Dir.chdir(Paths.build) { sh "open TrainerStudio.app" }
   end
 end
 
