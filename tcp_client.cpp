@@ -1,7 +1,6 @@
-#include "TCPClient.h"
-#include "switch.h"
+#include <switch.h>
+#include "tcp_client.h"
 #include "qJSON.h"
-
 
 TCPClient *tcp_client;
 

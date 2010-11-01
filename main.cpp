@@ -1,8 +1,8 @@
 #include <QtGui/QApplication>
-#include "mainwindow.h"
-#include "fshost.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "main_window.h"
+#include "fs_host.h"
 
 FILE *logFile;
 

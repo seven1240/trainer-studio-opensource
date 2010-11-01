@@ -4,13 +4,13 @@
 #include <QMainWindow>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
-#include <flashdialog.h>
-#include <logindialog.h>
-#include <IncomingCallDialog.h>
-#include <SettingsDialog.h>
+#include <flash_dialog.h>
+#include <login_dialog.h>
+#include <incoming_call_dialog.h>
+#include <settings_dialog.h>
 #include "trainer_studio.h"
 #include <QKeyEvent>
-#include "fshost.h"
+#include "fs_host.h"
 
 class MainWindow : public QWidget {
   Q_OBJECT

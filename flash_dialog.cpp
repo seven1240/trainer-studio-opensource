@@ -1,15 +1,14 @@
-#include "flashdialog.h"
-#include "ui_flashdialog.h"
+#include "flash_dialog.h"
+#include "ui_flash_dialog.h"
 #include <qwebsettings.h>
 #include <qurl.h>
 #include "trainer_studio.h"
-#include "TCPClient.h"
+#include "tcp_client.h"
 #include <QWebFrame>
 #include <QWebElement>
-#include "fshost.h"
-#include "mainwindow.h"
+#include "fs_host.h"
+#include "main_window.h"
 #include "qmessagebox.h"
-
 
 FlashDialog::FlashDialog(QWidget *parent) :
   QDialog(parent),

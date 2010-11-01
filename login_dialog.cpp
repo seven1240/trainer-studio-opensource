@@ -1,15 +1,15 @@
-#include "logindialog.h"
-#include "ui_logindialog.h"
-#include "qdebug.h"
-#include "TCPClient.h"
-#include <qmessagebox.h>
-#include "fshost.h"
+#include "login_dialog.h"
+#include "ui_login_dialog.h"
+#include <QDebug.h>
+#include "tcp_client.h"
+#include <QMessageBox.h>
+#include "fs_host.h"
 #include "isettings.h"
-#include "mainwindow.h"
-#include "SettingsDialog.h"
-#include "EchoTestDialog.h"
+#include "main_window.h"
+#include "settings_dialog.h"
+#include "echo_test_dialog.h"
 #include "cjson.h"
-#include "Utils.h"
+#include "utils.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
   QDialog(parent),

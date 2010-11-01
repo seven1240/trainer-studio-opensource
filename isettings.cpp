@@ -1,5 +1,5 @@
-#include "isettings.h"
 #include <QtGui>
+#include "isettings.h"
 
 QMutex *ISettings::mutex = new QMutex();
 QDomDocument *ISettings::xml = 0;

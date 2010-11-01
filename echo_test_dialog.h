@@ -2,7 +2,7 @@
 #define ECHOTESTDIALOG_H
 
 #include <QDialog>
-#include "fshost.h"
+#include "fs_host.h"
 
 namespace Ui {
   class EchoTestDialog;

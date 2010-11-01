@@ -1,6 +1,6 @@
-#include "IncomingCallDialog.h"
-#include "ui_IncomingCallDialog.h"
-#include "fshost.h"
+#include "incoming_call_dialog.h"
+#include "ui_incoming_call_dialog.h"
+#include "fs_host.h"
 
 IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
   QDialog(parent),

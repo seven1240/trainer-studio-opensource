@@ -37,44 +37,12 @@ QT += network \
     xmlpatterns \
     multimedia
 TEMPLATE = app
-SOURCES += main.cpp \
-    mainwindow.cpp \
-    flashdialog.cpp \
-    fshost.cpp \
-    channel.cpp \
-    call.cpp \
-    logindialog.cpp \
-    TCPClient.cpp \
-    isettings.cpp \
-    IncomingCallDialog.cpp \
-    SettingsDialog.cpp \
-    EchoTestDialog.cpp \
-    cjson.c \
-    qJSON.cpp \
-    Utils.cpp
-HEADERS += mainwindow.h \
-    flashdialog.h \
-    fshost.h \
-    trainer_studio.h \
-    channel.h \
-    call.h \
-    logindialog.h \
-    TCPClient.h \
-    isettings.h \
-    IncomingCallDialog.h \
-    SettingsDialog.h \
-    EchoTestDialog.h \
-    cjson.h \
-    qJSON.h \
-    Utils.h
-FORMS += flashdialog.ui \
-    logindialog.ui \
-    IncomingCallDialog.ui \
-    SettingsDialog.ui \
-    EchoTestDialog.ui
+SOURCES += *.cpp *.c
+HEADERS += *.h
+FORMS += *.ui
 RESOURCES += resources.qrc
 OTHER_FILES += resources/loadflash.js \
-    resources/conf/freeswitch.xml \
-    resources/conf/tsconf.xml
+               resources/conf/freeswitch.xml \
+               resources/conf/tsconf.xml
 macx:ICON = resources/application.icns
 win32:RC_FILE = resources.rc

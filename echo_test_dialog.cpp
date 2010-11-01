@@ -1,10 +1,9 @@
-#include "EchoTestDialog.h"
-#include "ui_EchoTestDialog.h"
+#include "echo_test_dialog.h"
+#include "ui_echo_test_dialog.h"
 #include <qmessagebox.h>
-#include "SettingsDialog.h"
-#include "mainwindow.h"
-#include "TCPClient.h"
-
+#include "settings_dialog.h"
+#include "main_window.h"
+#include "tcp_client.h"
 
 EchoTestDialog::EchoTestDialog(QWidget *parent) :
   QDialog(parent),

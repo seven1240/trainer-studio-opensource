@@ -1,9 +1,9 @@
 #include <QtGui>
-#include "MainWindow.h"
-#include "qdebug.h"
-#include "TcpClient.h"
+#include "main_window.h"
+#include <QDebug.h>
+#include "tcp_client.h"
 #include "isettings.h"
-#include "qmessagebox.h"
+#include <QMessageBox.h>
 
 QSystemTrayIcon *sysTray;
 

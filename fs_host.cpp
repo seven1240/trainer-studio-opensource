@@ -28,7 +28,7 @@
  */
 
 #include <QtGui>
-#include "fshost.h"
+#include "fs_host.h"
 #include "isettings.h"
 
 /* Declare it globally */

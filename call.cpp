@@ -27,9 +27,9 @@
  *
  */
 
-#include "call.h"
 #include <QtGui>
-#include <fshost.h>
+#include "call.h"
+#include "fs_host.h"
 
 Call::Call()
 {

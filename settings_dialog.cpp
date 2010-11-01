@@ -1,11 +1,11 @@
-#include "SettingsDialog.h"
-#include "ui_SettingsDialog.h"
-#include "trainer_studio.h"
-#include "fshost.h"
 #include <QtXml>
-#include <qfiledialog.h>
+#include <QFileDialog.h>
+#include <QMessageBox.h>
+#include "settings_dialog.h"
+#include "ui_settings_dialog.h"
+#include "trainer_studio.h"
+#include "fs_host.h"
 #include "isettings.h"
-#include <qmessagebox.h>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
   QDialog(parent),

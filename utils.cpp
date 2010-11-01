@@ -1,5 +1,5 @@
-#include "Utils.h"
-#include <qmessagebox.h>
+#include "utils.h"
+#include <QMessageBox.h>
 #include <QtGui/QApplication>
 #include <QtGlobal>
 #include <QSysInfo>
