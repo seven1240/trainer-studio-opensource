@@ -4,9 +4,6 @@
 #include <QDialog>
 #include <QKeyEvent>
 #include <QVariant>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 class QGroupBox;

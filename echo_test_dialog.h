@@ -4,9 +4,10 @@
 #include <QDialog>
 #include "fs_host.h"
 
-namespace Ui {
-  class EchoTestDialog;
-}
+QT_BEGIN_NAMESPACE
+class QPushButton;
+class QLabel;
+QT_END_NAMESPACE
 
 class EchoTestDialog : public QDialog {
   Q_OBJECT
@@ -19,12 +20,20 @@ protected:
   void closeEvent(QCloseEvent *e);
 
 private:
-  Ui::EchoTestDialog *ui;
+  QPushButton *_pbBegin;
+  QPushButton *_pbSkip;
+  QPushButton *_pbFinish;
+  QLabel *_lbProgress;
+
+private:
+  void setProgress(QString string);
+  bool didTheyHearThemselves();
 
 private slots:
-  void on_pbAdvanced_clicked();
-  void on_pbSkip_clicked();
-  void on_pbEchoTest_clicked();
+  void onSettingsClicked();
+  void onSkipClicked();
+  void onBeginClicked();
+  void onFinishClicked();
   void onNewEvent(QSharedPointer<switch_event_t>);
 };
 

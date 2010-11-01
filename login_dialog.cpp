@@ -1,8 +1,11 @@
 #include <QDebug.h>
-#include <QMessageBox.h>
+#include <QMessageBox>
+#include <QApplication>
 #include <QtGui/QFormLayout>
 #include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
 #include <QtGui/QGroupBox>
+#include <QtGui/QTextEdit>
 #include "login_dialog.h"
 #include "tcp_client.h"
 #include "fs_host.h"
