@@ -80,15 +80,12 @@ void FlashDialog::showEvent(QShowEvent *e)
 
 void FlashDialog::closeEvent(QCloseEvent *e)
 {
-  //show warning
 
   // Make sure mic unmuted
-  QString res;
-  fshost->sendCmd("pa", "flags on mouth", &res);
-  fshost->sendCmd("hupall", "", &res);
+  fshost->unmute();
+  fshost->hangup(true);
   ui->webView->reload();
   lower();
-  qDebug() << "FlashDialog closing...";
 }
 
 void FlashDialog::onTimerTimeout()
@@ -170,8 +167,7 @@ void FlashDialog::on_btnDisconnect_clicked()
   QSettings settings;
   QString url = settings.value("General/url").toString();
 
-  QString res;
-  fshost->sendCmd("pa", "hangup", &res);
+  fshost->hangup(false);
 
   if (_tickCount < 450 ) {
     int ret = QMessageBox::warning(this, "Premature Ending",
@@ -324,13 +320,11 @@ void FlashDialog::onJSWindowObjectCleared()
 
 void FlashDialog::on_tbMute_clicked()
 {
-  QString res;
   if (ui->tbMute->text() == "Mute") {
-    fshost->sendCmd("pa", "flags off mouth", &res);
+    fshost->mute();
     ui->tbMute->setText("UnMute");
   } else {
-    fshost->sendCmd("pa", "flags on mouth", &res);
+    fshost->unmute();
     ui->tbMute->setText("Mute");
   }
-  qDebug() << res;
 }

@@ -91,15 +91,15 @@ void SettingsDialog::on_pbSaveGeneral_clicked()
 
 void SettingsDialog::updateDevlist()
 {
-  QString devices;
 
   ignore_change_event = true;
 
-  fshost->sendCmd("pa", "rescan", &devices);
-  switch_status_t status = fshost->sendCmd("pa", "devlist", &devices);
+  QString devices;
+  fshost->portAudioRescan();
+  devices = fshost->portAudioDevices();
 
-  if(SWITCH_STATUS_SUCCESS != status) {
-    qDebug() << "PA devlist error: " << devices;
+  if (devices.length() == 0) {
+    qDebug() << "PA devlist error";
     return;
   }
 
@@ -168,14 +168,12 @@ void SettingsDialog::on_pbReset_clicked()
 
 void SettingsDialog::on_tbRingTest_clicked()
 {
-  QString res;
-  fshost->sendCmd("pa", QString("play %1").arg(ui->leRingFile->text()).toAscii(), &res);
+  fshost->portAudioPlay(ui->leRingFile->text());
 }
 
 void SettingsDialog::on_pbLoopTest_clicked()
 {
-  QString res;
-  fshost->sendCmd("pa", "looptest", &res);
+  fshost->portAudioLoop();
 }
 
 void SettingsDialog::on_tbSelectFile_clicked()
@@ -209,21 +207,21 @@ void SettingsDialog::on_cbInput_currentIndexChanged(int index)
 {
   QString res;
   if(ignore_change_event) return;
-  fshost->sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
+  fshost->portAudioInDevice(index);
 }
 
 void SettingsDialog::on_cbOutput_currentIndexChanged(int index)
 {
   QString res;
   if(ignore_change_event) return;
-  fshost->sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
+  fshost->portAudioOutDevice(index);
 }
 
 void SettingsDialog::on_cbRing_currentIndexChanged(int index)
 {
   QString res;
   if(ignore_change_event) return;
-  fshost->sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
+  fshost->portAudioRingDevice(index);
 }
 
 void SettingsDialog::setActiveTabs(unsigned int tabs)

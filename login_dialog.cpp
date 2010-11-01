@@ -226,9 +226,9 @@ void LoginDialog::doRegisterToVoIP()
   QVariantMap gw = isettings->getGateway(QString("default"));
   QString res;
 
-  if(gw["username"] == _user["voip_username"] && gw["password"] == _user["voip_password"]) {
+  if (gw["username"] == _user["voip_username"] && gw["password"] == _user["voip_password"]) {
     qDebug() << "No gateway info changed";
-  }else{
+  } else {
     qDebug() << "Need to set gateway";
 
     QVariantMap newgw;
@@ -247,7 +247,7 @@ void LoginDialog::doRegisterToVoIP()
     switch_sleep(1000000);
   }
 
-  fshost->sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+  fshost->reload();
   qDebug() << res;
 
   delete isettings;

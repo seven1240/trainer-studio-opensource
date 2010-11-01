@@ -110,7 +110,6 @@ void MainWindow::showLoginDialog()
     connect(login_dialog, SIGNAL(login()), this, SLOT(onLogin()));
   }
   login_dialog -> raise();
-  //    login_dialog->setModal(true);
   login_dialog -> show();
   login_dialog -> activateWindow();
 
@@ -131,16 +130,13 @@ void MainWindow::onLogin()
 
 void MainWindow::onAuthenticated(QVariantMap user)
 {
-  //remember user info
   _user = user;
-  //    show();
 }
 
 void MainWindow::on_btnState_clicked()
 {
   if (!_sipStateReady) {
-    QMessageBox::warning(this, QApplication::applicationName(),
-                         "Cannot Pause, VoIP not ready!");
+    QMessageBox::warning(this, QApplication::applicationName(), "Cannot Pause, VoIP not ready!");
   }
   // why isChecked shows reversed?
   qDebug() << ui->btnState->isChecked();
@@ -187,9 +183,11 @@ void MainWindow::onGatewayStateChange(QString state)
     if (!_sipStateReady) {
       _sipStateReady = true;
     }
-  } else if (state == "TRYING" || state == "REGISTER") {
+  }
+  else if (state == "TRYING" || state == "REGISTER") {
     // do nothing
-  } else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
+  }
+  else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
     if (_sipStateReady) {
       _sipStateReady = false;
       if (ui->btnState->isChecked()) server_connection->pause(true); //force pause
@@ -229,32 +227,25 @@ void MainWindow::on_actionPreferences_triggered()
 void MainWindow::on_pbEchoTest_clicked()
 {
   if (!_activeUUID.isEmpty()) return;
-  QString res;
   ui->lbStatus->setText("Echo test");
-  fshost->sendCmd("pa", "call echo", &res);
-  parseCallResult(res);
+  parseCallResult(fshost->call("echo"));
 }
 
 void MainWindow::on_pbConference_clicked()
 {
   if (!_activeUUID.isEmpty()) return;
-  QString res;
   ui->lbStatus->setText("Conference");
-  fshost->sendCmd("pa", "call conf", &res);
-  parseCallResult(res);
+  parseCallResult(fshost->call("conf"));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
   if (false) return; // if in call?
 
-  if (event->key() == 35 || event->key() == Qt::Key_Asterisk || //# *
-      event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 || //0 - 9
-      event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) {// A-D
-
-    QString params = QString("dtmf %1").arg((char)(event->key()));
-    QString res;
-    fshost->sendCmd("pa", params.toAscii(), &res);
+  if (event->key() == 35 || event->key() == Qt::Key_Asterisk ||  // # *
+      event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 ||  // 0 - 9
+      event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) { // A-D
+    fshost->portAudioDtmf((char)event->key());
   }
   qDebug() << "Key pressed: " << event->key();
 }
@@ -285,19 +276,17 @@ void MainWindow::parseCallResult(QString res)
   QStringList sl = res.split(":");
   if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
     _activeUUID = sl.at(2).trimmed();
-    this->connect(fshost, SIGNAL(newEvent(QSharedPointer<switch_event_t>)),
-                  this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+    connect(fshost, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
   } else {
     _activeUUID = "";
-    this->disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+    disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
     ui->lbStatus->setText(res.trimmed());
   }
 }
 
 void MainWindow::on_pbHupall_clicked()
 {
-  QString res;
-  fshost->sendCmd("hupall", "", &res);
+  fshost->hangup(true);
 }
 
 void MainWindow::onTimerTimeout()

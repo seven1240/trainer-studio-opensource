@@ -57,8 +57,7 @@ void EchoTestDialog::changeEvent(QEvent *e)
 
 void EchoTestDialog::closeEvent(QCloseEvent *e)
 {
-  QString res;
-  fshost->sendCmd("hupall", "", &res);
+  fshost->hangup(true);
 }
 
 void EchoTestDialog::setProgress(QString string)
@@ -69,8 +68,7 @@ void EchoTestDialog::setProgress(QString string)
 
 void EchoTestDialog::onFinishClicked()
 {
-  QString res;
-  fshost->sendCmd("hupall", "", &res);
+  fshost->hangup(true);
 }
 
 void EchoTestDialog::onBeginClicked()
@@ -82,8 +80,7 @@ void EchoTestDialog::onBeginClicked()
 
   setProgress("Running...");
 
-  QString res;
-  fshost->sendCmd("pa", "call echo", &res);
+  fshost->call("echo");
 }
 
 void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)

@@ -31,13 +31,14 @@
 #include "fs_host.h"
 #include "isettings.h"
 
-/* Declare it globally */
+static void eventHandlerCallback(switch_event_t *event);
+static switch_status_t loggerHandler(const switch_log_node_t *, switch_log_level_t);
+
 FSHost *fshost;
 
 FSHost::FSHost(QObject *parent) :
   QThread(parent)
 {
-  /* Initialize libs & globals */
   qDebug() << "Initializing globals..." << endl;
   switch_core_setrlimits();
   switch_core_set_globals();
@@ -46,18 +47,12 @@ FSHost::FSHost(QObject *parent) :
   qRegisterMetaType<QSharedPointer<switch_log_node_t> >("QSharedPointer<switch_log_node_t>");
   qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
 
-  //    connect(this, SIGNAL(loadedModule(QString,QString)), this, SLOT(minimalModuleLoaded(QString,QString)));
   _running = false;
   _ready = false;
   _sofia_ready = false;
   _active_calls = 0;
 
 }
-
-//QBool FSHost::isModuleLoaded(QString modName)
-//{
-//    return _loadedModules.contains(modName);
-//}
 
 void FSHost::createFolders()
 {
@@ -152,7 +147,7 @@ void FSHost::run(void)
 
   qDebug() << "Everything OK, Entering runtime loop ...";
 
-  if (switch_event_bind("FSHost", SWITCH_EVENT_ALL, SWITCH_EVENT_SUBCLASS_ANY, eventHandlerCallback, NULL) != SWITCH_STATUS_SUCCESS) {
+  if (switch_event_bind("TS", SWITCH_EVENT_ALL, SWITCH_EVENT_SUBCLASS_ANY, eventHandlerCallback, NULL) != SWITCH_STATUS_SUCCESS) {
     switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Couldn't bind!\n");
   }
 
@@ -167,14 +162,12 @@ void FSHost::run(void)
   emit ready();
 
   /* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
-   * If its false, it initializes the libedit for the console, then does the same thing
-   */
+   * If its false, it initializes the libedit for the console, then does the same thing */
   switch_core_runtime_loop(!console);
   fflush(stdout);
 
 
   switch_event_unbind_callback(eventHandlerCallback);
-  /* When the runtime loop exits, its time to shutdown */
   destroy_status = switch_core_destroy();
   if (destroy_status == SWITCH_STATUS_SUCCESS)
   {
@@ -183,19 +176,18 @@ void FSHost::run(void)
   }
 }
 
-void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
+void FSHost::generalEventHandler(QSharedPointer<switch_event_t> event)
 {
   QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
 
-  switch(event.data()->event_id) {
-  case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
+  switch (event.data()->event_id) {
+    case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
     {
       if (_active_calls > 0) {
         QString res;
         sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
         qDebug() << "hangup " << res;
       }
-      //            eventChannelCreate(event, uuid);
       break;
     }
     //    case SWITCH_EVENT_CHANNEL_ANSWER: /*2A - 31B*/
@@ -248,10 +240,9 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
     //            eventChannelProgressMedia(event, uuid);
     //            break;
     //        }
-  case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
+    case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
     {
       _active_calls++;
-      //            eventChannelBridge(event, uuid);
       break;
     }
     //    /*32?*/
@@ -265,10 +256,10 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
     //            eventChannelHangup(event, uuid);
     //            break;
     //        }
-  case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
+    case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
     {
-      if (--_active_calls < 0) _active_calls = 0;
-      //            eventChannelUnbridge(event, uuid);
+      if (--_active_calls < 0)
+        _active_calls = 0;
       break;
     }
     //    case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:/*39/43B*/
@@ -281,11 +272,12 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
     //            eventChannelDestroy(event, uuid);
     //            break;
     //        }
-  case SWITCH_EVENT_CUSTOM:/*5A*/
+    case SWITCH_EVENT_CUSTOM:/*5A*/
     {
-      if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0){
-        emit(incomingCall(event));
-      }else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0){
+      if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
+        emit incomingCall(event);
+      }
+      else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
         QString state = switch_event_get_header_nil(event.data(), "State");
         emit gatewayStateChange(state);
       }
@@ -311,26 +303,23 @@ void FSHost::generalEventHandler(QSharedPointer<switch_event_t>event)
       //                //printEventHeaders(event);
       //            }
       break;
-  }
-case SWITCH_EVENT_MODULE_LOAD:
-  {
-    QString modType = switch_event_get_header_nil(event.data(), "type");
-    QString modKey = switch_event_get_header_nil(event.data(), "key");
-    QString modName = switch_event_get_header_nil(event.data(), "name");
-    //            QString modFilename = switch_event_get_header_nil(event.data(), "filename");
-    //            qDebug() << "Module Loadded: " << modType << ": " << modKey << " " << modName << " " << modFilename;
-
-    if(modKey == "mod_sofia") {
-      _sofia_ready = true;
     }
-    emit moduleLoaded(modType, modKey, modName);
-    break;
+    case SWITCH_EVENT_MODULE_LOAD:
+    {
+      QString modType = switch_event_get_header_nil(event.data(), "type");
+      QString modKey = switch_event_get_header_nil(event.data(), "key");
+      QString modName = switch_event_get_header_nil(event.data(), "name");
+      if (modKey == "mod_sofia") {
+        _sofia_ready = true;
+      }
+      emit moduleLoaded(modType, modKey, modName);
+      break;
+    }
+    default:
+      break;
   }
-default:
-  break;
-}
 
-emit newEvent(event);
+  emit newEvent(event);
 }
 
 void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString modName)
@@ -346,7 +335,6 @@ switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
   switch_status_t status = SWITCH_STATUS_FALSE;
   switch_stream_handle_t stream = { 0 };
   SWITCH_STANDARD_STREAM(stream);
-  //qDebug() << "Sending command: " << cmd << args << endl;
   status = switch_api_execute(cmd, args, NULL, &stream);
   *res = switch_str_nil((char *) stream.data);
   switch_safe_free(stream.data);
@@ -356,7 +344,7 @@ switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
 
 QSharedPointer<Call> FSHost::getCurrentActiveCall()
 {
-  foreach(QSharedPointer<Call> call, _activeCalls.values())
+  foreach (QSharedPointer<Call> call, _activeCalls.values())
   {
     if (call.data()->isActive())
       return call;
@@ -374,10 +362,126 @@ void FSHost::printEventHeaders(QSharedPointer<switch_event_t>event)
   qDebug() << "\n\n";
 }
 
-/*
-   Used to match callback from fs core. We dup the event and call the class
-   method callback to make use of the signal/slot infrastructure.
- */
+QString FSHost::call(QString callee)
+{
+  QString res;
+  sendCmd("pa", ("call " + callee).toAscii(), &res);
+  return res;
+}
+
+void FSHost::reload()
+{
+  QString res;
+  sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+}
+
+switch_status_t FSHost::mute()
+{
+  QString res;
+  return sendCmd("pa", "flags off mouth", &res);
+}
+
+switch_status_t FSHost::unmute()
+{
+  QString res;
+  return sendCmd("pa", "flags on mouth", &res);
+}
+
+switch_status_t FSHost::hold(QString uuid)
+{
+  QString res;
+  return sendCmd("uuid_hold", uuid.toAscii(), &res);
+}
+
+switch_status_t FSHost::unhold(QString uuid)
+{
+  QString res;
+  return sendCmd("uuid_hold", ("off " + uuid).toAscii(), &res);
+}
+
+void FSHost::hangup(bool all)
+{
+  QString res;
+  if (all) {
+    sendCmd("hupall", "", &res);
+  }
+  else {
+    sendCmd("pa", "hangup", &res);
+  }
+}
+
+switch_status_t FSHost::recordStart(QString uuid, QString filename)
+{
+  QString res;
+  return sendCmd("uuid_record", QString("%1 start %2").arg(uuid, filename).toAscii().data(), &res);
+}
+
+switch_status_t FSHost::recordStop(QString uuid, QString filename)
+{
+  QString res;
+  return sendCmd("uuid_record", QString("%1 stop %2").arg(uuid, filename).toAscii().data(), &res);
+}
+
+void FSHost::answer()
+{
+  QString res;
+  sendCmd("pa", "answer", &res);
+}
+
+switch_status_t FSHost::portAudioDtmf(char chr)
+{
+  QString res;
+  QString params = QString("dtmf %1").arg(chr);
+  return sendCmd("pa", params.toAscii(), &res);
+}
+
+QString FSHost::portAudioRescan()
+{
+  QString devices;
+  sendCmd("pa", "rescan", &devices);
+  return devices;
+}
+
+void FSHost::portAudioLoop()
+{
+  QString res;
+  sendCmd("pa", "looptest", &res);
+}
+
+void FSHost::portAudioPlay(QString target)
+{
+  QString res;
+  sendCmd("pa", QString("play %1").arg(target).toAscii(), &res);
+}
+
+QString FSHost::portAudioDevices()
+{
+  QString devices;
+  switch_status_t status = fshost->sendCmd("pa", "devlist", &devices);
+  if (SWITCH_STATUS_SUCCESS != status) {
+    return "";
+  }
+  return devices;
+}
+
+void FSHost::portAudioInDevice(int index)
+{
+  QString res;
+  sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
+}
+
+void FSHost::portAudioOutDevice(int index)
+{
+  QString res;
+  sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
+}
+
+void FSHost::portAudioRingDevice(int index)
+{
+  QString res;
+  sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
+}
+
 static void eventHandlerCallback(switch_event_t *event)
 {
   switch_event_t *clone = NULL;
@@ -387,9 +491,6 @@ static void eventHandlerCallback(switch_event_t *event)
   }
 }
 
-/*
-   Used to propagate logs on the application
- */
 static switch_status_t loggerHandler(const switch_log_node_t *node, switch_log_level_t level)
 {
   switch_log_node_t *clone = switch_log_node_dup(node);
