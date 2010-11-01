@@ -1,10 +1,10 @@
-#include "utils.h"
 #include <QMessageBox.h>
 #include <QtGui/QApplication>
 #include <QtGlobal>
 #include <QSysInfo>
 #include <QProcess>
 #include <QDesktopWidget>
+#include "utils.h"
 
 namespace Utils {
   void msgbox(QString msg)
@@ -42,14 +42,14 @@ namespace Utils {
 #endif
 #ifdef Q_WS_MAC
     switch (QSysInfo::MacintoshVersion) {
-    case QSysInfo::MV_LEOPARD:   os = "Mac Leopard";            break;
+    case QSysInfo::MV_LEOPARD:     os = "Mac Leopard";          break;
     case QSysInfo::MV_SNOWLEOPARD: os = "Mac Snow Leopard";     break;
-    default:                     os = "Mac Unknown(unsupported)";
+    default:                       os = "Mac Unknown(unsupported)";
     }
 
     QProcess p;
     p.start("sysctl hw.memsize");
-    if(p.waitForFinished()) {
+    if (p.waitForFinished()) {
       QByteArray ba = p.readAll();
       if (ba.startsWith("hw.memsize: ")) {
         ba = ba.trimmed().right(ba.length() - 13);

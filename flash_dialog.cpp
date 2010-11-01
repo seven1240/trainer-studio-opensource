@@ -3,7 +3,7 @@
 #include <qwebsettings.h>
 #include <qurl.h>
 #include "trainer_studio.h"
-#include "tcp_client.h"
+#include "server_connection.h"
 #include <QWebFrame>
 #include <QWebElement>
 #include "fs_host.h"
@@ -27,10 +27,10 @@ FlashDialog::FlashDialog(QWidget *parent) :
   _timer->setInterval(1000);
   // Signals
   this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
-  this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-  this->connect(tcp_client, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
-  this->connect(tcp_client, SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
-  this->connect(tcp_client, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
+  this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+  this->connect(server_connection, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
+  this->connect(server_connection, SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
+  this->connect(server_connection, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
   this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
   //    ui->webView->load(QUrl("about:blank"));
@@ -201,7 +201,7 @@ void FlashDialog::on_btnDisconnect_clicked()
   QString params = QString("var url='%1/flex/markspot/markspot.swf?%2';"
                            "var vars='%2';").arg(url).arg(vars);
   loadMovie(params);
-  tcp_client->sendAction("Review");
+  server_connection->sendAction("Review");
 
   _tickCount = 0; //reset for review
   _timer->start();
@@ -281,7 +281,7 @@ void FlashDialog::on_btnReconnect_clicked()
                                  QMessageBox::Yes | QMessageBox::No );
   if (ret == QMessageBox::No) return;
 
-  tcp_client->write(QString("{\"action\": \"Reconnect\","
+  server_connection->write(QString("{\"action\": \"Reconnect\","
                             "\"interaction_id\": \"%1\"}").arg(_interactionID));
   onLostConnection();
 }

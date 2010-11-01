@@ -7,7 +7,7 @@
 #include <QtGui/QGroupBox>
 #include <QtGui/QTextEdit>
 #include "login_dialog.h"
-#include "tcp_client.h"
+#include "server_connection.h"
 #include "fs_host.h"
 #include "isettings.h"
 #include "main_window.h"
@@ -65,9 +65,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
   _authenticated = false;
   _leUsername->setText(settings.value("StoredData/Username", "").toString());
 
-  this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
-  this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
-  this->connect(tcp_client, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
+  this->connect(server_connection, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+  this->connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
+  this->connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
   this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
   this->connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
   this->connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
@@ -115,7 +115,7 @@ void LoginDialog::abortLogin(QString msg)
 void LoginDialog::onCancelClicked()
 {
   qDebug() << "Cancel";
-  tcp_client->close();
+  server_connection->close();
   abortLogin();
 }
 
@@ -131,7 +131,7 @@ void LoginDialog::onAuthenticated(QVariantMap map)
 
 void LoginDialog::onAuthenticateError(QString reason)
 {
-  tcp_client->close();
+  server_connection->close();
   QString msg = QString("Authenticate Error:\nReason: %1").arg(reason);
   abortLogin(msg);
 }
@@ -176,7 +176,7 @@ void LoginDialog::onLoginClicked()
 
   qDebug() << host << ":" << port;
   showProgress();
-  tcp_client->connectToHost(host, port);
+  server_connection->connectToHost(host, port);
 
   QVariantMap map = Utils::getSystemInfos();
 
@@ -207,7 +207,7 @@ void LoginDialog::onLoginClicked()
   _abort = false;
 
   int i;
-  for(i=0; i<200 && (!tcp_client->isConnected()); i++) {
+  for(i=0; i<200 && (!server_connection->isConnected()); i++) {
     if(_abort) return;
     QApplication::processEvents();
     switch_sleep(100000);
@@ -221,7 +221,7 @@ void LoginDialog::onLoginClicked()
 
   setProgress("Socket connected, authenticating...");
 
-  tcp_client->write(json);
+  server_connection->write(json);
 
   QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
 

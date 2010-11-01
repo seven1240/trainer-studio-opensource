@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QDebug.h>
 #include <QMessageBox.h>
-#include "tcp_client.h"
+#include "server_connection.h"
 #include "main_window.h"
 #include "isettings.h"
 #include "utils.h"
@@ -18,8 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
   setFixedSize(218, 430);
   Utils::centerWindowOnDesktop(this);
 
-  tcp_client = new TCPClient();
-  tcp_client->start();
+  server_connection = new ServerConnection();
+  server_connection->start();
 
   // We should not need set NULL manually, but without this,
   // flash_dialog is NULL but not login_dialog, weird
@@ -38,11 +38,11 @@ MainWindow::MainWindow(QWidget *parent) :
   sysTray->show();
   sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
-  this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
-  this->connect(tcp_client, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
-  this->connect(tcp_client, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
-  this->connect(tcp_client, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-  this->connect(tcp_client, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
+  this->connect(server_connection, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+  this->connect(server_connection, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
+  this->connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
+  this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+  this->connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
   this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
   this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
   this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
@@ -86,7 +86,7 @@ MainWindow::~MainWindow()
   if(flash_dialog) delete flash_dialog;
   if(incoming_call_dialog) delete incoming_call_dialog;
   if(settings_dialog) delete settings_dialog;
-  if(tcp_client) delete tcp_client;
+  if(server_connection) delete server_connection;
   if(fshost) delete fshost;
   delete(_timer);
 }
@@ -144,7 +144,7 @@ void MainWindow::on_btnState_clicked()
   }
   // why isChecked shows reversed?
   qDebug() << ui->btnState->isChecked();
-  tcp_client->pause(!ui->btnState->isChecked());
+  server_connection->pause(!ui->btnState->isChecked());
 }
 
 void MainWindow::onPaused(bool state)
@@ -192,7 +192,7 @@ void MainWindow::onGatewayStateChange(QString state)
   } else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
     if (_sipStateReady) {
       _sipStateReady = false;
-      if (ui->btnState->isChecked()) tcp_client->pause(true); //force pause
+      if (ui->btnState->isChecked()) server_connection->pause(true); //force pause
     }
   }
   ui->lbSIPStatus->setText(QString("SIP State: %1").arg(state));

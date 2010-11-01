@@ -5,11 +5,11 @@
 #include <QTCPSocket>
 #include "trainer_studio.h"
 
-class TCPClient : public QThread
+class ServerConnection : public QThread
 {
   Q_OBJECT
 public:
-  TCPClient();
+  ServerConnection();
   void connectToHost() { connectToHost(_host, _port); }
   void connectToHost(QString host, int port);
   void close();
@@ -46,12 +46,11 @@ private slots:
 private:
   bool _ping;
   bool _connected;
-  QTcpSocket *_tcpSocket;
+  QTcpSocket *_socket;
   QString _host;
   int _port;
 };
 
-
-extern TCPClient *tcp_client;
+extern ServerConnection *server_connection;
 
 #endif // TCPCLIENT_H

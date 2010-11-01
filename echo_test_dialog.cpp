@@ -3,7 +3,7 @@
 #include "echo_test_dialog.h"
 #include "settings_dialog.h"
 #include "main_window.h"
-#include "tcp_client.h"
+#include "server_connection.h"
 
 EchoTestDialog::EchoTestDialog(QWidget *parent) :
   QDialog(parent)
@@ -114,7 +114,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
       }
       setProgress("Channel Hangup!");
       if (didTheyHearThemselves()) {
-        tcp_client->sendAction("Pause");
+        server_connection->sendAction("Pause");
         close();
         return;
       }
@@ -134,7 +134,7 @@ bool EchoTestDialog::didTheyHearThemselves()
 
 void EchoTestDialog::onSkipClicked()
 {
-  tcp_client->sendAction("Pause");
+  server_connection->sendAction("Pause");
   close();
 }
 

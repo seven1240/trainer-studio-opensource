@@ -1,27 +1,27 @@
 #include <switch.h>
-#include "tcp_client.h"
+#include "server_connection.h"
 #include "qJSON.h"
 
-TCPClient *tcp_client;
+ServerConnection *server_connection;
 
-TCPClient::TCPClient()
+ServerConnection::ServerConnection()
 {
   _ping = false;
   _connected = false;
-  _tcpSocket = new QTcpSocket(this);
-  connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-  connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-  connect(_tcpSocket, SIGNAL(connected()), this, SLOT(onConnected()));
-  connect(_tcpSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+  _socket = new QTcpSocket(this);
+  connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+  connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+  connect(_socket, SIGNAL(connected()), this, SLOT(onConnected()));
+  connect(_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 }
 
-void TCPClient::run()
+void ServerConnection::run()
 {
   //        tcpSocket->connectToHost("localhost", 3000);
   //    ConnectToHost();
   for (;;) {
 
-    qDebug() << "TCPClient running: " << _tcpSocket->state() << _connected;
+    qDebug() << "ServerConnection running: " << _socket->state() << _connected;
     if(_connected && _ping) {
       //tcpSocket->write("{\"action\":\"Ping\"}");
     }
@@ -29,26 +29,26 @@ void TCPClient::run()
   }
 }
 
-void TCPClient::connectToHost(QString host, int port)
+void ServerConnection::connectToHost(QString host, int port)
 {
   if (_connected) return;
   _host = host;
   _port = port;
-  _tcpSocket->connectToHost(host, port);
+  _socket->connectToHost(host, port);
 }
 
-void TCPClient::close()
+void ServerConnection::close()
 {
-  _tcpSocket->close();
+  _socket->close();
 }
 
-void TCPClient::onReadyRead()
+void ServerConnection::onReadyRead()
 {
   QByteArray ba;
-  while( _tcpSocket->canReadLine() )
+  while( _socket->canReadLine() )
   {
     // read and process the line
-    ba = _tcpSocket->readAll();
+    ba = _socket->readAll();
 
   }
 
@@ -105,23 +105,23 @@ void TCPClient::onReadyRead()
   }
 }
 
-void TCPClient::onSocketError(QAbstractSocket::SocketError)
+void ServerConnection::onSocketError(QAbstractSocket::SocketError)
 {
   _connected = false;
   // Let others know
-  emit socketError(_tcpSocket->errorString());
-  qDebug() << "Socket Error: " << _tcpSocket->error() << " "
-   << _tcpSocket->errorString();
+  emit socketError(_socket->errorString());
+  qDebug() << "Socket Error: " << _socket->error() << " "
+   << _socket->errorString();
 }
 
-void TCPClient::onConnected()
+void ServerConnection::onConnected()
 {
   _connected = true;
   qDebug() << "Socket Connected";
 
 }
 
-void TCPClient::onDisconnected()
+void ServerConnection::onDisconnected()
 {
   _ping = false;
   _connected = false;
@@ -132,46 +132,47 @@ void TCPClient::onDisconnected()
   //    QTimer::singleShot(10000, this, SLOT(onTimer()));
 }
 
-void TCPClient::onTimer()
+void ServerConnection::onTimer()
 {
   qDebug() << "Reconnect";
   connectToHost();
 }
 
-void TCPClient::sendAction(char *action)
+void ServerConnection::sendAction(char *action)
 {
   write(QString("{\"action\": \"%1\"}").arg(action));
   qDebug() << QString("{\"action\": \"%1\"}").arg(action);
 }
 
-void TCPClient::write(QByteArray ba)
+void ServerConnection::write(QByteArray ba)
 {
-  _tcpSocket->write(ba.append("\n"));
+  _socket->write(ba.append("\n"));
 }
 
-void TCPClient::write(QString s)
+void ServerConnection::write(QString s)
 {
   write(s.toAscii());
 }
 
-void TCPClient::write(char *s)
+void ServerConnection::write(char *s)
 {
   QByteArray ba(s);
   write(ba);
 }
 
-bool TCPClient::isConnected()
+bool ServerConnection::isConnected()
 {
   return _connected;
-  //    return _tcpSocket->isValid();
+  //    return _socket->isValid();
 }
 
-void TCPClient::pause(bool action)
+void ServerConnection::pause(bool action)
 {
   qDebug() << "Pause: " << action;
-  if(action){
+  if (action){
     sendAction("Pause");
-  }else{
+  }
+  else {
     sendAction("Unpause");
   }
 }
