@@ -1,9 +1,8 @@
 #ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 
-#include <QTNetwork>
 #include <QThread>
-#include <QTCPSocket.h>
+#include <QTCPSocket>
 #include "trainer_studio.h"
 
 class TCPClient : public QThread

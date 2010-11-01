@@ -149,12 +149,13 @@ void MainWindow::on_btnState_clicked()
 
 void MainWindow::onPaused(bool state)
 {
-  if(state){
+  if (state){
     ui->btnState->setText("> Start Working");
     ui->btnState->setChecked(false);
     QApplication::alert(this, 0);
     _timer->start();
-  }else{
+  }
+  else {
     ui->btnState->setText("|| Pause");
     ui->btnState->setChecked(true);
     _timer->stop();
