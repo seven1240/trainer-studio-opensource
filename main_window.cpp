@@ -1,20 +1,22 @@
 #include <QtGui>
-#include "main_window.h"
 #include <QDebug.h>
-#include "tcp_client.h"
-#include "isettings.h"
 #include <QMessageBox.h>
+#include "tcp_client.h"
+#include "main_window.h"
+#include "isettings.h"
+#include "utils.h"
 
 QSystemTrayIcon *sysTray;
 
 MainWindow::MainWindow(QWidget *parent) :
   QWidget(parent)
 {
-  setWindowTitle("Trainer Studio - Idapted Ltd.");
-  setFixedSize(218, 430);
-
   ui = this;
   createBody();
+
+  setWindowTitle("Trainer Studio - Idapted Ltd.");
+  setFixedSize(218, 430);
+  Utils::centerWindowOnDesktop(this);
 
   tcp_client = new TCPClient();
   tcp_client->start();

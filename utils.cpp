@@ -12,6 +12,15 @@ namespace Utils {
     QMessageBox::information(NULL, QApplication::applicationName(), msg);
   }
 
+  void centerWindowOnDesktop(QWidget *window)
+  {
+    QDesktopWidget *desktop = QApplication::desktop();
+    QWidget *screen = desktop->screen(desktop->primaryScreen());
+    QRect screenGeometry = desktop->screenGeometry(desktop->primaryScreen());
+    window->move(screenGeometry.width() / 2 - window->width() / 2,
+                 screenGeometry.height() / 2 - window->height() / 2);
+  }
+
   QVariantMap getSystemInfos()
   {
     QVariantMap map;
@@ -27,7 +36,7 @@ namespace Utils {
     case QSysInfo::WV_XP:        os = "Windows XP";      break;
     case QSysInfo::WV_2003:      os = "Windows 2003";    break;
     case QSysInfo::WV_VISTA:     os = "Windows Vista";   break;
-    case QSysInfo::WV_WINDOWS7:   os = "Windows 7";       break;
+    case QSysInfo::WV_WINDOWS7:  os = "Windows 7";       break;
     default:                     os = "Windows Unknown";
     }
 #endif
@@ -49,8 +58,7 @@ namespace Utils {
     }
 
 #endif
-    screen_res = QString("%1x%2").arg(QApplication::desktop()->width())
-     .arg(QApplication::desktop()->height());
+    screen_res = QString("%1x%2").arg(QApplication::desktop()->width()).arg(QApplication::desktop()->height());
     map.insert("os", os);
     map.insert("memory", memory);
     map.insert("screen_res", screen_res);

@@ -5,6 +5,7 @@
 
 namespace Utils
 {
+  void centerWindowOnDesktop(QWidget *window);
   void msgbox(QString msg);
   QVariantMap getSystemInfos();
 }
