@@ -14,6 +14,4 @@
 
 extern QSystemTrayIcon *sysTray;
 
-
-
 #endif //TRAINER_STUIDIO_H

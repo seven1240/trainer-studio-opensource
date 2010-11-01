@@ -5,9 +5,8 @@
 
 namespace Utils
 {
-    void msgbox(QString msg);
-    QVariantMap getSystemInfos();
-
+  void msgbox(QString msg);
+  QVariantMap getSystemInfos();
 }
 
 #endif // UTILS_H

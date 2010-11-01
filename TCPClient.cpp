@@ -7,176 +7,172 @@ TCPClient *tcp_client;
 
 TCPClient::TCPClient()
 {
-    _ping = false;
-    _connected = false;
-    _tcpSocket = new QTcpSocket(this);
-    connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-    connect(_tcpSocket, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(_tcpSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-
+  _ping = false;
+  _connected = false;
+  _tcpSocket = new QTcpSocket(this);
+  connect(_tcpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+  connect(_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+  connect(_tcpSocket, SIGNAL(connected()), this, SLOT(onConnected()));
+  connect(_tcpSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 }
-
 
 void TCPClient::run()
 {
+  //        tcpSocket->connectToHost("localhost", 3000);
+  //    ConnectToHost();
+  for (;;) {
 
-
-//        tcpSocket->connectToHost("localhost", 3000);
-//    ConnectToHost();
-    for (;;) {
-
-        qDebug() << "TCPClient running: " << _tcpSocket->state() << _connected;
-        if(_connected && _ping) {
-            //tcpSocket->write("{\"action\":\"Ping\"}");
-        }
-        switch_sleep(10000000);
+    qDebug() << "TCPClient running: " << _tcpSocket->state() << _connected;
+    if(_connected && _ping) {
+      //tcpSocket->write("{\"action\":\"Ping\"}");
     }
+    switch_sleep(10000000);
+  }
 }
 
 void TCPClient::connectToHost(QString host, int port)
 {
-    if (_connected) return;
-    _host = host;
-    _port = port;
-    _tcpSocket->connectToHost(host, port);
+  if (_connected) return;
+  _host = host;
+  _port = port;
+  _tcpSocket->connectToHost(host, port);
 }
 
 void TCPClient::close()
 {
-    _tcpSocket->close();
+  _tcpSocket->close();
 }
 
 void TCPClient::onReadyRead()
 {
-    QByteArray ba;
-    while( _tcpSocket->canReadLine() )
-    {
-        // read and process the line
-        ba = _tcpSocket->readAll();
+  QByteArray ba;
+  while( _tcpSocket->canReadLine() )
+  {
+    // read and process the line
+    ba = _tcpSocket->readAll();
 
-    }
+  }
 
-    QString s(ba);
-    qDebug() << ba.data();
+  QString s(ba);
+  qDebug() << ba.data();
 
-    qJSON *qjson = new qJSON();
-    bool ok;
-    QVariantMap result;
-    qjson->parse(ba.data(), &ok);
+  qJSON *qjson = new qJSON();
+  bool ok;
+  QVariantMap result;
+  qjson->parse(ba.data(), &ok);
 
-    if(!ok) {
-        qDebug() << "Invalid JSON! " << ba;
-        return;
-    }
-    result = qjson->toMap();
+  if(!ok) {
+    qDebug() << "Invalid JSON! " << ba;
+    return;
+  }
+  result = qjson->toMap();
 
-    qDebug() << result;
-    QString status = result["status"].toString();
-    qDebug() << status;
+  qDebug() << result;
+  QString status = result["status"].toString();
+  qDebug() << status;
 
-    if(status == "Pong") {
-        qDebug() << "Got Pong";
-    }else if(status == "Authenticated") {
-        qDebug() << "blahh..... Authed";
-        emit authenticated(result);
-        //            ping = true;
-    } else if (status == "AuthenticateError"){
-        emit authenticateError(result["reason"].toString());
-    } else if (status== "Paused"){
-        emit paused(true);
-    } else if (status == "Unpaused"){
-        emit paused(false);
-    } else if (status == "ForcedPause"){
-        emit forcedPause(result["reason"].toString());
-    } else if (status == "ReservedForInteraction"){
-        emit reservedForInteraction(result);
-        qDebug() << "ReservedForInteraction....";
-    } else if (status == "Unregistered") {
+  if(status == "Pong") {
+    qDebug() << "Got Pong";
+  }else if(status == "Authenticated") {
+    qDebug() << "blahh..... Authed";
+    emit authenticated(result);
+    //            ping = true;
+  } else if (status == "AuthenticateError"){
+    emit authenticateError(result["reason"].toString());
+  } else if (status== "Paused"){
+    emit paused(true);
+  } else if (status == "Unpaused"){
+    emit paused(false);
+  } else if (status == "ForcedPause"){
+    emit forcedPause(result["reason"].toString());
+  } else if (status == "ReservedForInteraction"){
+    emit reservedForInteraction(result);
+    qDebug() << "ReservedForInteraction....";
+  } else if (status == "Unregistered") {
 
-    } else if (status == "Message") {
-        emit invokeMessage(result["message"].toString());
+  } else if (status == "Message") {
+    emit invokeMessage(result["message"].toString());
+  } else {
+    QString action = result["action"].toString();
+
+    if (action == "LostConnection") {
+      emit lostConnection();
+    } else if (action == "Reconnected") {
+      qDebug() << "hhh: " << action;
+      emit interactionReconnected();
     } else {
-        QString action = result["action"].toString();
-
-        if (action == "LostConnection") {
-            emit lostConnection();
-        } else if (action == "Reconnected") {
-            qDebug() << "hhh: " << action;
-            emit interactionReconnected();
-        } else {
-            qDebug() << "Unknown JSON";
-        }
+      qDebug() << "Unknown JSON";
     }
+  }
 }
 
 void TCPClient::onSocketError(QAbstractSocket::SocketError)
 {
-    _connected = false;
-    // Let others know
-    emit socketError(_tcpSocket->errorString());
-    qDebug() << "Socket Error: " << _tcpSocket->error() << " "
-            << _tcpSocket->errorString();
+  _connected = false;
+  // Let others know
+  emit socketError(_tcpSocket->errorString());
+  qDebug() << "Socket Error: " << _tcpSocket->error() << " "
+   << _tcpSocket->errorString();
 }
 
 void TCPClient::onConnected()
 {
-    _connected = true;
-    qDebug() << "Socket Connected";
+  _connected = true;
+  qDebug() << "Socket Connected";
 
 }
 
 void TCPClient::onDisconnected()
 {
-    _ping = false;
-    _connected = false;
-    // Let others know
-    emit
-    qDebug() << "Disconnected, reconnecting in 10 seconds...";
-//  Don't auto reconnect for now
-//    QTimer::singleShot(10000, this, SLOT(onTimer()));
+  _ping = false;
+  _connected = false;
+  // Let others know
+  emit
+   qDebug() << "Disconnected, reconnecting in 10 seconds...";
+  //  Don't auto reconnect for now
+  //    QTimer::singleShot(10000, this, SLOT(onTimer()));
 }
 
 void TCPClient::onTimer()
 {
-    qDebug() << "Reconnect";
-    connectToHost();
+  qDebug() << "Reconnect";
+  connectToHost();
 }
 
 void TCPClient::sendAction(char *action)
 {
-    write(QString("{\"action\": \"%1\"}").arg(action));
-    qDebug() << QString("{\"action\": \"%1\"}").arg(action);
+  write(QString("{\"action\": \"%1\"}").arg(action));
+  qDebug() << QString("{\"action\": \"%1\"}").arg(action);
 }
 
 void TCPClient::write(QByteArray ba)
 {
-    _tcpSocket->write(ba.append("\n"));
+  _tcpSocket->write(ba.append("\n"));
 }
 
 void TCPClient::write(QString s)
 {
-    write(s.toAscii());
+  write(s.toAscii());
 }
 
 void TCPClient::write(char *s)
 {
-    QByteArray ba(s);
-    write(ba);
+  QByteArray ba(s);
+  write(ba);
 }
 
 bool TCPClient::isConnected()
 {
-    return _connected;
-//    return _tcpSocket->isValid();
+  return _connected;
+  //    return _tcpSocket->isValid();
 }
 
 void TCPClient::pause(bool action)
 {
-    qDebug() << "Pause: " << action;
-    if(action){
-        sendAction("Pause");
-    }else{
-        sendAction("Unpause");
-    }
+  qDebug() << "Pause: " << action;
+  if(action){
+    sendAction("Pause");
+  }else{
+    sendAction("Unpause");
+  }
 }
