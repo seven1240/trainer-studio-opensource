@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtGui/QLabel>
+#include <QtGui/QPushButton>
 #include <flashdialog.h>
 #include <logindialog.h>
 #include <IncomingCallDialog.h>
@@ -10,12 +12,7 @@
 #include <QKeyEvent>
 #include "fshost.h"
 
-
-namespace Ui {
-    class MainWindow;
-}
-
-class MainWindow : public QMainWindow {
+class MainWindow : public QWidget {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
@@ -25,10 +22,13 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    QLayout *createBody();
 
 private:
-    Ui::MainWindow *ui;
-
+    MainWindow *ui;
+    QPushButton *btnState;
+    QLabel *lbStatus;
+    QLabel *lbSIPStatus;
     FlashDialog *flash_dialog;
     LoginDialog *login_dialog;
     IncomingCallDialog *incoming_call_dialog;

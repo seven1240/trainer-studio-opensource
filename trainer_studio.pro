@@ -67,8 +67,7 @@ HEADERS += mainwindow.h \
     cjson.h \
     qJSON.h \
     Utils.h
-FORMS += mainwindow.ui \
-    flashdialog.ui \
+FORMS += flashdialog.ui \
     logindialog.ui \
     IncomingCallDialog.ui \
     SettingsDialog.ui \

@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include <QtGui>
+#include "MainWindow.h"
 #include "qdebug.h"
 #include "TcpClient.h"
 #include "isettings.h"
@@ -8,16 +8,13 @@
 QSystemTrayIcon *sysTray;
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QWidget(parent)
 {
-    ui->setupUi(this);
-
     setWindowTitle("Trainer Studio - Idapted Ltd.");
-//    ui->lbSIPStatus->setMinimumSize(ui->lbSIPStatus->sizeHint());
-    statusBar()->addWidget(ui->lbSIPStatus);
-    ui->lbStatus->setIndent(5);
-    statusBar()->addWidget(ui->lbStatus, 1);
+    setFixedSize(218, 430);
+
+    ui = this;
+    createBody();
 
     tcp_client = new TCPClient();
     tcp_client->start();
@@ -47,13 +44,42 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
     this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
     this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
-
 }
 
+QLayout *MainWindow::createBody()
+{
+    QPushButton *settingsButton = new QPushButton("Settings");
+    QPushButton *loginButton = new QPushButton("Login");
+    QPushButton *echoButton = new QPushButton("Echo");
+    QPushButton *pauseButton = new QPushButton("Pause");
+    QPushButton *closeButton = new QPushButton("Close");
+    QPushButton *aboutButton = new QPushButton("About");
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(settingsButton);
+    layout->addWidget(loginButton);
+    layout->addWidget(echoButton);
+    layout->addWidget(pauseButton);
+    layout->addWidget(closeButton);
+    layout->addWidget(aboutButton);
+
+    QLabel *connectionLabel = new QLabel("Connection: No");
+    layout->addWidget(connectionLabel);
+
+    QLabel *sipLabel = new QLabel("SIP: None");
+    layout->addWidget(sipLabel);
+
+    btnState = pauseButton;
+    lbStatus = connectionLabel;
+    lbSIPStatus = sipLabel;
+
+    setLayout(layout);
+
+    return layout;
+}
 
 MainWindow::~MainWindow()
 {
-    delete ui;
     if(login_dialog) delete login_dialog;
     if(flash_dialog) delete flash_dialog;
     if(incoming_call_dialog) delete incoming_call_dialog;
@@ -65,10 +91,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::changeEvent(QEvent *e)
 {
-    QMainWindow::changeEvent(e);
+    QWidget::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        ui->retranslateUi(this);
+        // ui->retranslateUi(this);
         break;
     default:
         break;

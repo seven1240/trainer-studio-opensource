@@ -94,6 +94,7 @@ end
 
 task :run => :build do
   if $Win32
+    Dir.chdir(Paths.debug) { sh "TrainerStudio.exe" }
   else
     Dir.chdir(Paths.build) { sh "open TrainerStudio.app" }
   end
