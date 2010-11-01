@@ -15,7 +15,6 @@ namespace Utils {
   void centerWindowOnDesktop(QWidget *window)
   {
     QDesktopWidget *desktop = QApplication::desktop();
-    QWidget *screen = desktop->screen(desktop->primaryScreen());
     QRect screenGeometry = desktop->screenGeometry(desktop->primaryScreen());
     window->move(screenGeometry.width() / 2 - window->width() / 2,
                  screenGeometry.height() / 2 - window->height() / 2);

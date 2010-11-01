@@ -201,7 +201,7 @@ void FlashDialog::on_btnDisconnect_clicked()
   QString params = QString("var url='%1/flex/markspot/markspot.swf?%2';"
                            "var vars='%2';").arg(url).arg(vars);
   loadMovie(params);
-  server_connection->sendAction("Review");
+  server_connection->review();
 
   _tickCount = 0; //reset for review
   _timer->start();
@@ -281,8 +281,7 @@ void FlashDialog::on_btnReconnect_clicked()
                                  QMessageBox::Yes | QMessageBox::No );
   if (ret == QMessageBox::No) return;
 
-  server_connection->write(QString("{\"action\": \"Reconnect\","
-                            "\"interaction_id\": \"%1\"}").arg(_interactionID));
+  server_connection->startInteractionReconnection(_interactionID);
   onLostConnection();
 }
 

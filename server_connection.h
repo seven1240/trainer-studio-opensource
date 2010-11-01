@@ -10,15 +10,14 @@ class ServerConnection : public QThread
   Q_OBJECT
 public:
   ServerConnection();
-  void connectToHost() { connectToHost(_host, _port); }
-  void connectToHost(QString host, int port);
+  void open() { open(_host, _port); }
+  void open(QString host, int port);
+  void startInteractionReconnection(QString interactionId);
   void close();
-  void sendAction(char *);
-  void write(QByteArray);
-  void write(QString);
-  void write(char *);
   bool isConnected();
   void pause(bool action);
+  void review();
+  void login(QString username, QString password);
 
 protected:
   void run();
@@ -42,6 +41,11 @@ private slots:
   void onDisconnected();
   void onTimer();
 
+private:
+  void sendAction(char *action);
+  void write(QByteArray);
+  void write(QString);
+  void write(char *json);
 
 private:
   bool _ping;

@@ -114,7 +114,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
       }
       setProgress("Channel Hangup!");
       if (didTheyHearThemselves()) {
-        server_connection->sendAction("Pause");
+        server_connection->pause(TRUE);
         close();
         return;
       }
@@ -134,7 +134,7 @@ bool EchoTestDialog::didTheyHearThemselves()
 
 void EchoTestDialog::onSkipClicked()
 {
-  server_connection->sendAction("Pause");
+  server_connection->pause(TRUE);
   close();
 }
 

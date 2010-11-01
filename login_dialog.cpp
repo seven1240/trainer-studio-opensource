@@ -124,8 +124,6 @@ void LoginDialog::onAuthenticated(QVariantMap map)
   qDebug() << "Authenticated";
   _user = map;
   _authenticated = true;
-
-  // set timer to wait FreeSWITCH to be ready
   QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
 }
 
@@ -176,52 +174,27 @@ void LoginDialog::onLoginClicked()
 
   qDebug() << host << ":" << port;
   showProgress();
-  server_connection->connectToHost(host, port);
-
-  QVariantMap map = Utils::getSystemInfos();
-
-  char *json = NULL;
-
-  cJSON *info = cJSON_CreateArray();
-
-  cJSON *item;
-  item = cJSON_CreateObject();
-  cJSON_AddItemToObject(item, "os", cJSON_CreateString(map["os"].toString().toAscii().data()));
-  cJSON_AddItemToObject(item, "memory", cJSON_CreateString(map["memory"].toString().toAscii().data()));
-  cJSON_AddItemToObject(item, "screen_res", cJSON_CreateString(map["screen_res"].toString().toAscii().data()));
-  cJSON_AddItemToObject(item, "flash_player_version", cJSON_CreateString(map["flash_player_version"].toString().toAscii().data()));
-  cJSON_AddItemToArray(info, item);
-
-  cJSON *cj = cJSON_CreateObject();
-
-  cJSON_AddItemToObject(cj, "username", cJSON_CreateString(_leUsername->text().toAscii().data()));
-  cJSON_AddItemToObject(cj, "password", cJSON_CreateString(_lePassword->text().toAscii().data()));
-  cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
-  cJSON_AddItemToObject(cj, "system_info", info);
-
-  json = cJSON_Print(cj);
-  cJSON_Delete(cj);
-
-  qDebug() << json;
+  server_connection->open(host, port);
 
   _abort = false;
 
   int i;
-  for(i=0; i<200 && (!server_connection->isConnected()); i++) {
-    if(_abort) return;
+  for (i = 0; i < 200 && (!server_connection->isConnected()); i++) {
+    if (_abort) {
+      return;
+    }
     QApplication::processEvents();
     switch_sleep(100000);
   }
 
-  if(i == 200) {
-    // error socket connect
+  if (i == 200) {
     abortLogin("Login Error, Please Try again!");
     return;
   }
 
   setProgress("Socket connected, authenticating...");
 
-  server_connection->write(json);
+  server_connection->login(_leUsername->text(), _lePassword->text());
 
   QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
 

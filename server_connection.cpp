@@ -1,6 +1,7 @@
 #include <switch.h>
 #include "server_connection.h"
 #include "qJSON.h"
+#include "utils.h"
 
 ServerConnection *server_connection;
 
@@ -17,24 +18,56 @@ ServerConnection::ServerConnection()
 
 void ServerConnection::run()
 {
-  //        tcpSocket->connectToHost("localhost", 3000);
-  //    ConnectToHost();
   for (;;) {
-
     qDebug() << "ServerConnection running: " << _socket->state() << _connected;
-    if(_connected && _ping) {
-      //tcpSocket->write("{\"action\":\"Ping\"}");
-    }
     switch_sleep(10000000);
   }
 }
 
-void ServerConnection::connectToHost(QString host, int port)
+void ServerConnection::open(QString host, int port)
 {
   if (_connected) return;
   _host = host;
   _port = port;
   _socket->connectToHost(host, port);
+}
+
+void ServerConnection::startInteractionReconnection(QString interactionId)
+{
+  write(QString("{\"action\": \"Reconnect\"," "\"interaction_id\": \"%1\"}").arg(interactionId));
+}
+
+void ServerConnection::login(QString username, QString password)
+{
+  QVariantMap map = Utils::getSystemInfos();
+
+  char *json = NULL;
+
+  cJSON *info = cJSON_CreateArray();
+
+  cJSON *item;
+  item = cJSON_CreateObject();
+  cJSON_AddItemToObject(item, "os", cJSON_CreateString(map["os"].toString().toAscii().data()));
+  cJSON_AddItemToObject(item, "memory", cJSON_CreateString(map["memory"].toString().toAscii().data()));
+  cJSON_AddItemToObject(item, "screen_res", cJSON_CreateString(map["screen_res"].toString().toAscii().data()));
+  cJSON_AddItemToObject(item, "flash_player_version", cJSON_CreateString(map["flash_player_version"].toString().toAscii().data()));
+  cJSON_AddItemToArray(info, item);
+
+  cJSON *cj = cJSON_CreateObject();
+
+  cJSON_AddItemToObject(cj, "username", cJSON_CreateString(username.toAscii().data()));
+  cJSON_AddItemToObject(cj, "password", cJSON_CreateString(password.toAscii().data()));
+  cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
+  cJSON_AddItemToObject(cj, "system_info", info);
+
+  json = cJSON_Print(cj);
+  cJSON_Delete(cj);
+
+  qDebug() << json;
+
+  write(json);
+
+  // TODO: free json?
 }
 
 void ServerConnection::close()
@@ -45,11 +78,9 @@ void ServerConnection::close()
 void ServerConnection::onReadyRead()
 {
   QByteArray ba;
-  while( _socket->canReadLine() )
+  while (_socket->canReadLine())
   {
-    // read and process the line
     ba = _socket->readAll();
-
   }
 
   QString s(ba);
@@ -60,7 +91,7 @@ void ServerConnection::onReadyRead()
   QVariantMap result;
   qjson->parse(ba.data(), &ok);
 
-  if(!ok) {
+  if (!ok) {
     qDebug() << "Invalid JSON! " << ba;
     return;
   }
@@ -70,36 +101,46 @@ void ServerConnection::onReadyRead()
   QString status = result["status"].toString();
   qDebug() << status;
 
-  if(status == "Pong") {
+  if (status == "Pong") {
     qDebug() << "Got Pong";
-  }else if(status == "Authenticated") {
+  }
+  else if (status == "Authenticated") {
     qDebug() << "blahh..... Authed";
     emit authenticated(result);
-    //            ping = true;
-  } else if (status == "AuthenticateError"){
+  }
+  else if (status == "AuthenticateError") {
     emit authenticateError(result["reason"].toString());
-  } else if (status== "Paused"){
+  }
+  else if (status== "Paused") {
     emit paused(true);
-  } else if (status == "Unpaused"){
+  }
+  else if (status == "Unpaused") {
     emit paused(false);
-  } else if (status == "ForcedPause"){
+  }
+  else if (status == "ForcedPause") {
     emit forcedPause(result["reason"].toString());
-  } else if (status == "ReservedForInteraction"){
+  }
+  else if (status == "ReservedForInteraction") {
     emit reservedForInteraction(result);
     qDebug() << "ReservedForInteraction....";
-  } else if (status == "Unregistered") {
+  }
+  else if (status == "Unregistered") {
 
-  } else if (status == "Message") {
+  }
+  else if (status == "Message") {
     emit invokeMessage(result["message"].toString());
-  } else {
+  }
+  else {
     QString action = result["action"].toString();
 
     if (action == "LostConnection") {
       emit lostConnection();
-    } else if (action == "Reconnected") {
+    }
+    else if (action == "Reconnected") {
       qDebug() << "hhh: " << action;
       emit interactionReconnected();
-    } else {
+    }
+    else {
       qDebug() << "Unknown JSON";
     }
   }
@@ -108,34 +149,33 @@ void ServerConnection::onReadyRead()
 void ServerConnection::onSocketError(QAbstractSocket::SocketError)
 {
   _connected = false;
-  // Let others know
   emit socketError(_socket->errorString());
-  qDebug() << "Socket Error: " << _socket->error() << " "
-   << _socket->errorString();
+  qDebug() << "Socket Error: " << _socket->error() << " " << _socket->errorString();
 }
 
 void ServerConnection::onConnected()
 {
   _connected = true;
   qDebug() << "Socket Connected";
-
 }
 
 void ServerConnection::onDisconnected()
 {
   _ping = false;
   _connected = false;
-  // Let others know
-  emit
-   qDebug() << "Disconnected, reconnecting in 10 seconds...";
-  //  Don't auto reconnect for now
-  //    QTimer::singleShot(10000, this, SLOT(onTimer()));
+  emit socketDisconnected();
+  qDebug() << "Disconnected, reconnecting in 10 seconds...";
 }
 
 void ServerConnection::onTimer()
 {
   qDebug() << "Reconnect";
-  connectToHost();
+  open();
+}
+
+void ServerConnection::review()
+{
+  sendAction("Review");
 }
 
 void ServerConnection::sendAction(char *action)
@@ -163,13 +203,12 @@ void ServerConnection::write(char *s)
 bool ServerConnection::isConnected()
 {
   return _connected;
-  //    return _socket->isValid();
 }
 
 void ServerConnection::pause(bool action)
 {
   qDebug() << "Pause: " << action;
-  if (action){
+  if (action) {
     sendAction("Pause");
   }
   else {

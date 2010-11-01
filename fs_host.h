@@ -48,9 +48,6 @@ class FSHost : public QThread
 public:
   explicit FSHost(QObject *parent = 0);
   switch_status_t sendCmd(const char *cmd, const char *args, QString *res);
-  void generalEventHandler(QSharedPointer<switch_event_t>event);
-  void generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level);
-  void printEventHeaders(QSharedPointer<switch_event_t>event);
   bool isModuleLoaded(QString);
   bool isRunning() { return _running; }
   bool isReady() { return _ready; }
@@ -60,13 +57,18 @@ public:
 protected:
   void run(void);
 
+public:
+  void generalEventHandler(QSharedPointer<switch_event_t>event);
+  void generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level);
+  void printEventHeaders(QSharedPointer<switch_event_t>event);
+  void createFolders();
+
 signals:
   /* Status signals */
   void coreLoadingError(QString);
   void loadingModules(QString, int, QColor);
   void moduleLoaded(QString, QString, QString);
   void ready(void);
-
 
   /* Logging signals */
   void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
@@ -82,15 +84,15 @@ private slots:
   void minimalModuleLoaded(QString, QString, QString);
 
 private:
+  QSharedPointer<Call> getCurrentActiveCall();
+  QList<QString> _loadedModules;
+  QHash<QString, QSharedPointer<Call> > _activeCalls;
+  QHash<QString, QSharedPointer<Channel> > _activeChannels;
   bool _running;
   bool _ready;
   bool _sofia_ready;
   int _active_calls;
-  /* Helper methods */
-  void createFolders();
 
-  /*FSM State handlers*/
-  /** Channel Related*/
   void eventChannelCreate(QSharedPointer<switch_event_t> event, QString uuid);
   void eventChannelAnswer(QSharedPointer<switch_event_t> event, QString uuid);
   void eventChannelState(QSharedPointer<switch_event_t>event, QString uuid);
@@ -105,18 +107,9 @@ private:
   void eventChannelUnbridge(QSharedPointer<switch_event_t>event, QString uuid);
   void eventChannelHangupComplete(QSharedPointer<switch_event_t>event, QString uuid);
   void eventChannelDestroy(QSharedPointer<switch_event_t>event, QString uuid);
-
-  /** Others*/
   void eventCodec(QSharedPointer<switch_event_t>event, QString uuid);
   void eventCallUpdate(QSharedPointer<switch_event_t>event, QString uuid);
   void eventRecvInfo(QSharedPointer<switch_event_t>event, QString uuid);
-
-  QSharedPointer<Call> getCurrentActiveCall();
-
-  /* Structures to keep track of things */
-  QList<QString> _loadedModules;
-  QHash<QString, QSharedPointer<Call> > _activeCalls;
-  QHash<QString, QSharedPointer<Channel> > _activeChannels;
 };
 
 extern FSHost *fshost;

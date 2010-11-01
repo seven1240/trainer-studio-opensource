@@ -80,7 +80,6 @@ void FSHost::createFolders()
     destFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
   }
 
-
   /* Set all directories to the home user directory */
   if (conf_dir.cd(DOTDIR))
   {
@@ -355,7 +354,6 @@ switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
   return status;
 }
 
-
 QSharedPointer<Call> FSHost::getCurrentActiveCall()
 {
   foreach(QSharedPointer<Call> call, _activeCalls.values())
@@ -375,7 +373,6 @@ void FSHost::printEventHeaders(QSharedPointer<switch_event_t>event)
   }
   qDebug() << "\n\n";
 }
-
 
 /*
    Used to match callback from fs core. We dup the event and call the class
