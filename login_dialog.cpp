@@ -1,8 +1,10 @@
-#include "login_dialog.h"
-#include "ui_login_dialog.h"
 #include <QDebug.h>
-#include "tcp_client.h"
 #include <QMessageBox.h>
+#include <QtGui/QFormLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QGroupBox>
+#include "login_dialog.h"
+#include "tcp_client.h"
 #include "fs_host.h"
 #include "isettings.h"
 #include "main_window.h"
@@ -12,32 +14,65 @@
 #include "utils.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
-  QDialog(parent),
-  ui(new Ui::LoginDialog)
+  QDialog(parent)
 {
-  qDebug() << "LoginDialog starting";
-  ui->setupUi(this);
-  ui->pbSettings->setVisible(false);
-  ui->lePassword->setEchoMode(QLineEdit::Password);
-  ui->frmSplash->hide();
-  ui->frmLogin->move(QPoint(10, 10));
-  this->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+  _lbProgress = new QLabel();
+  _pbSettings = new QPushButton("Settings");
+  _pbCancel = new QPushButton("Cancel");
+  _pbLogin = new QPushButton("Login");
+  _leUsername = new QLineEdit();
+  _lePassword = new QLineEdit();
+  _lePassword->setEchoMode(QLineEdit::Password);
+  _teProgress = new QTextEdit();
 
-  this->setWindowTitle("Login");
+  QGroupBox *loginFormGroupBox = new QGroupBox(tr("Login"));
+  QFormLayout *formLayout = new QFormLayout;
+  formLayout->addRow(new QLabel(tr("Username:")), _leUsername);
+  formLayout->addRow(new QLabel(tr("Password:")), _lePassword);
+  loginFormGroupBox->setLayout(formLayout);
+
+  _loginFrame = new QFrame();
+  QVBoxLayout *loginLayout = new QVBoxLayout();
+  loginLayout->addWidget(_lbProgress);
+  loginLayout->addWidget(loginFormGroupBox);
+  loginLayout->addWidget(_pbLogin);
+  loginLayout->addWidget(_pbSettings);
+  loginLayout->addWidget(new QFrame());
+  _loginFrame->setLayout(loginLayout);
+
+  _progressFrame = new QFrame();
+  QVBoxLayout *progressLayout = new QVBoxLayout();
+  progressLayout->addWidget(_lbProgress);
+  progressLayout->addWidget(_teProgress);
+  progressLayout->addWidget(_pbCancel);
+  _progressFrame->setLayout(progressLayout);
+
+  QVBoxLayout *mainLayout = new QVBoxLayout();
+  mainLayout->addWidget(_loginFrame);
+  mainLayout->addWidget(_progressFrame);
+  setLayout(mainLayout);
+
+  setFixedSize(320, 240);
+  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+  setWindowTitle("Login");
+
+  showLogin();
+
+  QSettings settings;
   _authenticated = false;
+  _leUsername->setText(settings.value("StoredData/Username", "").toString());
 
   this->connect(tcp_client, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
   this->connect(tcp_client, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
   this->connect(tcp_client, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
   this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
-
-  QSettings settings;
-  ui->leUsername->setText(settings.value("StoredData/Username", "").toString());
+  this->connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
+  this->connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
+  this->connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 }
 
 LoginDialog::~LoginDialog()
 {
-  delete ui;
 }
 
 void LoginDialog::changeEvent(QEvent *e)
@@ -45,7 +80,7 @@ void LoginDialog::changeEvent(QEvent *e)
   QDialog::changeEvent(e);
   switch (e->type()) {
   case QEvent::LanguageChange:
-    ui->retranslateUi(this);
+    // retranslateUi(this);
     break;
   default:
     break;
@@ -54,20 +89,18 @@ void LoginDialog::changeEvent(QEvent *e)
 
 void LoginDialog::closeEvent(QCloseEvent *e)
 {
-  //    qDebug() << "Close Event" << e;
 }
 
 void LoginDialog::KeyPressEvent(QKeyEvent *e)
 {
-  //ignore ESC ? Why it doesn't work?
-  if (e->key() == Qt::Key_Escape ) return;
+  if (e->key() == Qt::Key_Escape) return;
 }
 
 void LoginDialog::abortLogin()
 {
   _abort = true;
-  ui->frmSplash->hide();
-  ui->pbSettings->setVisible(true);
+  showLogin();
+  _pbSettings->setVisible(true);
 }
 
 void LoginDialog::abortLogin(QString msg)
@@ -76,7 +109,7 @@ void LoginDialog::abortLogin(QString msg)
   QMessageBox::critical( this, QApplication::applicationName(), msg);
 }
 
-void LoginDialog::on_cancelLogin_clicked()
+void LoginDialog::onCancelClicked()
 {
   qDebug() << "Cancel";
   tcp_client->close();
@@ -111,18 +144,35 @@ void LoginDialog::onSocketError(QString error)
   abortLogin(error);
 }
 
-void LoginDialog::on_btnLogin_clicked()
+void LoginDialog::showProgress()
+{
+  _loginFrame->hide();
+  _progressFrame->show();
+}
+
+void LoginDialog::showLogin()
+{
+  _progressFrame->hide();
+  _loginFrame->show();
+}
+
+void LoginDialog::setProgress(QString string)
+{
+  _lbProgress->setText(string);
+  _lbProgress->repaint();
+}
+
+void LoginDialog::onLoginClicked()
 {
   QSettings settings;
-  settings.setValue("StoredData/Username", ui->leUsername->text());
+  settings.setValue("StoredData/Username", _leUsername->text());
   QString host = settings.value("General/trainer_server").toString();
   int port = settings.value("trainer_server_port").toInt();
   host = host.isEmpty() ? "voip.idapted.com" : host;
   port = port == 0 ? 7000 : port;
 
   qDebug() << host << ":" << port;
-  ui->frmSplash->setGeometry( ui->frmLogin->geometry());
-  ui->frmSplash->show();
+  showProgress();
   tcp_client->connectToHost(host, port);
 
   QVariantMap map = Utils::getSystemInfos();
@@ -141,8 +191,8 @@ void LoginDialog::on_btnLogin_clicked()
 
   cJSON *cj = cJSON_CreateObject();
 
-  cJSON_AddItemToObject(cj, "username", cJSON_CreateString(ui->leUsername->text().toAscii().data()));
-  cJSON_AddItemToObject(cj, "password", cJSON_CreateString(ui->lePassword->text().toAscii().data()));
+  cJSON_AddItemToObject(cj, "username", cJSON_CreateString(_leUsername->text().toAscii().data()));
+  cJSON_AddItemToObject(cj, "password", cJSON_CreateString(_lePassword->text().toAscii().data()));
   cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
   cJSON_AddItemToObject(cj, "system_info", info);
 
@@ -153,7 +203,6 @@ void LoginDialog::on_btnLogin_clicked()
 
   _abort = false;
 
-  // wait socket
   int i;
   for(i=0; i<200 && (!tcp_client->isConnected()); i++) {
     if(_abort) return;
@@ -167,9 +216,7 @@ void LoginDialog::on_btnLogin_clicked()
     return;
   }
 
-  //else connected
-  ui->lbProgress->setText("Socket connected, authenticating...");
-  ui->lbProgress->repaint();
+  setProgress("Socket connected, authenticating...");
 
   tcp_client->write(json);
 
@@ -190,15 +237,13 @@ void LoginDialog::doRegisterToVoIP()
   }
 
   if (!fshost->isSofiaReady()) {
-    ui->lbProgress->setText("Loading VoIP modules...");
-    ui->lbProgress->repaint();
+    setProgress("Loading VoIP modules...");
     QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
     return;
   }
 
   //setup sip account and register
-  ui->lbProgress->setText("Registering to VoIP sever...");
-  ui->lbProgress->repaint();
+  setProgress("Registering to VoIP sever...");
 
   ISettings *isettings = new ISettings(this);
 
@@ -206,7 +251,6 @@ void LoginDialog::doRegisterToVoIP()
   QString res;
 
   if(gw["username"] == _user["voip_username"] && gw["password"] == _user["voip_password"]) {
-    //this should not happen
     qDebug() << "No gateway info changed";
   }else{
     qDebug() << "Need to set gateway";
@@ -233,23 +277,21 @@ void LoginDialog::doRegisterToVoIP()
   delete isettings;
   hide();
 
-  EchoTestDialog *etd = new EchoTestDialog((QWidget*)this->parent());
+  EchoTestDialog *etd = new EchoTestDialog((QWidget *)this->parent());
   etd->setAttribute(Qt::WA_DeleteOnClose);
   etd->show();
 }
 
-void LoginDialog::on_pbSettings_clicked()
+void LoginDialog::onSettingsClicked()
 {
   SettingsDialog *settings_dialog = new SettingsDialog(this);
-  // auto delete on close
   settings_dialog->setAttribute(Qt::WA_DeleteOnClose);
   settings_dialog->show();
 }
 
 void LoginDialog::onFSModuleLoaded(QString modType, QString modKey, QString modName)
 {
-  ui->teProgress->insertPlainText(QString("Loaded: [%1] %2 %3\n")
-                                  .arg(modType).arg(modKey).arg(modName));
-  ui->teProgress->textCursor().movePosition(QTextCursor::End);
-  ui->teProgress->ensureCursorVisible();
+  _teProgress->insertPlainText(QString("Loaded: [%1] %2 %3\n").arg(modType).arg(modKey).arg(modName));
+  _teProgress->textCursor().movePosition(QTextCursor::End);
+  _teProgress->ensureCursorVisible();
 }

@@ -2,12 +2,20 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
-#include <qvariant.h>
 #include <QKeyEvent>
+#include <QVariant>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QLabel>
 
-namespace Ui {
-  class LoginDialog;
-}
+QT_BEGIN_NAMESPACE
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QTextEdit;
+class QFrame;
+QT_END_NAMESPACE
 
 class LoginDialog : public QDialog {
   Q_OBJECT
@@ -21,28 +29,38 @@ protected:
   void closeEvent(QCloseEvent *);
   void KeyPressEvent(QKeyEvent *e);
 
-signals:
-  void login();
-
 private:
-  Ui::LoginDialog *ui;
+  QLineEdit *_leUsername;
+  QLineEdit *_lePassword;
+  QPushButton *_pbSettings;
+  QPushButton *_pbLogin;
+  QPushButton *_pbCancel;
+  QLabel *_lbProgress;
+  QTextEdit *_teProgress;
   QVariantMap _user;
+  QFrame *_loginFrame;
+  QFrame *_progressFrame;
   bool _authenticated;
-  bool _abort; //abort login
+  bool _abort;
 
   void abortLogin();
   void abortLogin(QString msg);
 
+private:
+  void showProgress();
+  void showLogin();
+  void setProgress(QString string);
+
 public slots:
 
 private slots:
-  void on_pbSettings_clicked();
+  void onSettingsClicked();
   void onAuthenticated(QVariantMap);
   void onAuthenticateError(QString);
   void onAuthenticateTimeout();
   void onSocketError(QString);
-  void on_cancelLogin_clicked();
-  void on_btnLogin_clicked();
+  void onCancelClicked();
+  void onLoginClicked();
   void onFSModuleLoaded(QString modType, QString modKey, QString modName);
   void doRegisterToVoIP();
 };
