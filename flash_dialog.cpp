@@ -1,14 +1,15 @@
-#include "flash_dialog.h"
-#include "ui_flash_dialog.h"
-#include <qwebsettings.h>
-#include <qurl.h>
-#include "trainer_studio.h"
-#include "server_connection.h"
+#include <QWebSettings.h>
+#include <QMessageBox>
 #include <QWebFrame>
 #include <QWebElement>
+#include <QUrl.h>
+#include "trainer_studio.h"
+#include "application_controller.h"
+#include "server_connection.h"
 #include "fs_host.h"
+#include "flash_dialog.h"
+#include "ui_flash_dialog.h"
 #include "main_window.h"
-#include "qmessagebox.h"
 
 FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent),
@@ -21,19 +22,19 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
 	ui->setupUi(this);
 	setLayout(ui->verticalLayout);
-	this->setWindowFlags(Qt::Window);
+	setWindowFlags(Qt::Window);
 
 	_timer = new QTimer(this);
 	_timer->setInterval(1000);
-	// Signals
-	this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
-	this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-	this->connect(server_connection, SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
-	this->connect(server_connection, SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
-	this->connect(server_connection, SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
-	this->connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
-	//    ui->webView->load(QUrl("about:blank"));
+	// Signals
+	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
+	connect(ApplicationController::server(), SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+	connect(ApplicationController::server(), SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
+	connect(ApplicationController::server(), SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
+	connect(ApplicationController::server(), SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
+	connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
+
 	// Load a blank HTML to avoid cross domain communication between JS and Flash
 	QSettings settings;
 	QString url = settings.value("General/url").toString();
@@ -41,7 +42,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
 	// Allow JS call QT callback using the mainWindow object
 	ui->webView->page()->mainFrame()->addToJavaScriptWindowObject("mainWindow", this);
-	this->connect(ui->webView->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(onJSWindowObjectCleared()));
+	connect(ui->webView->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(onJSWindowObjectCleared()));
 
 	// Read JS into memory
 	QFile file;
@@ -79,9 +80,8 @@ void FlashDialog::showEvent(QShowEvent * /*e*/)
 
 void FlashDialog::closeEvent(QCloseEvent* /*e*/)
 {
-	// Make sure mic unmuted
-	fs->unmute();
-	fs->hangup(true);
+	ApplicationController::fs()->unmute();
+	ApplicationController::fs()->hangup(true);
 	ui->webView->reload();
 	lower();
 }
@@ -162,7 +162,7 @@ void FlashDialog::on_btnDisconnect_clicked()
 	QSettings settings;
 	QString url = settings.value("General/url").toString();
 
-	fs->hangup(false);
+	ApplicationController::fs()->hangup(false);
 
 	if (_tickCount < 450 ) {
 		int ret = QMessageBox::warning(this, "Premature Ending",
@@ -192,7 +192,7 @@ void FlashDialog::on_btnDisconnect_clicked()
 	QString params = QString("var url='%1/flex/markspot/markspot.swf?%2';"
 							 "var vars='%2';").arg(url).arg(vars);
 	loadMovie(params);
-	server_connection->review();
+	ApplicationController::server()->review();
 
 	_tickCount = 0; //reset for review
 	_timer->start();
@@ -272,7 +272,7 @@ void FlashDialog::on_btnReconnect_clicked()
 								   QMessageBox::Yes | QMessageBox::No );
 	if (ret == QMessageBox::No) return;
 
-	server_connection->startInteractionReconnection(_interactionID);
+	ApplicationController::server()->startInteractionReconnection(_interactionID);
 	onLostConnection();
 }
 
@@ -316,10 +316,10 @@ void FlashDialog::onJSWindowObjectCleared()
 void FlashDialog::on_tbMute_clicked()
 {
 	if (ui->tbMute->text() == "Mute") {
-		fs->mute();
+		ApplicationController::fs()->mute();
 		ui->tbMute->setText("UnMute");
 	} else {
-		fs->unmute();
+		ApplicationController::fs()->unmute();
 		ui->tbMute->setText("Mute");
 	}
 }

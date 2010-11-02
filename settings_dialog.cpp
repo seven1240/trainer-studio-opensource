@@ -1,9 +1,10 @@
 #include <QtXml>
 #include <QFileDialog.h>
 #include <QMessageBox.h>
+#include "trainer_studio.h"
+#include "application_controller.h"
 #include "settings_dialog.h"
 #include "ui_settings_dialog.h"
-#include "trainer_studio.h"
 #include "fs_host.h"
 #include "isettings.h"
 
@@ -94,8 +95,8 @@ void SettingsDialog::updateDevlist()
 	ignore_change_event = true;
 
 	QString devices;
-	fs->portAudioRescan();
-	devices = fs->portAudioDevices();
+	ApplicationController::fs()->portAudioRescan();
+	devices = ApplicationController::fs()->portAudioDevices();
 
 	if (devices.length() == 0) {
 		qDebug() << "PA devlist error";
@@ -171,12 +172,12 @@ void SettingsDialog::on_pbReset_clicked()
 
 void SettingsDialog::on_tbRingTest_clicked()
 {
-	fs->portAudioPlay(ui->leRingFile->text());
+	ApplicationController::fs()->portAudioPlay(ui->leRingFile->text());
 }
 
 void SettingsDialog::on_pbLoopTest_clicked()
 {
-	fs->portAudioLoop();
+	ApplicationController::fs()->portAudioLoop();
 }
 
 void SettingsDialog::on_tbSelectFile_clicked()
@@ -209,21 +210,21 @@ void SettingsDialog::on_cbInput_currentIndexChanged(int index)
 {
 	QString res;
 	if (ignore_change_event) return;
-	fs->portAudioInDevice(index);
+	ApplicationController::fs()->portAudioInDevice(index);
 }
 
 void SettingsDialog::on_cbOutput_currentIndexChanged(int index)
 {
 	QString res;
 	if (ignore_change_event) return;
-	fs->portAudioOutDevice(index);
+	ApplicationController::fs()->portAudioOutDevice(index);
 }
 
 void SettingsDialog::on_cbRing_currentIndexChanged(int index)
 {
 	QString res;
 	if (ignore_change_event) return;
-	fs->portAudioRingDevice(index);
+	ApplicationController::fs()->portAudioRingDevice(index);
 }
 
 void SettingsDialog::setActiveTabs(unsigned int tabs)

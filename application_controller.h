@@ -4,6 +4,8 @@
 #include <QObject>
 
 class MainWindow;
+class ServerConnection;
+class FSHost;
 
 class ApplicationController : public QObject
 {
@@ -14,9 +16,13 @@ public:
 	 ~ApplicationController();
 
 private:
+	static ServerConnection *_server;
+	static FSHost *_fs;
 	MainWindow *_main_window;
 
 public:
+	static ServerConnection *server();
+	static FSHost *fs();
 	int32_t run();
 
 };

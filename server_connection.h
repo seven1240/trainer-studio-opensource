@@ -78,6 +78,4 @@ private:
 	int _port;
 };
 
-extern ServerConnection *server_connection;
-
 #endif // TCPCLIENT_H

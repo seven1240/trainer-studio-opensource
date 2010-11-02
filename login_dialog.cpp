@@ -6,14 +6,14 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QGroupBox>
 #include <QtGui/QTextEdit>
+#include <QtGui/QPushButton>
+#include "application_controller.h"
 #include "login_dialog.h"
 #include "server_connection.h"
 #include "fs_host.h"
 #include "isettings.h"
-#include "main_window.h"
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
-#include "cjson.h"
 #include "utils.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -67,12 +67,12 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	_authenticated = false;
 	_leUsername->setText(settings.value("StoredData/Username", "").toString());
 
-	connect(server_connection, SIGNAL(connected()), this, SLOT(onServerConnectionConnected()));
-	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onServerConnectionAuthenticated(User*)));
-	connect(server_connection, SIGNAL(disconnected()), this, SLOT(onServerConnectionDisconnected()));
-	connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
-	connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
-	connect(fs, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
+	connect(ApplicationController::server(), SIGNAL(connected()), this, SLOT(onServerConnectionConnected()));
+	connect(ApplicationController::server(), SIGNAL(authenticated(User*)), this, SLOT(onServerConnectionAuthenticated(User*)));
+	connect(ApplicationController::server(), SIGNAL(disconnected()), this, SLOT(onServerConnectionDisconnected()));
+	connect(ApplicationController::server(), SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
+	connect(ApplicationController::server(), SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
+	connect(ApplicationController::fs(), SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
 	connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
 	connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
 	connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
@@ -87,7 +87,7 @@ LoginDialog::~LoginDialog()
 void LoginDialog::onServerConnectionConnected()
 {
 	setProgress("Connected, authenticating...");
-	server_connection->login(_leUsername->text(), _lePassword->text());
+	ApplicationController::server()->login(_leUsername->text(), _lePassword->text());
 }
 
 void LoginDialog::onServerConnectionAuthenticated(User *user)
@@ -140,13 +140,13 @@ void LoginDialog::abortLogin(QString msg)
 void LoginDialog::onCancelClicked()
 {
 	qDebug() << "Cancel";
-	server_connection->close();
+	ApplicationController::server()->close();
 	abortLogin();
 }
 
 void LoginDialog::onAuthenticateError(QString reason)
 {
-	server_connection->close();
+	ApplicationController::server()->close();
 	QString msg = QString("Authenticate Error:\nReason: %1").arg(reason);
 	abortLogin(msg);
 }
@@ -187,7 +187,7 @@ void LoginDialog::onLoginClicked()
 	qDebug() << host << ":" << port;
 	_abort = false;
 	showProgress();
-	server_connection->open(host, port);
+	ApplicationController::server()->open(host, port);
 }
 
 void LoginDialog::doRegisterToVoIP()
@@ -201,7 +201,7 @@ void LoginDialog::doRegisterToVoIP()
 		return;
 	}
 
-	if (!fs->isSofiaReady()) {
+	if (!ApplicationController::fs()->isSofiaReady()) {
 		setProgress("Loading VoIP modules...");
 		QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
 		return;
@@ -233,7 +233,7 @@ void LoginDialog::doRegisterToVoIP()
 		switch_sleep(1000000);
 	}
 
-	fs->reload();
+	ApplicationController::fs()->reload();
 
 	delete isettings;
 	hide();

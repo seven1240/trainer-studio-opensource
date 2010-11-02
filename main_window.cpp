@@ -1,6 +1,7 @@
 #include <QtGui>
 #include <QDebug.h>
-#include <QMessageBox.h>
+#include <QMessageBox>
+#include "application_controller.h"
 #include "server_connection.h"
 #include "main_window.h"
 #include "isettings.h"
@@ -36,13 +37,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	sysTray->show();
 	sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
-	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
-	connect(server_connection, SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
-	connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
-	connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-	connect(server_connection, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+	connect(ApplicationController::server(), SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
+	connect(ApplicationController::server(), SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
+	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
+	connect(ApplicationController::server(), SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+	connect(ApplicationController::server(), SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 	connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
-	connect(fs, SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
+	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
 	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 
 	QMetaObject::connectSlotsByName(this);
@@ -135,7 +136,7 @@ void MainWindow::on_Login_clicked()
 
 void MainWindow::on_Logout_clicked()
 {
-	server_connection->logout();
+	ApplicationController::server()->logout();
 }
 
 void MainWindow::onAuthenticated(User *user)
@@ -153,7 +154,7 @@ void MainWindow::on_State_clicked()
 	}
 	// why isChecked shows reversed?
 	qDebug() << ui->btnState->isChecked();
-	server_connection->pause(!ui->btnState->isChecked());
+	ApplicationController::server()->pause(!ui->btnState->isChecked());
 }
 
 void MainWindow::onPaused(bool state)
@@ -202,7 +203,7 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 		if (_sipStateReady) {
 			_sipStateReady = false;
 			if (ui->btnState->isChecked())
-				server_connection->pause(true); //force pause
+				ApplicationController::server()->pause(true); //force pause
 		}
 	}
 	ui->lbSIPStatus->setText(QString("SIP State: %1").arg(state));
@@ -241,14 +242,14 @@ void MainWindow::on_Echo_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
 	ui->lbStatus->setText("Echo test");
-	parseCallResult(fs->call("echo"));
+	parseCallResult(ApplicationController::fs()->call("echo"));
 }
 
 void MainWindow::on_Conference_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
 	ui->lbStatus->setText("Conference");
-	parseCallResult(fs->call("conf"));
+	parseCallResult(ApplicationController::fs()->call("conf"));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -258,7 +259,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	if (event->key() == 35 || event->key() == Qt::Key_Asterisk ||  // # *
 		event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 ||  // 0 - 9
 		event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) { // A-D
-		fs->portAudioDtmf((char)event->key());
+		ApplicationController::fs()->portAudioDtmf((char)event->key());
 	}
 }
 
@@ -291,7 +292,7 @@ void MainWindow::parseCallResult(QString res)
 	QStringList sl = res.split(":");
 	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
 		_activeUUID = sl.at(2).trimmed();
-		connect(fs, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+		connect(ApplicationController::fs(), SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
 	} else {
 		_activeUUID = "";
 		disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
@@ -301,7 +302,7 @@ void MainWindow::parseCallResult(QString res)
 
 void MainWindow::on_Hangup_clicked()
 {
-	fs->hangup(true);
+	ApplicationController::fs()->hangup(true);
 }
 
 void MainWindow::onTimerTimeout()

@@ -1,5 +1,6 @@
 #include <QtGui/QVBoxLayout>
 #include <QMessageBox>
+#include "application_controller.h"
 #include "echo_test_dialog.h"
 #include "settings_dialog.h"
 #include "main_window.h"
@@ -36,7 +37,7 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
 	connect(_pbBegin, SIGNAL(clicked()), this, SLOT(onBeginClicked()));
 	connect(_pbSkip, SIGNAL(clicked()), this, SLOT(onSkipClicked()));
 	connect(_pbFinish, SIGNAL(clicked()), this, SLOT(onFinishClicked()));
-	connect(fs, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+	connect(ApplicationController::fs(), SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
 }
 
 EchoTestDialog::~EchoTestDialog()
@@ -57,7 +58,7 @@ void EchoTestDialog::changeEvent(QEvent *e)
 
 void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
 {
-	fs->hangup(true);
+	ApplicationController::fs()->hangup(true);
 }
 
 void EchoTestDialog::setProgress(QString string)
@@ -68,19 +69,19 @@ void EchoTestDialog::setProgress(QString string)
 
 void EchoTestDialog::onFinishClicked()
 {
-	fs->hangup(true);
+	ApplicationController::fs()->hangup(true);
 }
 
 void EchoTestDialog::onBeginClicked()
 {
-	if (!fs->isSofiaReady()) {
+	if (!ApplicationController::fs()->isSofiaReady()) {
 		setProgress("Please wait a while and try again!");
 		return;
 	}
 
 	setProgress("Running...");
 
-	fs->call("echo");
+	ApplicationController::fs()->call("echo");
 }
 
 void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
@@ -111,7 +112,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 			}
 			setProgress("Channel Hangup!");
 			if (didTheyHearThemselves()) {
-				server_connection->pause(TRUE);
+				ApplicationController::server()->pause(TRUE);
 				close();
 				return;
 			}
@@ -131,7 +132,7 @@ bool EchoTestDialog::didTheyHearThemselves()
 
 void EchoTestDialog::onSkipClicked()
 {
-	server_connection->pause(TRUE);
+	ApplicationController::server()->pause(TRUE);
 	close();
 }
 

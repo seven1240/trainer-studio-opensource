@@ -6,8 +6,6 @@
 #include "qJSON.h"
 #include "utils.h"
 
-ServerConnection *server_connection;
-
 ServerConnection::ServerConnection()
 {
 	_connected = false;
