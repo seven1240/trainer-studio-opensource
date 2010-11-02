@@ -181,10 +181,13 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
 	QSharedPointer<switch_event_t> event(switchEvent);
 	QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
 
+	// case SWITCH_EVENT_CUSTOM: break;
+	// case SWITCH_EVENT_CHANNEL_CREATE: break;
+	// case SWITCH_EVENT_CHANNEL_BRIDGE: break;
+	// case SWITCH_EVENT_CHANNEL_UNBRIDGE: break;
+	// case SWITCH_EVENT_MODULE_LOAD: break;
 	switch (event.data()->event_id) {
-		// case SWITCH_EVENT_CUSTOM: break;
 	case SWITCH_EVENT_CLONE: break;
-							 // case SWITCH_EVENT_CHANNEL_CREATE: break;
 	case SWITCH_EVENT_CHANNEL_DESTROY: break;
 	case SWITCH_EVENT_CHANNEL_STATE: break;
 	case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
@@ -194,8 +197,6 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE: break;
 	case SWITCH_EVENT_CHANNEL_HOLD: break;
 	case SWITCH_EVENT_CHANNEL_UNHOLD: break;
-									  // case SWITCH_EVENT_CHANNEL_BRIDGE: break;
-									  // case SWITCH_EVENT_CHANNEL_UNBRIDGE: break;
 	case SWITCH_EVENT_CHANNEL_PROGRESS: break;
 	case SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA: break;
 	case SWITCH_EVENT_CHANNEL_OUTGOING: break;
@@ -215,7 +216,6 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_TALK: break;
 	case SWITCH_EVENT_NOTALK: break;
 	case SWITCH_EVENT_SESSION_CRASH: break;
-									 // case SWITCH_EVENT_MODULE_LOAD: break;
 	case SWITCH_EVENT_MODULE_UNLOAD: break;
 	case SWITCH_EVENT_DTMF: break;
 	case SWITCH_EVENT_MESSAGE: break;
@@ -261,59 +261,67 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_MEDIA_BUG_START: break;
 	case SWITCH_EVENT_MEDIA_BUG_STOP: break;
 	case SWITCH_EVENT_ALL: break;
-	case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
-						   {
-							   if (_active_calls > 0) {
-								   QString res;
-								   sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
-								   qDebug() << "hangup " << res;
-							   }
-							   break;
-						   }
-	case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
-						   {
-							   _active_calls++;
-							   break;
-						   }
-	case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
-						   {
-							   if (--_active_calls < 0)
-								   _active_calls = 0;
-							   break;
-						   }
-	case SWITCH_EVENT_CUSTOM:/*5A*/
-						   {
-							   if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
-								   emit incomingCall(event);
-							   }
-							   else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
-								   QString state = switch_event_get_header_nil(event.data(), "State");
-								   emit gatewayStateChange(state);
-							   }
-
-							   //            }
-							   //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
-							   //            {
-							   //                QString gw = switch_event_get_header_nil(event.data(), "Gateway");
-							   //                Account * accPtr = new Account(gw);
-							   //                QSharedPointer<Account> acc = QSharedPointer<Account>(accPtr);
-							   //                acc.data()->setState(FSCOMM_GW_STATE_NOAVAIL);
-							   //                _accounts.insert(gw, acc);
-							   //                emit newAccount(acc);
-							   //            }
-							   //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_delete") == 0)
-							   //            {
-							   //                QSharedPointer<Account> acc = _accounts.take(switch_event_get_header_nil(event.data(), "Gateway"));
-							   //                if (!acc.isNull())
-							   //                    emit delAccount(acc);
-							   //            }
-							   //            else
-							   //            {
-							   //                //printEventHeaders(event);
-							   //            }
-							   break;
+	case SWITCH_EVENT_CHANNEL_CREATE:
+	{
+		if (_active_calls > 0) {
+			QString res;
+			sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
+			qDebug() << "hangup " << res;
+		}
+		break;
 	}
-case SWITCH_EVENT_MODULE_LOAD:
+	case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
+	{
+		_active_calls++;
+		break;
+	}
+	case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
+	{
+		if (--_active_calls < 0)
+			_active_calls = 0;
+		break;
+	}
+	case SWITCH_EVENT_CUSTOM:/*5A*/
+	{
+		if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
+			emit incomingCall(event);
+		}
+		else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
+			QString gw = switch_event_get_header_nil(event.data(), "Gateway");
+			QString state = switch_event_get_header_nil(event.data(), "State");
+			qDebug() << "Gateway State:" << gw << " " << state;
+			emit gatewayStateChange(gw, state);
+		}
+		else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
+		{
+			QString gw = switch_event_get_header_nil(event.data(), "Gateway");
+			qDebug() << "Gateway Added:" << gw;
+			emit gatewayAdded(gw);
+			/*
+			Account * accPtr = new Account(gw);
+			QSharedPointer<Account> acc = QSharedPointer<Account>(accPtr);
+			acc.data()->setState(FSCOMM_GW_STATE_NOAVAIL);
+			_accounts.insert(gw, acc);
+			emit newAccount(acc);
+			*/
+		}
+		else if (strcmp(event.data()->subclass_name, "sofia::gateway_delete") == 0)
+		{
+			QString gw = switch_event_get_header_nil(event.data(), "Gateway");
+			qDebug() << "Gateway Deleted:" << gw;
+			emit gatewayDeleted(gw);
+			/*
+			QSharedPointer<Account> acc = _accounts.take(gw);
+			if (!acc.isNull())
+			emit delAccount(acc);
+			*/
+		}
+		else
+		{
+		}
+		break;
+	}
+	case SWITCH_EVENT_MODULE_LOAD:
 	{
 		QString modType = switch_event_get_header_nil(event.data(), "type");
 		QString modKey = switch_event_get_header_nil(event.data(), "key");
@@ -324,11 +332,11 @@ case SWITCH_EVENT_MODULE_LOAD:
 		emit moduleLoaded(modType, modKey, modName);
 		break;
 	}
-default:
-	break;
-}
+	default:
+		break;
+	}
 
-emit newEvent(event);
+	emit newEvent(event);
 }
 
 void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString /*modName*/)

@@ -56,7 +56,7 @@ private slots:
 	void onPaused(bool);
 	void onForcedPause(QString reason);
 	void onAnswered(QString cid_name, QString cid_number);
-	void onGatewayStateChange(QString state);
+	void onGatewayStateChange(QString name, QString state);
 	void onReservedForInteraction(QVariantMap);
 	void onDisconnected();
 	void onNewEvent(QSharedPointer<switch_event_t>);

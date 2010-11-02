@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
 	connect(server_connection, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 	connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
-	connect(fs, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
+	connect(fs, SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
 	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 
 	QMetaObject::connectSlotsByName(this);
@@ -182,7 +182,7 @@ void MainWindow::onAnswered(QString cid_name, QString /*cid_number*/)
 	}
 }
 
-void MainWindow::onGatewayStateChange(QString state)
+void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 {
 	if (state == "REGED") {
 		if (!_sipStateReady) {

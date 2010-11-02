@@ -80,19 +80,16 @@ public:
 	void createFolders();
 
 signals:
-	/* Status signals */
 	void coreLoadingError(QString);
 	void loadingModules(QString, int, QColor);
 	void moduleLoaded(QString, QString, QString);
 	void ready(void);
-
-	/* Logging signals */
+	void gatewayStateChange(QString name, QString state);
+	void gatewayAdded(QString name);
+	void gatewayDeleted(QString name);
 	void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
 	void newEvent(QSharedPointer<switch_event_t>);    
-
-	/* Call signals */
 	void incomingCall(QSharedPointer<switch_event_t>event);
-	void gatewayStateChange(QString state);
 
 private slots:
 	void minimalModuleLoaded(QString, QString, QString);
