@@ -246,7 +246,7 @@ void ServerConnection::review()
   sendAction("Review");
 }
 
-void ServerConnection::sendAction(char *action)
+void ServerConnection::sendAction(const char *action)
 {
   write(QString("{\"action\": \"%1\"}").arg(action));
 }
@@ -261,7 +261,7 @@ void ServerConnection::write(QString s)
   write(s.toAscii());
 }
 
-void ServerConnection::write(char *s)
+void ServerConnection::write(const char *s)
 {
   QByteArray ba(s);
   write(ba);

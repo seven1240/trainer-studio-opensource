@@ -56,7 +56,7 @@ void EchoTestDialog::changeEvent(QEvent *e)
   }
 }
 
-void EchoTestDialog::closeEvent(QCloseEvent *e)
+void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
 {
   fshost->hangup(true);
 }

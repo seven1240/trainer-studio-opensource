@@ -70,17 +70,15 @@ void FlashDialog::changeEvent(QEvent *e)
   }
 }
 
-void FlashDialog::showEvent(QShowEvent *e)
+void FlashDialog::showEvent(QShowEvent * /*e*/)
 {
-  qDebug() << e;
   ui->lbTimer->setText("00:00:00");
   _tickCount = 0;
   _timer->start();
 }
 
-void FlashDialog::closeEvent(QCloseEvent *e)
+void FlashDialog::closeEvent(QCloseEvent* /*e*/)
 {
-
   // Make sure mic unmuted
   fshost->unmute();
   fshost->hangup(true);

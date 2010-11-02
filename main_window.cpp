@@ -167,13 +167,13 @@ void MainWindow::onForcedPause(QString reason)
   onPaused(true);
 }
 
-void MainWindow::onAnswered(QString cid_name, QString cid_number)
+void MainWindow::onAnswered(QString cid_name, QString /*cid_number*/)
 {
   if (cid_name.left(2) == "IT") {
     //Interaction
-    flash_dialog -> raise();
-    flash_dialog -> show();
-    flash_dialog -> activateWindow();
+    flash_dialog->raise();
+    flash_dialog->show();
+    flash_dialog->activateWindow();
   } else {
     //Other
   }
@@ -263,11 +263,14 @@ void MainWindow::onNewEvent(QSharedPointer<switch_event_t> spEvent)
   QString eventSubclass = switch_event_get_header_nil(event, "Event-Subclass");
   ui->lbStatus->setText(eventName + "::" + eventSubclass);
 
-  switch(event->event_id) {
-  case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
+  switch (event->event_id) {
+    case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
     {
       _activeUUID = "";
+      break;
     }
+    default:
+      break;
   }
 }
 

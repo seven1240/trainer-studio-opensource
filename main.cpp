@@ -35,17 +35,16 @@ void configureLogging()
 
   if (!home.exists(DOTDIR "/log")) {
     if (!home.mkpath(DOTDIR "/log")) {
-      fprintf(stderr, "Error opening log dir %s\n", home.absolutePath() + DOTDIR "/log");
+      fprintf(stderr, "Error opening log dir %s%s\n", home.absolutePath().toAscii().data(), DOTDIR "/log");
     }
   }
   QFile log(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
 
   if (!(_logFile = fopen(log.fileName().toAscii(), "a+"))) {
-    fprintf(stderr, "Error opening log file %s\n", log.fileName().toAscii());
+    fprintf(stderr, "Error opening log file %s\n", log.fileName().toAscii().data());
   }
   else {
     oldMsgHandler = qInstallMsgHandler(customMessageHandler);
-    fprintf(stderr, "HI");
   }
 
   QDateTime now = QDateTime::currentDateTime();

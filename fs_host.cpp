@@ -182,6 +182,85 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
   QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
 
   switch (event.data()->event_id) {
+    // case SWITCH_EVENT_CUSTOM: break;
+    case SWITCH_EVENT_CLONE: break;
+    // case SWITCH_EVENT_CHANNEL_CREATE: break;
+    case SWITCH_EVENT_CHANNEL_DESTROY: break;
+    case SWITCH_EVENT_CHANNEL_STATE: break;
+    case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
+    case SWITCH_EVENT_CHANNEL_ANSWER: break;
+    case SWITCH_EVENT_CHANNEL_HANGUP: break;
+    case SWITCH_EVENT_CHANNEL_EXECUTE: break;
+    case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE: break;
+    case SWITCH_EVENT_CHANNEL_HOLD: break;
+    case SWITCH_EVENT_CHANNEL_UNHOLD: break;
+    // case SWITCH_EVENT_CHANNEL_BRIDGE: break;
+    // case SWITCH_EVENT_CHANNEL_UNBRIDGE: break;
+    case SWITCH_EVENT_CHANNEL_PROGRESS: break;
+    case SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA: break;
+    case SWITCH_EVENT_CHANNEL_OUTGOING: break;
+    case SWITCH_EVENT_CHANNEL_PARK: break;
+    case SWITCH_EVENT_CHANNEL_UNPARK: break;
+    case SWITCH_EVENT_CHANNEL_APPLICATION: break;
+    case SWITCH_EVENT_CHANNEL_ORIGINATE: break;
+    case SWITCH_EVENT_CHANNEL_UUID: break;
+    case SWITCH_EVENT_API: break;
+    case SWITCH_EVENT_LOG: break;
+    case SWITCH_EVENT_INBOUND_CHAN: break;
+    case SWITCH_EVENT_OUTBOUND_CHAN: break;
+    case SWITCH_EVENT_STARTUP: break;
+    case SWITCH_EVENT_SHUTDOWN: break;
+    case SWITCH_EVENT_PUBLISH: break;
+    case SWITCH_EVENT_UNPUBLISH: break;
+    case SWITCH_EVENT_TALK: break;
+    case SWITCH_EVENT_NOTALK: break;
+    case SWITCH_EVENT_SESSION_CRASH: break;
+    // case SWITCH_EVENT_MODULE_LOAD: break;
+    case SWITCH_EVENT_MODULE_UNLOAD: break;
+    case SWITCH_EVENT_DTMF: break;
+    case SWITCH_EVENT_MESSAGE: break;
+    case SWITCH_EVENT_PRESENCE_IN: break;
+    case SWITCH_EVENT_NOTIFY_IN: break;
+    case SWITCH_EVENT_PRESENCE_OUT: break;
+    case SWITCH_EVENT_PRESENCE_PROBE: break;
+    case SWITCH_EVENT_MESSAGE_WAITING: break;
+    case SWITCH_EVENT_MESSAGE_QUERY: break;
+    case SWITCH_EVENT_ROSTER: break;
+    case SWITCH_EVENT_CODEC: break;
+    case SWITCH_EVENT_BACKGROUND_JOB: break;
+    case SWITCH_EVENT_DETECTED_SPEECH: break;
+    case SWITCH_EVENT_DETECTED_TONE: break;
+    case SWITCH_EVENT_PRIVATE_COMMAND: break;
+    case SWITCH_EVENT_HEARTBEAT: break;
+    case SWITCH_EVENT_TRAP: break;
+    case SWITCH_EVENT_ADD_SCHEDULE: break;
+    case SWITCH_EVENT_DEL_SCHEDULE: break;
+    case SWITCH_EVENT_EXE_SCHEDULE: break;
+    case SWITCH_EVENT_RE_SCHEDULE: break;
+    case SWITCH_EVENT_RELOADXML: break;
+    case SWITCH_EVENT_NOTIFY: break;
+    case SWITCH_EVENT_SEND_MESSAGE: break;
+    case SWITCH_EVENT_RECV_MESSAGE: break;
+    case SWITCH_EVENT_REQUEST_PARAMS: break;
+    case SWITCH_EVENT_CHANNEL_DATA: break;
+    case SWITCH_EVENT_GENERAL: break;
+    case SWITCH_EVENT_COMMAND: break;
+    case SWITCH_EVENT_SESSION_HEARTBEAT: break;
+    case SWITCH_EVENT_CLIENT_DISCONNECTED: break;
+    case SWITCH_EVENT_SERVER_DISCONNECTED: break;
+    case SWITCH_EVENT_SEND_INFO: break;
+    case SWITCH_EVENT_RECV_INFO: break;
+    case SWITCH_EVENT_RECV_RTCP_MESSAGE: break;
+    case SWITCH_EVENT_CALL_SECURE: break;
+    case SWITCH_EVENT_NAT: break;
+    case SWITCH_EVENT_RECORD_START: break;
+    case SWITCH_EVENT_RECORD_STOP: break;
+    case SWITCH_EVENT_CALL_UPDATE: break;
+    case SWITCH_EVENT_FAILURE: break;
+    case SWITCH_EVENT_SOCKET_DATA: break;
+    case SWITCH_EVENT_MEDIA_BUG_START: break;
+    case SWITCH_EVENT_MEDIA_BUG_STOP: break;
+    case SWITCH_EVENT_ALL: break;
     case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
     {
       if (_active_calls > 0) {
@@ -191,88 +270,17 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
       }
       break;
     }
-    //    case SWITCH_EVENT_CHANNEL_ANSWER: /*2A - 31B*/
-    //        {
-    //            eventChannelAnswer(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CODEC:/*3/4A - 24/25B*/
-    //        {
-    //            eventCodec(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_STATE:/*6/7/8/37/44/46A - 20/21/22/28/38/40/42B*/
-    //        {
-    //            eventChannelState(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_EXECUTE:/*9/11/13/15A*/
-    //        {
-    //            eventChannelExecute(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE:/*10/12/14/16/35A*/
-    //        {
-    //            eventChannelExecuteComplete(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_OUTGOING:/*18B*/
-    //        {
-    //            eventChannelOutgoing(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_ORIGINATE:/*19B*/
-    //        {
-    //            eventChannelOriginate(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CALL_UPDATE:/*23/29/30B*/
-    //        {
-    //            eventCallUpdate(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_PROGRESS:
-    //        {
-    //            eventChannelProgress(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA:/*26B*/
-    //        {
-    //            eventChannelProgressMedia(event, uuid);
-    //            break;
-    //        }
     case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
     {
       _active_calls++;
       break;
     }
-    //    /*32?*/
-    //    /*case SWITCH_EVENT_RECV_INFO:
-    //        {
-    //            eventRecvInfo(event, uuid);
-    //            break;
-    //        }*/
-    //    case SWITCH_EVENT_CHANNEL_HANGUP:/*36A-33B*/
-    //        {
-    //            eventChannelHangup(event, uuid);
-    //            break;
-    //        }
     case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
     {
       if (--_active_calls < 0)
         _active_calls = 0;
       break;
     }
-    //    case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:/*39/43B*/
-    //        {
-    //            eventChannelHangupComplete(event, uuid);
-    //            break;
-    //        }
-    //    case SWITCH_EVENT_CHANNEL_DESTROY:/*45A-41B*/
-    //        {
-    //            eventChannelDestroy(event, uuid);
-    //            break;
-    //        }
     case SWITCH_EVENT_CUSTOM:/*5A*/
     {
       if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
@@ -323,7 +331,7 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
   emit newEvent(event);
 }
 
-void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString modName)
+void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString /*modName*/)
 {
   if (modType == "endpoint")
   {
@@ -334,7 +342,7 @@ void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString modNam
 switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
 {
   switch_status_t status = SWITCH_STATUS_FALSE;
-  switch_stream_handle_t stream = { 0 };
+  switch_stream_handle_t stream;
   SWITCH_STANDARD_STREAM(stream);
   status = switch_api_execute(cmd, args, NULL, &stream);
   *res = switch_str_nil((char *) stream.data);

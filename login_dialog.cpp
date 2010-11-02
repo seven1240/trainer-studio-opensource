@@ -90,7 +90,7 @@ void LoginDialog::changeEvent(QEvent *e)
   }
 }
 
-void LoginDialog::closeEvent(QCloseEvent *e)
+void LoginDialog::closeEvent(QCloseEvent * /*e*/)
 {
 }
 

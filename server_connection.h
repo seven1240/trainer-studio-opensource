@@ -56,10 +56,10 @@ private slots:
 
 private:
   QStateMachine *createStateMachine();
-  void sendAction(char *action);
+  void sendAction(const char *action);
   void write(QByteArray);
   void write(QString);
-  void write(char *json);
+  void write(const char *json);
 
 private:
   bool _connected;
