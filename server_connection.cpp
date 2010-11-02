@@ -143,6 +143,11 @@ void ServerConnection::login(QString username, QString password)
 	free(json);
 }
 
+void ServerConnection::logout()
+{
+	close();
+}
+
 void ServerConnection::close()
 {
 	_socket->close();

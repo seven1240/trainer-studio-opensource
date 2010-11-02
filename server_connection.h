@@ -24,6 +24,7 @@ public:
 	void pause(bool action);
 	void review();
 	void login(QString username, QString password);
+	void logout();
 
 protected:
 	void run();

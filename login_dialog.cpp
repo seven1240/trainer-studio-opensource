@@ -72,6 +72,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
 	connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
 	connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+
+	QMetaObject::connectSlotsByName(this);
 }
 
 LoginDialog::~LoginDialog()
