@@ -51,7 +51,6 @@ FSHost::FSHost(QObject *parent) :
 	_ready = false;
 	_sofia_ready = false;
 	_active_calls = 0;
-
 }
 
 void FSHost::createFolders()
@@ -124,6 +123,7 @@ void FSHost::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_
 void FSHost::shutdown()
 {
 	QString res;
+	_running = false;
 	sendCmd("fsctl", "shutdown", &res);
 }
 
@@ -144,18 +144,21 @@ void FSHost::run(void)
 	_running = true;
 
 	/* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
-	qDebug() << "Initializing core...";
+	qDebug() << "FS: initializing core...";
+
 	/* Initialize the core and load modules, that will startup FS completely */
 	if (switch_core_init(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
 		fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
 		emit coreLoadingError(err);
 	}
 
-	qDebug() << "Everything OK, Entering runtime loop ...";
+	qDebug() << "FS: binding callback...";
 
 	if (switch_event_bind("TS", SWITCH_EVENT_ALL, SWITCH_EVENT_SUBCLASS_ANY, eventHandlerCallback, NULL) != SWITCH_STATUS_SUCCESS) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Couldn't bind!\n");
 	}
+
+	qDebug() << "FS: loading modules...";
 
 	emit loadingModules("Loading modules...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
 	if (switch_core_init_and_modload(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
@@ -163,22 +166,33 @@ void FSHost::run(void)
 		emit coreLoadingError(err);
 	}
 
+	qDebug() << "FS: binding logger...";
+
 	switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
 	_ready = true;
 	emit ready();
 
 	/* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
 	 * If its false, it initializes the libedit for the console, then does the same thing */
-	switch_core_runtime_loop(!console);
-	fflush(stdout);
+	if (_running) {
+		qDebug() << "FS: entering runtime loop...";
+		switch_core_runtime_loop(!console);
+	}
+	else {
+		qDebug() << "FS: shutdown before startup...";
+	}
 
 	switch_event_unbind_callback(eventHandlerCallback);
 	destroy_status = switch_core_destroy();
 	if (destroy_status == SWITCH_STATUS_SUCCESS)
 	{
-		qDebug() << "We have properly shutdown the core.";
-		_running = false;
+		qDebug() << "FS: we have properly shutdown the core.";
 	}
+	else
+	{
+		qDebug() << "FS: errors during FS shutdown.";
+	}
+	_running = false;
 }
 
 void FSHost::generalEventHandler(switch_event_t *switchEvent)
