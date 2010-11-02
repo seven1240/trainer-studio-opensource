@@ -18,13 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	setFixedSize(218, 430);
 	Utils::centerWindowOnDesktop(this);
 
-	// We should not need set NULL manually, but without this,
-	// flash_dialog is NULL but not login_dialog, weird
-	// Also, Mac & Win have different default value
-	login_dialog = NULL;
-	flash_dialog = new FlashDialog(this);
-	incoming_call_dialog = new IncomingCallDialog();
-	settings_dialog = NULL;
 	_sipStateReady = false;
 	btnState->setChecked(false);
 	_timer = new QTimer(this);
@@ -39,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
 	connect(ApplicationController::server(), SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
 	connect(ApplicationController::server(), SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-	connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
 	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
 	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 
@@ -89,11 +81,7 @@ QLayout *MainWindow::createBody()
 
 MainWindow::~MainWindow()
 {
-	if (login_dialog) delete login_dialog;
-	if (flash_dialog) delete flash_dialog;
-	if (incoming_call_dialog) delete incoming_call_dialog;
-	if (settings_dialog) delete settings_dialog;
-	delete (_timer);
+	delete _timer;
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -108,26 +96,12 @@ void MainWindow::changeEvent(QEvent *e)
 	}
 }
 
-void MainWindow::showLoginDialog()
-{
-	if (!login_dialog) {
-		login_dialog = new LoginDialog(this);
-	}
-	login_dialog->raise();
-	login_dialog->show();
-	login_dialog->activateWindow();
-}
-
 void MainWindow::on_Flash_clicked()
 {
-	flash_dialog->raise();
-	flash_dialog->show();
-	flash_dialog->activateWindow();
 }
 
 void MainWindow::on_Login_clicked()
 {
-	showLoginDialog();
 }
 
 void MainWindow::on_Logout_clicked()
@@ -169,9 +143,6 @@ void MainWindow::onForcedPause(QString reason)
 void MainWindow::onAnswered(QString cid_name, QString /*cid_number*/)
 {
 	if (cid_name.left(2) == "IT") {
-		flash_dialog->raise();
-		flash_dialog->show();
-		flash_dialog->activateWindow();
 	}
 	else {
 	}
@@ -207,10 +178,7 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 void MainWindow::onDisconnected()
 {
 	QMessageBox::critical(this,QApplication::applicationName(), "Socket Broken!!");
-	showLoginDialog();
 	hide();
-	delete flash_dialog;
-	flash_dialog = new FlashDialog(this);
 }
 
 void MainWindow::on_About_clicked()
@@ -221,9 +189,6 @@ void MainWindow::on_About_clicked()
 
 void MainWindow::on_Settings_clicked()
 {
-	if (!settings_dialog)
-		settings_dialog = new SettingsDialog();
-	settings_dialog->show();
 }
 
 void MainWindow::on_Echo_clicked()

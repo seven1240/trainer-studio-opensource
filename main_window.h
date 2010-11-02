@@ -18,7 +18,6 @@ class MainWindow : public QWidget {
 public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
-	void showLoginDialog();
 
 protected:
 	void changeEvent(QEvent *e);
@@ -28,10 +27,6 @@ private:
 	QPushButton *btnState;
 	QLabel *lbStatus;
 	QLabel *lbSIPStatus;
-	FlashDialog *flash_dialog;
-	LoginDialog *login_dialog;
-	IncomingCallDialog *incoming_call_dialog;
-	SettingsDialog *settings_dialog;
 	bool _sipStateReady;
 	QString _activeUUID;
 	void keyPressEvent(QKeyEvent *event);
