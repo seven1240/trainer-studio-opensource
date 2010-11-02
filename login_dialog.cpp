@@ -206,7 +206,6 @@ void LoginDialog::doRegisterToVoIP()
 
   static int count = 0;
   if (count++ == 20) {
-    //20 seconds past and FS still didn't load
     abortLogin("Error loading VoIP module, Please close and reopen!!");
     count = 0;
     return;
@@ -218,7 +217,6 @@ void LoginDialog::doRegisterToVoIP()
     return;
   }
 
-  //setup sip account and register
   setProgress("Registering to VoIP sever...");
 
   ISettings *isettings = new ISettings(this);

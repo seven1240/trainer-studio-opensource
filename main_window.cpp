@@ -82,13 +82,13 @@ QLayout *MainWindow::createBody()
 
 MainWindow::~MainWindow()
 {
-  if(login_dialog) delete login_dialog;
-  if(flash_dialog) delete flash_dialog;
-  if(incoming_call_dialog) delete incoming_call_dialog;
-  if(settings_dialog) delete settings_dialog;
-  if(server_connection) delete server_connection;
-  if(fshost) delete fshost;
-  delete(_timer);
+  if (login_dialog) delete login_dialog;
+  if (flash_dialog) delete flash_dialog;
+  if (incoming_call_dialog) delete incoming_call_dialog;
+  if (settings_dialog) delete settings_dialog;
+  if (server_connection) delete server_connection;
+  if (fshost) delete fshost;
+  delete (_timer);
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -107,7 +107,6 @@ void MainWindow::showLoginDialog()
 {
   if (!login_dialog) {
     login_dialog = new LoginDialog(this);
-    connect(login_dialog, SIGNAL(login()), this, SLOT(onLogin()));
   }
   login_dialog -> raise();
   login_dialog -> show();
