@@ -52,6 +52,7 @@ private slots:
 	void on_Flash_clicked();
 	void on_About_clicked();
 	void on_Login_clicked();
+	void on_Logout_clicked();
 	void onAuthenticated(User *user);
 	void onPaused(bool);
 	void onForcedPause(QString reason);

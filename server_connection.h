@@ -31,6 +31,8 @@ protected:
 
 signals:
 	void connected();
+	void connecting();
+	void timeout();
 	void disconnected();
 	void authenticating();
 	void authenticated(User *user);
@@ -59,6 +61,7 @@ private slots:
 
 private:
 	QStateMachine *createStateMachine();
+	void startTimer(int milliseconds);
 	void sendAction(const char *action);
 	void write(QByteArray);
 	void write(QString);
@@ -68,6 +71,7 @@ private:
 	bool _connected;
 	QTcpSocket *_socket;
 	QStateMachine *_machine;
+	QTimer *_timer;
 	QString _host;
 	int _port;
 };

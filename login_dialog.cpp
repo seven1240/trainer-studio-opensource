@@ -21,8 +21,11 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
 	_lbProgress = new QLabel();
 	_pbSettings = new QPushButton("Settings");
+	_pbSettings->setObjectName("Settings");
 	_pbCancel = new QPushButton("Cancel");
+	_pbCancel->setObjectName("Cancel");
 	_pbLogin = new QPushButton("Login");
+	_pbLogin->setObjectName("Login");
 	_leUsername = new QLineEdit();
 	_lePassword = new QLineEdit();
 	_lePassword->setEchoMode(QLineEdit::Password);
@@ -56,7 +59,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	setLayout(mainLayout);
 
 	setFixedSize(320, 240);
-	// setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	setWindowTitle("Login");
 
 	showLogin();
@@ -86,7 +88,6 @@ void LoginDialog::onServerConnectionConnected()
 {
 	setProgress("Connected, authenticating...");
 	server_connection->login(_leUsername->text(), _lePassword->text());
-	QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
 }
 
 void LoginDialog::onServerConnectionAuthenticated(User *user)
@@ -131,6 +132,8 @@ void LoginDialog::abortLogin()
 void LoginDialog::abortLogin(QString msg)
 {
 	abortLogin();
+	if (_abort || _authenticated)
+		return;
 	QMessageBox::critical(this, QApplication::applicationName(), msg);
 }
 
@@ -146,13 +149,6 @@ void LoginDialog::onAuthenticateError(QString reason)
 	server_connection->close();
 	QString msg = QString("Authenticate Error:\nReason: %1").arg(reason);
 	abortLogin(msg);
-}
-
-void LoginDialog::onAuthenticateTimeout()
-{
-	if (_abort || _authenticated)
-		return;
-	abortLogin("Authenticate Timed out!");
 }
 
 void LoginDialog::onSocketError(QString error)
@@ -186,6 +182,7 @@ void LoginDialog::onLoginClicked()
 	int port = settings.value("trainer_server_port").toInt();
 	host = host.isEmpty() ? "voip.idapted.com" : host;
 	port = port == 0 ? 7000 : port;
+	host = "192.168.0.127";
 
 	qDebug() << host << ":" << port;
 	_abort = false;

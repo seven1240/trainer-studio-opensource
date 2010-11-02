@@ -54,6 +54,8 @@ QLayout *MainWindow::createBody()
 	settingsButton->setObjectName("Settings");
 	QPushButton *loginButton = new QPushButton("Login");
 	loginButton->setObjectName("Login");
+	QPushButton *logoutButton = new QPushButton("Logout");
+	logoutButton->setObjectName("Logout");
 	QPushButton *echoButton = new QPushButton("Echo");
 	echoButton->setObjectName("Echo");
 	QPushButton *pauseButton = new QPushButton("Pause");
@@ -66,6 +68,7 @@ QLayout *MainWindow::createBody()
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(settingsButton);
 	layout->addWidget(loginButton);
+	layout->addWidget(logoutButton);
 	layout->addWidget(echoButton);
 	layout->addWidget(pauseButton);
 	layout->addWidget(closeButton);
@@ -130,6 +133,11 @@ void MainWindow::on_Flash_clicked()
 void MainWindow::on_Login_clicked()
 {
 	showLoginDialog();
+}
+
+void MainWindow::on_Logout_clicked()
+{
+	server_connection->logout();
 }
 
 void MainWindow::onAuthenticated(User *user)

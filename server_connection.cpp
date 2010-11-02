@@ -1,5 +1,6 @@
 #include <QTCPSocket>
 #include <QStateMachine>
+#include <QTimer>
 #include <switch.h>
 #include "server_connection.h"
 #include "qJSON.h"
@@ -7,47 +8,51 @@
 
 ServerConnection *server_connection;
 
+ServerConnection::ServerConnection()
+{
+	_connected = false;
+	_socket = new QTcpSocket(this);
+	_timer = new QTimer(this);
+	_machine = createStateMachine();
+
+	setObjectName("ServerConnection");
+
+	connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+	connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+}
+
+static QState *createState(ServerConnection *connection, QString name)
+{
+	QState *state = new QState();
+	connection->connect(state, SIGNAL(entered()), connection, SLOT(changed()));
+	state->setObjectName(name);
+	return state;
+}
+
 QStateMachine *ServerConnection::createStateMachine()
 {
-	QState *disconnected = new QState();
-	connect(disconnected, SIGNAL(entered()), this, SLOT(changed()));
-	disconnected->setObjectName("disconnected");
-	// off->assignProperty(&button, "text", "Off");
+	QState *disconnected = createState(this, "disconnected");
+	connect(disconnected, SIGNAL(entered()), this, SLOT(onDisconnected()));
+	QState *connecting = createState(this, "connecting");
+	QState *connected = createState(this, "connected");
+	connect(connected, SIGNAL(entered()), this, SLOT(onConnected()));
+	QState *authenticating = createState(this, "authenticating");
+	QState *authenticated = createState(this, "authenticated");
+	QState *pausing = createState(this, "pausing");
+	QState *unpausing = createState(this, "unpausing");
+	QState *working = createState(this, "working");
+	QState *paused = createState(this, "paused");
+	QState *timeout = createState(this, "timeout");
 
-	QState *connected = new QState();
-	connect(connected, SIGNAL(entered()), this, SLOT(changed()));
-	connected->setObjectName("connected");
-
-	QState *authenticating = new QState();
-	connect(authenticating, SIGNAL(entered()), this, SLOT(changed()));
-	authenticating->setObjectName("authenticating");
-
-	QState *authenticated = new QState();
-	connect(authenticated, SIGNAL(entered()), this, SLOT(changed()));
-	authenticated->setObjectName("authenticated");
-
-	QState *pausing = new QState();
-	connect(pausing, SIGNAL(entered()), this, SLOT(changed()));
-	pausing->setObjectName("pausing");
-
-	QState *unpausing = new QState();
-	connect(unpausing, SIGNAL(entered()), this, SLOT(changed()));
-	unpausing->setObjectName("unpausing");
-
-	QState *working = new QState();
-	connect(working, SIGNAL(entered()), this, SLOT(changed()));
-	working->setObjectName("working");
-
-	QState *paused = new QState();
-	connect(paused, SIGNAL(entered()), this, SLOT(changed()));
-	paused->setObjectName("paused");
-
-	disconnected->addTransition(_socket, SIGNAL(connected()), connected);
+	disconnected->addTransition(this, SIGNAL(connecting()), connecting);
+	connecting->addTransition(_socket, SIGNAL(connected()), connected);
+	connecting->addTransition(_timer, SIGNAL(timeout()), timeout);
 	connected->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 	connected->addTransition(this, SIGNAL(authenticating()), authenticating);
-	authenticated->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 	authenticating->addTransition(this, SIGNAL(authenticated(User*)), authenticated);
 	authenticating->addTransition(this, SIGNAL(authenticateError(QString)), disconnected);
+	authenticating->addTransition(_timer, SIGNAL(timeout()), timeout);
+	authenticated->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 
 	authenticated->addTransition(this, SIGNAL(pausing()), pausing);
 	pausing->addTransition(this, SIGNAL(paused()), paused);
@@ -56,9 +61,15 @@ QStateMachine *ServerConnection::createStateMachine()
 
 	QStateMachine *machine = new QStateMachine();
 	machine->addState(disconnected);
+	machine->addState(connecting);
+	machine->addState(timeout);
 	machine->addState(connected);
 	machine->addState(authenticating);
 	machine->addState(authenticated);
+	machine->addState(paused);
+	machine->addState(unpausing);
+	machine->addState(pausing);
+	machine->addState(working);
 
 	machine->setInitialState(disconnected);
 	machine->start();
@@ -75,23 +86,9 @@ void ServerConnection::changed()
 	}
 }
 
-ServerConnection::ServerConnection()
-{
-	_connected = false;
-	_socket = new QTcpSocket(this);
-	_machine = createStateMachine();
-
-	setObjectName("ServerConnection");
-
-	connect(_socket, SIGNAL(connected()), this, SLOT(onConnected()));
-	connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-	connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-	connect(_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-}
-
 void ServerConnection::run()
 {
-	for (;;) {
+	while (true) {
 		qDebug() << "ServerConnection:" << _socket->state() << _connected;
 		switch_sleep(10000000);
 	}
@@ -101,9 +98,19 @@ void ServerConnection::open(QString host, int port)
 {
 	if (_connected)
 		return;
+
+	startTimer(5000);
+	emit connecting();
+
 	_host = host;
 	_port = port;
 	_socket->connectToHost(host, port);
+}
+
+void ServerConnection::startTimer(int milliseconds)
+{
+	_timer->setInterval(milliseconds);
+	_timer->start();
 }
 
 void ServerConnection::startInteractionReconnection(QString interactionId)
@@ -139,6 +146,7 @@ void ServerConnection::login(QString username, QString password)
 
 	qDebug() << json;
 
+	startTimer(5000);
 	emit authenticating();
 
 	write(json);
@@ -164,14 +172,18 @@ void ServerConnection::onReadyRead()
 		ba = _socket->readAll();
 	}
 
-	QString s(ba);
+	QString s(ba.trimmed());
+	if (s.length() == 0) {
+		return;
+	}
 
 	qJSON *qjson = new qJSON();
 	bool ok;
 	qjson->parse(ba.data(), &ok);
 
 	if (!ok) {
-		qDebug() << "Invalid JSON! " << ba;
+		qDebug() << "Invalid JSON:" << ba;
+		delete qjson;
 		return;
 	}
 	QVariantMap data = qjson->toMap();
@@ -224,13 +236,13 @@ void ServerConnection::onReadyRead()
 			qDebug() << "Unknown JSON";
 		}
 	}
+	delete qjson;
 }
 
 void ServerConnection::onSocketError(QAbstractSocket::SocketError)
 {
 	_connected = false;
 	emit socketError(_socket->errorString());
-	qDebug() << "Socket Error: " << _socket->error() << " " << _socket->errorString();
 }
 
 void ServerConnection::onConnected()
@@ -247,7 +259,6 @@ void ServerConnection::onDisconnected()
 
 void ServerConnection::onTimer()
 {
-	open();
 }
 
 void ServerConnection::review()

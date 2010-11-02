@@ -58,7 +58,6 @@ private slots:
 	void onServerConnectionDisconnected();
 	void onSettingsClicked();
 	void onAuthenticateError(QString);
-	void onAuthenticateTimeout();
 	void onSocketError(QString);
 	void onCancelClicked();
 	void onLoginClicked();
