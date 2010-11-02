@@ -121,6 +121,12 @@ void FSHost::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_
 	emit eventLog(node, level);
 }
 
+void FSHost::shutdown()
+{
+	QString res;
+	sendCmd("fsctl", "shutdown", &res);
+}
+
 void FSHost::run(void)
 {
 	switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT;
@@ -165,7 +171,6 @@ void FSHost::run(void)
 	 * If its false, it initializes the libedit for the console, then does the same thing */
 	switch_core_runtime_loop(!console);
 	fflush(stdout);
-
 
 	switch_event_unbind_callback(eventHandlerCallback);
 	destroy_status = switch_core_destroy();

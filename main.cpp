@@ -1,6 +1,7 @@
 #include <QtGui/QApplication>
 #include <stdio.h>
 #include <stdlib.h>
+#include "application_controller.h"
 #include "main_window.h"
 #include "fs_host.h"
 #include "server_connection.h"
@@ -66,7 +67,7 @@ bool setDefaultSettings()
 	return true;
 }
 
-int main(int argc, char *argv[])
+int32_t main(int32_t argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	QApplication::setApplicationName("Trainer Studio");
@@ -76,25 +77,16 @@ int main(int argc, char *argv[])
 
 	configureLogging();
 
-	fs = new FSHost();
-	fs->start();
-
-	server_connection = new ServerConnection();
-	server_connection->start();
-
 	QSettings settings;
-	qDebug() << settings.fileName();
 	if (settings.value("General/url").isNull()) {
-		qDebug() << "set default settings";
-		if(!setDefaultSettings()) {
-			qDebug() << "Error set default settings!";
-			exit(99);
+		if (!setDefaultSettings()) {
+			return 99;
 		}
 	}
 
-	MainWindow w;
-	w.showLoginDialog();
-	w.show();
-	return a.exec();
+	ApplicationController *controller = new ApplicationController();
+	controller->run();
+	int32_t status = a.exec();
+	delete controller;
+	return status;
 }
-

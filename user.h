@@ -9,6 +9,9 @@ class User : public QObject
 {
 	Q_OBJECT
 
+private:
+	QVariantMap _details;
+
 public:
 	User(QVariantMap &details);
 	~User();
@@ -18,12 +21,6 @@ public:
 	QString getVoipPassword() { return _details["voip_password"].toString(); }
 	QString getVoipServer();
 	bool skipEchoTesting() { return _details["skip_echo_test"].toString() == "true"; }
-
-signals:
-public slots:
-
-private:
-	QVariantMap _details;
 };
 
 #endif // USER_H

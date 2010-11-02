@@ -25,6 +25,7 @@ public:
 	void review();
 	void login(QString username, QString password);
 	void logout();
+	void shutdown();
 
 protected:
 	void run();
@@ -68,6 +69,7 @@ private:
 	void write(const char *json);
 
 private:
+	bool _running;
 	bool _connected;
 	QTcpSocket *_socket;
 	QStateMachine *_machine;

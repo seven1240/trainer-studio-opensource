@@ -88,10 +88,20 @@ void ServerConnection::changed()
 
 void ServerConnection::run()
 {
-	while (true) {
-		qDebug() << "ServerConnection:" << _socket->state() << _connected;
-		switch_sleep(10000000);
+	_running = true;
+	int32_t counter = 0;
+	while (_running) {
+		if (counter++ == 10) {
+			qDebug() << "ServerConnection:" << _socket->state() << _connected;
+			counter = 0;
+		}
+		msleep(2000);
 	}
+}
+
+void ServerConnection::shutdown()
+{
+	_running = false;
 }
 
 void ServerConnection::open(QString host, int port)

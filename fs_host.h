@@ -72,6 +72,7 @@ public:
 	void portAudioInDevice(int index);
 	void portAudioOutDevice(int index);
 	void portAudioRingDevice(int index);
+	void shutdown();
 
 public:
 	void generalEventHandler(switch_event_t *event);

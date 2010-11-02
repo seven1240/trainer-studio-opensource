@@ -95,8 +95,6 @@ MainWindow::~MainWindow()
 	if (flash_dialog) delete flash_dialog;
 	if (incoming_call_dialog) delete incoming_call_dialog;
 	if (settings_dialog) delete settings_dialog;
-	if (server_connection) delete server_connection;
-	if (fs) delete fs;
 	if (_user) delete _user;
 	delete (_timer);
 }
