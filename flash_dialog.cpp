@@ -101,11 +101,9 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
   QSettings settings;
   QString url = settings.value("General/url").toString();
-  QVariantMap user = ((MainWindow *)(this->parent()))->getUser();
-  qDebug() << user["login"];
+  User *user = ((MainWindow *)(this->parent()))->getUser();
 
   _interactionID = data["interaction_id"].toString();
-
 
   QString params = QString("var url='%1/flex/interaction/trainer/interaction.swf';"
                            "var vars='realtime_host=%2"
@@ -116,19 +114,18 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
                            "&realtime_subscriber=%7"
                            "&trainer_login=%8"
                            "&trainer_pwd=%9"
-                           "&base_url=%10';"
-                          ).arg(url
-                               ).arg("127.0.0.1"
-                                    ).arg(data["realtime_uuid"].toString()
-                                         ).arg("2000"
-                                              ).arg(_interactionID
-                                                   ).arg(data["scenario_id"].toString()
-                                                        ).arg(user["login"].toString()
-                                                             ).arg(user["login"].toString()
-                                                                  ).arg("test"
-                                                                       ).arg(url
-                                                                            );
-  //Load movie useing js
+                           "&base_url=%10';").
+                   arg(url).
+                   arg("127.0.0.1").
+                   arg(data["realtime_uuid"].toString()).
+                   arg("2000").
+                   arg(_interactionID).
+                   arg(data["scenario_id"].toString()).
+                   arg(user->getLogin()).
+                   arg(user->getLogin()).
+                   arg("test").
+                   arg(url);
+
   loadMovie(params);
   ui->btnReconnect->setStyleSheet("background-color: ;");
   ui->btnReconnect->setText("Reconnect");

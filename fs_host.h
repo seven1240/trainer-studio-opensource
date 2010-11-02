@@ -74,9 +74,9 @@ public:
   void portAudioRingDevice(int index);
 
 public:
-  void generalEventHandler(QSharedPointer<switch_event_t>event);
-  void generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level);
-  void printEventHeaders(QSharedPointer<switch_event_t>event);
+  void generalEventHandler(switch_event_t *event);
+  void generalLoggerHandler(QSharedPointer<switch_log_node_t> node, switch_log_level_t level);
+  void printEventHeaders(QSharedPointer<switch_event_t> event);
   void createFolders();
 
 signals:

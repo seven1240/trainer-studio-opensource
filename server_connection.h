@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QTCPSocket>
 #include "trainer_studio.h"
+#include "user.h"
 
 class ServerConnection : public QThread
 {
@@ -23,7 +24,7 @@ protected:
   void run();
 
 signals:
-  void authenticated(QVariantMap);
+  void authenticated(User *user);
   void authenticateError(QString reason);
   void paused(bool state);
   void forcedPause(QString reason);

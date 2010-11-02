@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
   // We should not need set NULL manually, but without this,
   // flash_dialog is NULL but not login_dialog, weird
   // Also, Mac & Win have different default value
+  _user = NULL;
   login_dialog = NULL;
   flash_dialog = new FlashDialog(this);
   incoming_call_dialog = new IncomingCallDialog();
@@ -38,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
   sysTray->show();
   sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
-  this->connect(server_connection, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+  this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
   this->connect(server_connection, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
   this->connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
   this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
@@ -88,6 +89,7 @@ MainWindow::~MainWindow()
   if (settings_dialog) delete settings_dialog;
   if (server_connection) delete server_connection;
   if (fshost) delete fshost;
+  if (_user) delete _user;
   delete (_timer);
 }
 
@@ -127,8 +129,11 @@ void MainWindow::onLogin()
   show();
 }
 
-void MainWindow::onAuthenticated(QVariantMap user)
+void MainWindow::onAuthenticated(User *user)
 {
+  if (_user != NULL) {
+    delete _user;
+  }
   _user = user;
 }
 

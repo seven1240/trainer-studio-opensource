@@ -176,8 +176,9 @@ void FSHost::run(void)
   }
 }
 
-void FSHost::generalEventHandler(QSharedPointer<switch_event_t> event)
+void FSHost::generalEventHandler(switch_event_t *switchEvent)
 {
+  QSharedPointer<switch_event_t> event(switchEvent);
   QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
 
   switch (event.data()->event_id) {
@@ -486,8 +487,7 @@ static void eventHandlerCallback(switch_event_t *event)
 {
   switch_event_t *clone = NULL;
   if (switch_event_dup(&clone, event) == SWITCH_STATUS_SUCCESS) {
-    QSharedPointer<switch_event_t> e(clone);
-    fshost->generalEventHandler(e);
+    fshost->generalEventHandler(clone);
   }
 }
 

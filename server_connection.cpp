@@ -88,28 +88,25 @@ void ServerConnection::onReadyRead()
 
   qJSON *qjson = new qJSON();
   bool ok;
-  QVariantMap result;
   qjson->parse(ba.data(), &ok);
 
   if (!ok) {
     qDebug() << "Invalid JSON! " << ba;
     return;
   }
-  result = qjson->toMap();
+  QVariantMap data = qjson->toMap();
+  QString status = data["status"].toString();
 
-  qDebug() << result;
-  QString status = result["status"].toString();
+  qDebug() << data;
   qDebug() << status;
 
   if (status == "Pong") {
-    qDebug() << "Got Pong";
   }
   else if (status == "Authenticated") {
-    qDebug() << "blahh..... Authed";
-    emit authenticated(result);
+    emit authenticated(new User(data));
   }
   else if (status == "AuthenticateError") {
-    emit authenticateError(result["reason"].toString());
+    emit authenticateError(data["reason"].toString());
   }
   else if (status== "Paused") {
     emit paused(true);
@@ -118,26 +115,24 @@ void ServerConnection::onReadyRead()
     emit paused(false);
   }
   else if (status == "ForcedPause") {
-    emit forcedPause(result["reason"].toString());
+    emit forcedPause(data["reason"].toString());
   }
   else if (status == "ReservedForInteraction") {
-    emit reservedForInteraction(result);
-    qDebug() << "ReservedForInteraction....";
+    emit reservedForInteraction(data);
   }
   else if (status == "Unregistered") {
 
   }
   else if (status == "Message") {
-    emit invokeMessage(result["message"].toString());
+    emit invokeMessage(data["message"].toString());
   }
   else {
-    QString action = result["action"].toString();
+    QString action = data["action"].toString();
 
     if (action == "LostConnection") {
       emit lostConnection();
     }
     else if (action == "Reconnected") {
-      qDebug() << "hhh: " << action;
       emit interactionReconnected();
     }
     else {

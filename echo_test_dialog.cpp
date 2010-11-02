@@ -22,11 +22,12 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
   layout->addWidget(_pbFinish);
   setLayout(layout);
 
-  QVariantMap user = ((MainWindow *)this->parent())->getUser();
+  User *user = ((MainWindow *)this->parent())->getUser();
   qDebug() << user;
-  if (user["skip_echo_test"].toString() == "true") {
+  if (user->skipEchoTesting()) {
     _pbSkip->setVisible(true);
-  } else {
+  }
+  else {
     _pbSkip->setVisible(false);
   }
 

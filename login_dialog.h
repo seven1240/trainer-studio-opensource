@@ -14,6 +14,8 @@ class QTextEdit;
 class QFrame;
 QT_END_NAMESPACE
 
+class User;
+
 class LoginDialog : public QDialog {
   Q_OBJECT
 
@@ -34,11 +36,11 @@ private:
   QPushButton *_pbCancel;
   QLabel *_lbProgress;
   QTextEdit *_teProgress;
-  QVariantMap _user;
   QFrame *_loginFrame;
   QFrame *_progressFrame;
   bool _authenticated;
   bool _abort;
+  User *_user;
 
   void abortLogin();
   void abortLogin(QString msg);
@@ -52,7 +54,7 @@ public slots:
 
 private slots:
   void onSettingsClicked();
-  void onAuthenticated(QVariantMap);
+  void onAuthenticated(User *user);
   void onAuthenticateError(QString);
   void onAuthenticateTimeout();
   void onSocketError(QString);

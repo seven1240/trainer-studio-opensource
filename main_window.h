@@ -4,13 +4,14 @@
 #include <QMainWindow>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
-#include <flash_dialog.h>
-#include <login_dialog.h>
-#include <incoming_call_dialog.h>
-#include <settings_dialog.h>
-#include "trainer_studio.h"
 #include <QKeyEvent>
+#include "flash_dialog.h"
+#include "login_dialog.h"
+#include "incoming_call_dialog.h"
+#include "settings_dialog.h"
+#include "trainer_studio.h"
 #include "fs_host.h"
+#include "user.h"
 
 class MainWindow : public QWidget {
   Q_OBJECT
@@ -18,7 +19,9 @@ public:
   MainWindow(QWidget *parent = 0);
   ~MainWindow();
   void showLoginDialog();
-  QVariantMap getUser() { return _user; }
+  User *getUser() {
+    return _user;
+  }
 
 protected:
   void changeEvent(QEvent *e);
@@ -33,12 +36,12 @@ private:
   LoginDialog *login_dialog;
   IncomingCallDialog *incoming_call_dialog;
   SettingsDialog *settings_dialog;
-  QVariantMap _user;
   bool _sipStateReady;
   QString _activeUUID;
   void keyPressEvent(QKeyEvent *event);
   void parseCallResult(QString res);
   QTimer *_timer;
+  User *_user;
 
 private slots:
   void on_pbHupall_clicked();
@@ -48,7 +51,7 @@ private slots:
   void on_btnState_clicked();
   void on_pushButton_clicked();
   void on_actionAbout_triggered();
-  void onAuthenticated(QVariantMap);
+  void onAuthenticated(User *user);
   void onPaused(bool);
   void onForcedPause(QString reason);
   void onLogin();

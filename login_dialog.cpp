@@ -65,7 +65,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
   _authenticated = false;
   _leUsername->setText(settings.value("StoredData/Username", "").toString());
 
-  this->connect(server_connection, SIGNAL(authenticated(QVariantMap)), this, SLOT(onAuthenticated(QVariantMap)));
+  this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
   this->connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
   this->connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
   this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
@@ -119,10 +119,10 @@ void LoginDialog::onCancelClicked()
   abortLogin();
 }
 
-void LoginDialog::onAuthenticated(QVariantMap map)
+void LoginDialog::onAuthenticated(User *user)
 {
   qDebug() << "Authenticated";
-  _user = map;
+  _user = user;
   _authenticated = true;
   QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
 }
@@ -224,20 +224,18 @@ void LoginDialog::doRegisterToVoIP()
   QVariantMap gw = isettings->getGateway(QString("default"));
   QString res;
 
-  if (gw["username"] == _user["voip_username"] && gw["password"] == _user["voip_password"]) {
+  if (gw["username"] == _user->getVoipUsername() && gw["password"] == _user->getVoipPassword()) {
     qDebug() << "No gateway info changed";
-  } else {
+  }
+  else {
     qDebug() << "Need to set gateway";
 
     QVariantMap newgw;
-    newgw.insert("username", _user["voip_username"]);
-    newgw.insert("password", _user["voip_password"]);
-    QVariantList serverlist = _user["servers"].toList();
-    QVariantMap server = serverlist[0].toMap();
-
-    newgw.insert("realm", QString("%1:%2").arg(server["sip_proxy"].toString(), server["sip_port"].toString()));
-    QSettings qsettings;
-    if (qsettings.value("sip_transport").toString() == "tcp") {
+    newgw.insert("username", _user->getVoipUsername());
+    newgw.insert("password", _user->getVoipPassword());
+    newgw.insert("realm", _user->getVoipServer());
+    QSettings settings;
+    if (settings.value("sip_transport").toString() == "tcp") {
       newgw.insert("register-transport", "tcp");
     }
     isettings->writeGateway(newgw);
@@ -246,7 +244,6 @@ void LoginDialog::doRegisterToVoIP()
   }
 
   fshost->reload();
-  qDebug() << res;
 
   delete isettings;
   hide();
