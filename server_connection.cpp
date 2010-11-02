@@ -1,3 +1,5 @@
+#include <QTCPSocket>
+#include <QStateMachine>
 #include <switch.h>
 #include "server_connection.h"
 #include "qJSON.h"
@@ -5,21 +7,90 @@
 
 ServerConnection *server_connection;
 
+QStateMachine *ServerConnection::createStateMachine()
+{
+  QState *disconnected = new QState();
+  connect(disconnected, SIGNAL(entered()), this, SLOT(changed()));
+  disconnected->setObjectName("disconnected");
+  // off->assignProperty(&button, "text", "Off");
+
+  QState *connected = new QState();
+  connect(connected, SIGNAL(entered()), this, SLOT(changed()));
+  connected->setObjectName("connected");
+
+  QState *authenticating = new QState();
+  connect(authenticating, SIGNAL(entered()), this, SLOT(changed()));
+  authenticating->setObjectName("authenticating");
+
+  QState *authenticated = new QState();
+  connect(authenticated, SIGNAL(entered()), this, SLOT(changed()));
+  authenticated->setObjectName("authenticated");
+
+  QState *pausing = new QState();
+  connect(pausing, SIGNAL(entered()), this, SLOT(changed()));
+  pausing->setObjectName("pausing");
+
+  QState *unpausing = new QState();
+  connect(unpausing, SIGNAL(entered()), this, SLOT(changed()));
+  unpausing->setObjectName("unpausing");
+
+  QState *working = new QState();
+  connect(working, SIGNAL(entered()), this, SLOT(changed()));
+  working->setObjectName("working");
+
+  QState *paused = new QState();
+  connect(paused, SIGNAL(entered()), this, SLOT(changed()));
+  paused->setObjectName("paused");
+
+  disconnected->addTransition(_socket, SIGNAL(connected()), connected);
+  connected->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+  connected->addTransition(this, SIGNAL(authenticating()), authenticating);
+  authenticated->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+  authenticating->addTransition(this, SIGNAL(authenticated(User*)), authenticated);
+  authenticating->addTransition(this, SIGNAL(authenticateError(QString)), disconnected);
+
+  authenticated->addTransition(this, SIGNAL(pausing()), pausing);
+  pausing->addTransition(this, SIGNAL(paused()), paused);
+  paused->addTransition(this, SIGNAL(unpausing()), unpausing);
+  unpausing->addTransition(this, SIGNAL(working()), unpausing);
+
+  QStateMachine *machine = new QStateMachine();
+  machine->addState(disconnected);
+  machine->addState(connected);
+  machine->addState(authenticating);
+  machine->addState(authenticated);
+
+  machine->setInitialState(disconnected);
+  machine->start();
+
+  return machine;
+}
+
+void ServerConnection::changed()
+{
+  QSetIterator<QAbstractState*> i(_machine->configuration());
+  while (i.hasNext())
+  {
+    qDebug() << "ServerConnection:" << i.next()->objectName();
+  }
+}
+
 ServerConnection::ServerConnection()
 {
-  _ping = false;
   _connected = false;
   _socket = new QTcpSocket(this);
+  _machine = createStateMachine();
+
+  connect(_socket, SIGNAL(connected()), this, SLOT(onConnected()));
   connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
   connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-  connect(_socket, SIGNAL(connected()), this, SLOT(onConnected()));
   connect(_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 }
 
 void ServerConnection::run()
 {
   for (;;) {
-    qDebug() << "ServerConnection running: " << _socket->state() << _connected;
+    qDebug() << "ServerConnection:" << _socket->state() << _connected;
     switch_sleep(10000000);
   }
 }
@@ -65,9 +136,11 @@ void ServerConnection::login(QString username, QString password)
 
   qDebug() << json;
 
+  emit authenticating();
+
   write(json);
 
-  // TODO: free json?
+  free(json);
 }
 
 void ServerConnection::close()
@@ -84,7 +157,6 @@ void ServerConnection::onReadyRead()
   }
 
   QString s(ba);
-  qDebug() << ba.data();
 
   qJSON *qjson = new qJSON();
   bool ok;
@@ -97,8 +169,11 @@ void ServerConnection::onReadyRead()
   QVariantMap data = qjson->toMap();
   QString status = data["status"].toString();
 
+  qDebug() << ba.data();
+  #if _EXTRA_VERBOSE
   qDebug() << data;
   qDebug() << status;
+  #endif
 
   if (status == "Pong") {
   }
@@ -108,20 +183,22 @@ void ServerConnection::onReadyRead()
   else if (status == "AuthenticateError") {
     emit authenticateError(data["reason"].toString());
   }
-  else if (status== "Paused") {
-    emit paused(true);
+  else if (status == "Paused") {
+    emit pauseChanged(true);
+    emit paused();
   }
   else if (status == "Unpaused") {
-    emit paused(false);
+    emit pauseChanged(false);
+    emit unpaused();
   }
   else if (status == "ForcedPause") {
     emit forcedPause(data["reason"].toString());
+    emit paused();
   }
   else if (status == "ReservedForInteraction") {
     emit reservedForInteraction(data);
   }
   else if (status == "Unregistered") {
-
   }
   else if (status == "Message") {
     emit invokeMessage(data["message"].toString());
@@ -151,20 +228,16 @@ void ServerConnection::onSocketError(QAbstractSocket::SocketError)
 void ServerConnection::onConnected()
 {
   _connected = true;
-  qDebug() << "Socket Connected";
 }
 
 void ServerConnection::onDisconnected()
 {
-  _ping = false;
   _connected = false;
   emit socketDisconnected();
-  qDebug() << "Disconnected, reconnecting in 10 seconds...";
 }
 
 void ServerConnection::onTimer()
 {
-  qDebug() << "Reconnect";
   open();
 }
 
@@ -176,7 +249,6 @@ void ServerConnection::review()
 void ServerConnection::sendAction(char *action)
 {
   write(QString("{\"action\": \"%1\"}").arg(action));
-  qDebug() << QString("{\"action\": \"%1\"}").arg(action);
 }
 
 void ServerConnection::write(QByteArray ba)
@@ -205,8 +277,10 @@ void ServerConnection::pause(bool action)
   qDebug() << "Pause: " << action;
   if (action) {
     sendAction("Pause");
+    emit pausing();
   }
   else {
     sendAction("Unpause");
+    emit unpausing();
   }
 }

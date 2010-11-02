@@ -6,6 +6,11 @@
 #include "trainer_studio.h"
 #include "user.h"
 
+QT_BEGIN_NAMESPACE
+class QStateMachine;
+class QTcpSocket;
+QT_END_NAMESPACE
+
 class ServerConnection : public QThread
 {
   Q_OBJECT
@@ -24,10 +29,16 @@ protected:
   void run();
 
 signals:
+  void authenticating();
   void authenticated(User *user);
   void authenticateError(QString reason);
-  void paused(bool state);
+  void pauseChanged(bool state);
   void forcedPause(QString reason);
+  void paused();
+  void pausing();
+  void unpausing();
+  void unpaused();
+
   void reservedForInteraction(QVariantMap);
   void invokeMessage(QString msg);
   void lostConnection();
@@ -41,17 +52,19 @@ private slots:
   void onConnected();
   void onDisconnected();
   void onTimer();
+  void changed();
 
 private:
+  QStateMachine *createStateMachine();
   void sendAction(char *action);
   void write(QByteArray);
   void write(QString);
   void write(char *json);
 
 private:
-  bool _ping;
   bool _connected;
   QTcpSocket *_socket;
+  QStateMachine *_machine;
   QString _host;
   int _port;
 };

@@ -40,8 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
   sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
   this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
-  this->connect(server_connection, SIGNAL(paused(bool)), this, SLOT(onPaused(bool)));
-  this->connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
+  this->connect(server_connection, SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
+  this->connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcePaused(QString)));
   this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
   this->connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
   this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
@@ -125,7 +125,6 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::onLogin()
 {
-  qDebug() << "LoginSuccess";
   show();
 }
 
@@ -164,8 +163,7 @@ void MainWindow::onPaused(bool state)
 
 void MainWindow::onForcedPause(QString reason)
 {
-  QMessageBox::warning(this, QApplication::applicationName(),
-                       reason);
+  QMessageBox::warning(this, QApplication::applicationName(), reason);
   onPaused(true);
 }
 
@@ -244,14 +242,13 @@ void MainWindow::on_pbConference_clicked()
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-  if (false) return; // if in call?
+  if (false) return; // TODO if in call?
 
   if (event->key() == 35 || event->key() == Qt::Key_Asterisk ||  // # *
       event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 ||  // 0 - 9
       event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) { // A-D
     fshost->portAudioDtmf((char)event->key());
   }
-  qDebug() << "Key pressed: " << event->key();
 }
 
 void MainWindow::onNewEvent(QSharedPointer<switch_event_t> spEvent)
