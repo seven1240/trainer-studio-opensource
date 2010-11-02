@@ -39,24 +39,33 @@ MainWindow::MainWindow(QWidget *parent) :
 	sysTray->show();
 	sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
-	this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
-	this->connect(server_connection, SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
-	this->connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcePaused(QString)));
-	this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-	this->connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
-	this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
-	this->connect(fs, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
-	this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
+	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
+	connect(server_connection, SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
+	connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcePaused(QString)));
+	connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
+	connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
+	connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
+	connect(fs, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
+	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
+
+	QMetaObject::connectSlotsByName(this);
 }
 
 QLayout *MainWindow::createBody()
 {
 	QPushButton *settingsButton = new QPushButton("Settings");
+	settingsButton->setObjectName("Settings");
+
 	QPushButton *loginButton = new QPushButton("Login");
 	QPushButton *echoButton = new QPushButton("Echo");
+	echoButton->setObjectName("Echo");
+
 	QPushButton *pauseButton = new QPushButton("Pause");
 	QPushButton *closeButton = new QPushButton("Close");
+	closeButton->setObjectName("Close");
+
 	QPushButton *aboutButton = new QPushButton("About");
+	aboutButton->setObjectName("About");
 
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(settingsButton);
@@ -110,17 +119,17 @@ void MainWindow::showLoginDialog()
 	if (!login_dialog) {
 		login_dialog = new LoginDialog(this);
 	}
-	login_dialog -> raise();
-	login_dialog -> show();
-	login_dialog -> activateWindow();
+	login_dialog->raise();
+	login_dialog->show();
+	login_dialog->activateWindow();
 
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_Flash_clicked()
 {
-	flash_dialog -> raise();
-	flash_dialog -> show();
-	flash_dialog -> activateWindow();
+	flash_dialog->raise();
+	flash_dialog->show();
+	flash_dialog->activateWindow();
 }
 
 void MainWindow::onLogin()
@@ -136,7 +145,7 @@ void MainWindow::onAuthenticated(User *user)
 	_user = user;
 }
 
-void MainWindow::on_btnState_clicked()
+void MainWindow::on_State_clicked()
 {
 	if (!_sipStateReady) {
 		QMessageBox::warning(this, QApplication::applicationName(), "Cannot Pause, VoIP not ready!");
@@ -214,26 +223,27 @@ void MainWindow::onSocketDisconnected()
 	flash_dialog = new FlashDialog(this);
 }
 
-void MainWindow::on_actionAbout_triggered()
+void MainWindow::on_About_clicked()
 {
 	QMessageBox::about(this, QApplication::applicationName(),
 					   QString("Version: %1\n\nCopyright(c): Idapted Ltd.").arg(QApplication::applicationVersion()));
 }
 
-void MainWindow::on_actionPreferences_triggered()
+void MainWindow::on_Settings_clicked()
 {
-	if(!settings_dialog) settings_dialog = new SettingsDialog();
+	if (!settings_dialog)
+		settings_dialog = new SettingsDialog();
 	settings_dialog->show();
 }
 
-void MainWindow::on_pbEchoTest_clicked()
+void MainWindow::on_Echo_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
 	ui->lbStatus->setText("Echo test");
 	parseCallResult(fs->call("echo"));
 }
 
-void MainWindow::on_pbConference_clicked()
+void MainWindow::on_Conference_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
 	ui->lbStatus->setText("Conference");
@@ -288,7 +298,7 @@ void MainWindow::parseCallResult(QString res)
 	}
 }
 
-void MainWindow::on_pbHupall_clicked()
+void MainWindow::on_Hangup_clicked()
 {
 	fs->hangup(true);
 }

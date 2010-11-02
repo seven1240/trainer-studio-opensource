@@ -44,13 +44,13 @@ private:
 	User *_user;
 
 private slots:
-	void on_pbHupall_clicked();
-	void on_pbConference_clicked();
-	void on_pbEchoTest_clicked();
-	void on_actionPreferences_triggered();
-	void on_btnState_clicked();
-	void on_pushButton_clicked();
-	void on_actionAbout_triggered();
+	void on_Hangup_clicked();
+	void on_Conference_clicked();
+	void on_Echo_clicked();
+	void on_Settings_clicked();
+	void on_State_clicked();
+	void on_Flash_clicked();
+	void on_About_clicked();
 	void onAuthenticated(User *user);
 	void onPaused(bool);
 	void onForcedPause(QString reason);
