@@ -99,7 +99,7 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
 	QSettings settings;
 	QString url = settings.value("General/url").toString();
-	User *user = ((MainWindow *)(this->parent()))->getUser();
+	User *user = ApplicationController::user();
 
 	_interactionID = data["interaction_id"].toString();
 

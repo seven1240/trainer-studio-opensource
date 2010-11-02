@@ -67,7 +67,7 @@ bool setDefaultSettings()
 	return true;
 }
 
-int32_t main(int32_t argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	QApplication::setApplicationName("Trainer Studio");
@@ -86,7 +86,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
-	int32_t status = a.exec();
+	int status = a.exec();
 	delete controller;
 	return status;
 }

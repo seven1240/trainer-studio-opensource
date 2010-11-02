@@ -23,7 +23,7 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
 	layout->addWidget(_pbFinish);
 	setLayout(layout);
 
-	User *user = ((MainWindow *)this->parent())->getUser();
+	User *user = ApplicationController::user();
 	if (user->skipEchoTesting()) {
 		_pbSkip->setVisible(true);
 	}

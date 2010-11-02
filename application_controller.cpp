@@ -7,6 +7,7 @@
 
 ServerConnection *ApplicationController::_server;
 FSHost *ApplicationController::_fs;
+User *ApplicationController::_user;
 
 ApplicationController::ApplicationController()
 {
@@ -14,6 +15,7 @@ ApplicationController::ApplicationController()
 	_server = NULL;
 	_fs = NULL;
 	_login_dialog = NULL;
+	_user = NULL;
 }
 
 ApplicationController::~ApplicationController()
@@ -38,10 +40,13 @@ ApplicationController::~ApplicationController()
 		_server->wait();
 		delete _server;
 	}
+	if (_user != NULL) {
+		delete _user;
+	}
 	qDebug() << "Stopped";
 }
 
-int32_t ApplicationController::run()
+int ApplicationController::run()
 {
 	_fs = new FSHost();
 	_fs->start();
@@ -61,6 +66,10 @@ int32_t ApplicationController::run()
 
 void ApplicationController::authenticated(User *user)
 {
+	if (_user != NULL) {
+		delete _user;
+	}
+	_user = user;
 	loginDialog()->hide();
 	mainWindow()->show();
 }
@@ -95,4 +104,9 @@ ServerConnection *ApplicationController::server()
 FSHost *ApplicationController::fs()
 {
 	return _fs;
+}
+
+User *ApplicationController::user()
+{
+	return _user;
 }

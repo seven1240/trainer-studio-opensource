@@ -19,9 +19,6 @@ public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 	void showLoginDialog();
-	User *getUser() {
-		return _user;
-	}
 
 protected:
 	void changeEvent(QEvent *e);
@@ -41,7 +38,6 @@ private:
 	void keyPressEvent(QKeyEvent *event);
 	void parseCallResult(QString res);
 	QTimer *_timer;
-	User *_user;
 
 private slots:
 	void on_Hangup_clicked();
@@ -53,7 +49,6 @@ private slots:
 	void on_About_clicked();
 	void on_Login_clicked();
 	void on_Logout_clicked();
-	void onAuthenticated(User *user);
 	void onPaused(bool);
 	void onForcedPause(QString reason);
 	void onAnswered(QString cid_name, QString cid_number);

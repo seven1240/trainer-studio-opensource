@@ -20,6 +20,7 @@ public:
 private:
 	static ServerConnection *_server;
 	static FSHost *_fs;
+	static User *_user;
 	LoginDialog *_login_dialog;
 	MainWindow *_main_window;
 
@@ -34,7 +35,8 @@ private slots:
 public:
 	static ServerConnection *server();
 	static FSHost *fs();
-	int32_t run();
+	static User *user();
+	int run();
 
 };
 
