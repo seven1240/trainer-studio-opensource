@@ -23,7 +23,6 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
 	setLayout(layout);
 
 	User *user = ((MainWindow *)this->parent())->getUser();
-	qDebug() << user;
 	if (user->skipEchoTesting()) {
 		_pbSkip->setVisible(true);
 	}

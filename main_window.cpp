@@ -18,9 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	setFixedSize(218, 430);
 	Utils::centerWindowOnDesktop(this);
 
-	server_connection = new ServerConnection();
-	server_connection->start();
-
 	// We should not need set NULL manually, but without this,
 	// flash_dialog is NULL but not login_dialog, weird
 	// Also, Mac & Win have different default value
@@ -41,9 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
 	connect(server_connection, SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
-	connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcePaused(QString)));
+	connect(server_connection, SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
 	connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-	connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
+	connect(server_connection, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 	connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
 	connect(fs, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
 	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
@@ -212,7 +209,7 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 	sysTray->showMessage(QApplication::applicationName(),msg, QSystemTrayIcon::Information, 3000);
 }
 
-void MainWindow::onSocketDisconnected()
+void MainWindow::onDisconnected()
 {
 	QMessageBox::critical(this,QApplication::applicationName(), "Socket Broken!!");
 	showLoginDialog();

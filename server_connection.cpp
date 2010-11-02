@@ -81,6 +81,8 @@ ServerConnection::ServerConnection()
 	_socket = new QTcpSocket(this);
 	_machine = createStateMachine();
 
+	setObjectName("ServerConnection");
+
 	connect(_socket, SIGNAL(connected()), this, SLOT(onConnected()));
 	connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 	connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
@@ -97,7 +99,8 @@ void ServerConnection::run()
 
 void ServerConnection::open(QString host, int port)
 {
-	if (_connected) return;
+	if (_connected)
+		return;
 	_host = host;
 	_port = port;
 	_socket->connectToHost(host, port);
@@ -233,12 +236,13 @@ void ServerConnection::onSocketError(QAbstractSocket::SocketError)
 void ServerConnection::onConnected()
 {
 	_connected = true;
+	emit connected();
 }
 
 void ServerConnection::onDisconnected()
 {
 	_connected = false;
-	emit socketDisconnected();
+	emit disconnected();
 }
 
 void ServerConnection::onTimer()

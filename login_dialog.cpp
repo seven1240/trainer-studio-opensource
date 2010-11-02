@@ -56,7 +56,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	setLayout(mainLayout);
 
 	setFixedSize(320, 240);
-	setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+	// setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	setWindowTitle("Login");
 
 	showLogin();
@@ -65,7 +65,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	_authenticated = false;
 	_leUsername->setText(settings.value("StoredData/Username", "").toString());
 
-	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
+	connect(server_connection, SIGNAL(connected()), this, SLOT(onServerConnectionConnected()));
+	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onServerConnectionAuthenticated(User*)));
+	connect(server_connection, SIGNAL(disconnected()), this, SLOT(onServerConnectionDisconnected()));
 	connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
 	connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
 	connect(fs, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
@@ -78,6 +80,25 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
 LoginDialog::~LoginDialog()
 {
+}
+
+void LoginDialog::onServerConnectionConnected()
+{
+	setProgress("Connected, authenticating...");
+	server_connection->login(_leUsername->text(), _lePassword->text());
+	QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
+}
+
+void LoginDialog::onServerConnectionAuthenticated(User *user)
+{
+	_user = user;
+	_authenticated = true;
+	QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
+}
+
+void LoginDialog::onServerConnectionDisconnected()
+{
+	showLogin();
 }
 
 void LoginDialog::changeEvent(QEvent *e)
@@ -105,7 +126,6 @@ void LoginDialog::abortLogin()
 {
 	_abort = true;
 	showLogin();
-	_pbSettings->setVisible(true);
 }
 
 void LoginDialog::abortLogin(QString msg)
@@ -121,14 +141,6 @@ void LoginDialog::onCancelClicked()
 	abortLogin();
 }
 
-void LoginDialog::onAuthenticated(User *user)
-{
-	qDebug() << "Authenticated";
-	_user = user;
-	_authenticated = true;
-	QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
-}
-
 void LoginDialog::onAuthenticateError(QString reason)
 {
 	server_connection->close();
@@ -138,7 +150,8 @@ void LoginDialog::onAuthenticateError(QString reason)
 
 void LoginDialog::onAuthenticateTimeout()
 {
-	if (_abort || _authenticated) return;
+	if (_abort || _authenticated)
+		return;
 	abortLogin("Authenticate Timed out!");
 }
 
@@ -175,30 +188,9 @@ void LoginDialog::onLoginClicked()
 	port = port == 0 ? 7000 : port;
 
 	qDebug() << host << ":" << port;
+	_abort = false;
 	showProgress();
 	server_connection->open(host, port);
-
-	_abort = false;
-
-	int i;
-	for (i = 0; i < 200 && (!server_connection->isConnected()); i++) {
-		if (_abort) {
-			return;
-		}
-		QApplication::processEvents();
-		switch_sleep(100000);
-	}
-
-	if (i == 200) {
-		abortLogin("Login Error, Please Try again!");
-		return;
-	}
-
-	setProgress("Socket connected, authenticating...");
-
-	server_connection->login(_leUsername->text(), _lePassword->text());
-
-	QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
 }
 
 void LoginDialog::doRegisterToVoIP()
@@ -249,9 +241,9 @@ void LoginDialog::doRegisterToVoIP()
 	delete isettings;
 	hide();
 
-	EchoTestDialog *etd = new EchoTestDialog((QWidget *)this->parent());
-	etd->setAttribute(Qt::WA_DeleteOnClose);
-	etd->show();
+	EchoTestDialog *echo_dialog = new EchoTestDialog((QWidget *)this->parent());
+	echo_dialog->setAttribute(Qt::WA_DeleteOnClose);
+	echo_dialog->show();
 }
 
 void LoginDialog::onSettingsClicked()

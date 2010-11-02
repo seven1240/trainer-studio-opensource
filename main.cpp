@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "main_window.h"
 #include "fs_host.h"
+#include "server_connection.h"
 
 FILE *_logFile = NULL;
 QtMsgHandler oldMsgHandler = NULL;
@@ -77,6 +78,9 @@ int main(int argc, char *argv[])
 
 	fs = new FSHost();
 	fs->start();
+
+	server_connection = new ServerConnection();
+	server_connection->start();
 
 	QSettings settings;
 	qDebug() << settings.fileName();

@@ -53,8 +53,10 @@ private:
 public slots:
 
 private slots:
+	void onServerConnectionConnected();
+	void onServerConnectionAuthenticated(User *user);
+	void onServerConnectionDisconnected();
 	void onSettingsClicked();
-	void onAuthenticated(User *user);
 	void onAuthenticateError(QString);
 	void onAuthenticateTimeout();
 	void onSocketError(QString);

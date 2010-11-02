@@ -30,6 +30,8 @@ protected:
 	void run();
 
 signals:
+	void connected();
+	void disconnected();
 	void authenticating();
 	void authenticated(User *user);
 	void authenticateError(QString reason);
@@ -39,12 +41,12 @@ signals:
 	void pausing();
 	void unpausing();
 	void unpaused();
+	void working();
 
 	void reservedForInteraction(QVariantMap);
 	void invokeMessage(QString msg);
 	void lostConnection();
 	void interactionReconnected();
-	void socketDisconnected();
 	void socketError(QString);
 
 private slots:
