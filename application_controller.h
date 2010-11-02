@@ -6,6 +6,8 @@
 class MainWindow;
 class ServerConnection;
 class FSHost;
+class LoginDialog;
+class User;
 
 class ApplicationController : public QObject
 {
@@ -18,7 +20,16 @@ public:
 private:
 	static ServerConnection *_server;
 	static FSHost *_fs;
+	LoginDialog *_login_dialog;
 	MainWindow *_main_window;
+
+private:
+	MainWindow *mainWindow();
+	LoginDialog *loginDialog();
+
+private slots:
+	void authenticated(User *user);
+	void disconnected();
 
 public:
 	static ServerConnection *server();

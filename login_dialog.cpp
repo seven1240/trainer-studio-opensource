@@ -212,7 +212,6 @@ void LoginDialog::doRegisterToVoIP()
 	ISettings *isettings = new ISettings(this);
 
 	QVariantMap gw = isettings->getGateway(QString("default"));
-	QString res;
 
 	if (gw["username"] == _user->getVoipUsername() && gw["password"] == _user->getVoipPassword()) {
 		qDebug() << "No gateway info changed";
