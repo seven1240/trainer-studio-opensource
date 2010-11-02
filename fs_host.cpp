@@ -34,7 +34,7 @@
 static void eventHandlerCallback(switch_event_t *event);
 static switch_status_t loggerHandler(const switch_log_node_t *, switch_log_level_t);
 
-FSHost *fshost;
+FSHost *fs;
 
 FSHost::FSHost(QObject *parent) :
   QThread(parent)
@@ -466,7 +466,7 @@ void FSHost::portAudioPlay(QString target)
 QString FSHost::portAudioDevices()
 {
   QString devices;
-  switch_status_t status = fshost->sendCmd("pa", "devlist", &devices);
+  switch_status_t status = fs->sendCmd("pa", "devlist", &devices);
   if (SWITCH_STATUS_SUCCESS != status) {
     return "";
   }
@@ -495,7 +495,7 @@ static void eventHandlerCallback(switch_event_t *event)
 {
   switch_event_t *clone = NULL;
   if (switch_event_dup(&clone, event) == SWITCH_STATUS_SUCCESS) {
-    fshost->generalEventHandler(clone);
+    fs->generalEventHandler(clone);
   }
 }
 
@@ -503,7 +503,7 @@ static switch_status_t loggerHandler(const switch_log_node_t *node, switch_log_l
 {
   switch_log_node_t *clone = switch_log_node_dup(node);
   QSharedPointer<switch_log_node_t> l(clone);
-  fshost->generalLoggerHandler(l, level);
+  fs->generalLoggerHandler(l, level);
   return SWITCH_STATUS_SUCCESS;
 }
 

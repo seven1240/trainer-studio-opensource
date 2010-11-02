@@ -68,7 +68,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
   this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
   this->connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
   this->connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
-  this->connect(fshost, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
+  this->connect(fs, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
   this->connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
   this->connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
   this->connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
@@ -211,7 +211,7 @@ void LoginDialog::doRegisterToVoIP()
     return;
   }
 
-  if (!fshost->isSofiaReady()) {
+  if (!fs->isSofiaReady()) {
     setProgress("Loading VoIP modules...");
     QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
     return;
@@ -243,7 +243,7 @@ void LoginDialog::doRegisterToVoIP()
     switch_sleep(1000000);
   }
 
-  fshost->reload();
+  fs->reload();
 
   delete isettings;
   hide();

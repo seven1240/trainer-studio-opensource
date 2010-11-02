@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
   this->connect(server_connection, SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
   this->connect(server_connection, SIGNAL(socketDisconnected()), this, SLOT(onSocketDisconnected()));
   this->connect(incoming_call_dialog, SIGNAL(answered(QString, QString)), this, SLOT(onAnswered(QString, QString)));
-  this->connect(fshost, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
+  this->connect(fs, SIGNAL(gatewayStateChange(QString)), this, SLOT(onGatewayStateChange(QString)));
   this->connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 }
 
@@ -88,7 +88,7 @@ MainWindow::~MainWindow()
   if (incoming_call_dialog) delete incoming_call_dialog;
   if (settings_dialog) delete settings_dialog;
   if (server_connection) delete server_connection;
-  if (fshost) delete fshost;
+  if (fs) delete fs;
   if (_user) delete _user;
   delete (_timer);
 }
@@ -230,14 +230,14 @@ void MainWindow::on_pbEchoTest_clicked()
 {
   if (!_activeUUID.isEmpty()) return;
   ui->lbStatus->setText("Echo test");
-  parseCallResult(fshost->call("echo"));
+  parseCallResult(fs->call("echo"));
 }
 
 void MainWindow::on_pbConference_clicked()
 {
   if (!_activeUUID.isEmpty()) return;
   ui->lbStatus->setText("Conference");
-  parseCallResult(fshost->call("conf"));
+  parseCallResult(fs->call("conf"));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -247,7 +247,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
   if (event->key() == 35 || event->key() == Qt::Key_Asterisk ||  // # *
       event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 ||  // 0 - 9
       event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) { // A-D
-    fshost->portAudioDtmf((char)event->key());
+    fs->portAudioDtmf((char)event->key());
   }
 }
 
@@ -280,7 +280,7 @@ void MainWindow::parseCallResult(QString res)
   QStringList sl = res.split(":");
   if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
     _activeUUID = sl.at(2).trimmed();
-    connect(fshost, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+    connect(fs, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
   } else {
     _activeUUID = "";
     disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
@@ -290,7 +290,7 @@ void MainWindow::parseCallResult(QString res)
 
 void MainWindow::on_pbHupall_clicked()
 {
-  fshost->hangup(true);
+  fs->hangup(true);
 }
 
 void MainWindow::onTimerTimeout()

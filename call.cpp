@@ -43,11 +43,11 @@ switch_status_t Call::toggleHold(bool hold)
 
   if (hold)
   {
-    return fshost->hold(_channel.data()->getUuid());
+    return fs->hold(_channel.data()->getUuid());
   }
   else
   {
-    return fshost->unhold(_channel.data()->getUuid());
+    return fs->unhold(_channel.data()->getUuid());
   }
 }
 
@@ -58,18 +58,18 @@ switch_status_t Call::toggleRecord(bool startRecord)
   if (startRecord)
   {
     _recording_filename = QString("%1/.fscomm/recordings/%2_%3.wav").arg(conf_dir.absolutePath(), QDateTime::currentDateTime().toString("yyyyMMddhhmmss"), getCidNumber());
-    return fshost->recordStart(getUuid(), _recording_filename);
+    return fs->recordStart(getUuid(), _recording_filename);
   }
   else
   {
     switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "Stopping call recording on call [%s]\n", getUuid().toAscii().data());
-    return fshost->recordStop(getUuid(), _recording_filename);
+    return fs->recordStop(getUuid(), _recording_filename);
   }
 }
 
 void Call::sendDTMF(QString digit)
 {
-  if (fshost->portAudioDtmf(digit.toAscii()[0]) == SWITCH_STATUS_FALSE) {
+  if (fs->portAudioDtmf(digit.toAscii()[0]) == SWITCH_STATUS_FALSE) {
     switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Could not send DTMF digit %s on call[%s]", digit.toAscii().data(), getUuid().toAscii().data());
     QMessageBox::critical(0, QWidget::tr("DTMF Error"), QWidget::tr("There was an error sending DTMF, please report this bug."), QMessageBox::Ok);
   }

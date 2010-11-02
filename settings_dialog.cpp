@@ -21,8 +21,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   QSettings settings;
   settings.beginGroup("General");
   ui->leURL->setText(settings.value("url").toString());
-  ui->leServer->setText(settings.value("trainer_server").toString() +
-                        ":" + settings.value("trainer_server_port").toString());
+  ui->leServer->setText(settings.value("trainer_server").toString() + ":" + settings.value("trainer_server_port").toString());
   if (settings.value("sip_transport").toString() == "tcp") {
     ui->cbSIPTransport->setChecked(true);
   }
@@ -95,8 +94,8 @@ void SettingsDialog::updateDevlist()
   ignore_change_event = true;
 
   QString devices;
-  fshost->portAudioRescan();
-  devices = fshost->portAudioDevices();
+  fs->portAudioRescan();
+  devices = fs->portAudioDevices();
 
   if (devices.length() == 0) {
     qDebug() << "PA devlist error";
@@ -113,28 +112,29 @@ void SettingsDialog::updateDevlist()
   ui->cbRing->addItem("Default Device", "");
 
   QStringList devlist = devices.split("\n");
-  for(int i=0; i<devlist.count(); i++) {
+  for (int i = 0; i < devlist.count(); i++) {
     QStringList fieldlist = devlist.at(i).split(";");
 
-    if(fieldlist.count()< 4) continue;
+    if (fieldlist.count()< 4) continue;
 
     QString id = fieldlist.at(0);
     QString name = fieldlist.at(1);
     QString inputs = fieldlist.at(2);
     QString outputs = fieldlist.at(3);
 
-    if(inputs.toInt() > 0 ) {
+    if (inputs.toInt() > 0 ) {
       ui->cbInput->addItem(name, id);
-    }else if(outputs.toInt() > 0) {
+    }
+    else if (outputs.toInt() > 0) {
       ui->cbOutput->addItem(name, id);
       ui->cbRing->addItem(name, id);
     }
 
-    if(fieldlist.count() > 4) {
+    if (fieldlist.count() > 4) {
       QString flag = fieldlist.at(4);
       QStringList flaglist = flag.split(",");
-      if(flaglist.count() > 1) {
-        if("r" == flaglist.at(0) || "r" == flaglist.at(1)) {
+      if (flaglist.count() > 1) {
+        if ("r" == flaglist.at(0) || "r" == flaglist.at(1)) {
           ui->cbRing->setCurrentIndex(ui->cbRing->count() -1);
         }
         if ("o" == flaglist.at(0) || "o" == flaglist.at(1)) {
@@ -143,12 +143,15 @@ void SettingsDialog::updateDevlist()
         if ("i" == flaglist.at(0) || "i" == flaglist.at(1)) {
           ui->cbInput->setCurrentIndex(ui->cbInput->count() -1);
         }
-      } else {
-        if("r" == flag) {
+      }
+      else {
+        if ("r" == flag) {
           ui->cbRing->setCurrentIndex(ui->cbRing->count() -1);
-        } else if("o" == flag) {
+        }
+        else if("o" == flag) {
           ui->cbOutput->setCurrentIndex(ui->cbOutput->count() -1);
-        } else if("i" == flag) {
+        }
+        else if("i" == flag) {
           ui->cbInput->setCurrentIndex(ui->cbInput->count() -1);
         }
       }
@@ -168,19 +171,18 @@ void SettingsDialog::on_pbReset_clicked()
 
 void SettingsDialog::on_tbRingTest_clicked()
 {
-  fshost->portAudioPlay(ui->leRingFile->text());
+  fs->portAudioPlay(ui->leRingFile->text());
 }
 
 void SettingsDialog::on_pbLoopTest_clicked()
 {
-  fshost->portAudioLoop();
+  fs->portAudioLoop();
 }
 
 void SettingsDialog::on_tbSelectFile_clicked()
 {
-  QString fileName = QFileDialog::getOpenFileName(this,
-                                                  tr("Open File"), QDir::home().absolutePath(), tr("Wav Files (*.wav)"));
-  if(!fileName.isEmpty()) ui->leRingFile->setText(fileName);
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::home().absolutePath(), tr("Wav Files (*.wav)"));
+  if (!fileName.isEmpty()) ui->leRingFile->setText(fileName);
 }
 
 void SettingsDialog::on_pbSave_clicked()
@@ -206,30 +208,31 @@ void SettingsDialog::on_pbSave_clicked()
 void SettingsDialog::on_cbInput_currentIndexChanged(int index)
 {
   QString res;
-  if(ignore_change_event) return;
-  fshost->portAudioInDevice(index);
+  if (ignore_change_event) return;
+  fs->portAudioInDevice(index);
 }
 
 void SettingsDialog::on_cbOutput_currentIndexChanged(int index)
 {
   QString res;
-  if(ignore_change_event) return;
-  fshost->portAudioOutDevice(index);
+  if (ignore_change_event) return;
+  fs->portAudioOutDevice(index);
 }
 
 void SettingsDialog::on_cbRing_currentIndexChanged(int index)
 {
   QString res;
-  if(ignore_change_event) return;
-  fshost->portAudioRingDevice(index);
+  if (ignore_change_event) return;
+  fs->portAudioRingDevice(index);
 }
 
 void SettingsDialog::setActiveTabs(unsigned int tabs)
 {
-  for(int i=0; i<ui->tabWidget->count(); i++) {
+  for (int i = 0; i < ui->tabWidget->count(); i++) {
     if (tabs & (1<< i)) {
       ui->tabWidget->setTabEnabled(i, true);
-    } else {
+    }
+    else {
       ui->tabWidget->setTabEnabled(i, false);
     }
   }

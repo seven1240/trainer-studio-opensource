@@ -37,7 +37,7 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
   connect(_pbBegin, SIGNAL(clicked()), this, SLOT(onBeginClicked()));
   connect(_pbSkip, SIGNAL(clicked()), this, SLOT(onSkipClicked()));
   connect(_pbFinish, SIGNAL(clicked()), this, SLOT(onFinishClicked()));
-  connect(fshost, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
+  connect(fs, SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
 }
 
 EchoTestDialog::~EchoTestDialog()
@@ -58,7 +58,7 @@ void EchoTestDialog::changeEvent(QEvent *e)
 
 void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
 {
-  fshost->hangup(true);
+  fs->hangup(true);
 }
 
 void EchoTestDialog::setProgress(QString string)
@@ -69,19 +69,19 @@ void EchoTestDialog::setProgress(QString string)
 
 void EchoTestDialog::onFinishClicked()
 {
-  fshost->hangup(true);
+  fs->hangup(true);
 }
 
 void EchoTestDialog::onBeginClicked()
 {
-  if (!fshost->isSofiaReady()) {
+  if (!fs->isSofiaReady()) {
     setProgress("Please wait a while and try again!");
     return;
   }
 
   setProgress("Running...");
 
-  fshost->call("echo");
+  fs->call("echo");
 }
 
 void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)

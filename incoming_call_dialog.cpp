@@ -7,7 +7,7 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
   ui(new Ui::IncomingCallDialog)
 {
   ui->setupUi(this);
-  this->connect(fshost, SIGNAL(incomingCall(QSharedPointer<switch_event_t>)), this, SLOT(onIncomingCall(QSharedPointer<switch_event_t>)));
+  this->connect(fs, SIGNAL(incomingCall(QSharedPointer<switch_event_t>)), this, SLOT(onIncomingCall(QSharedPointer<switch_event_t>)));
 }
 
 IncomingCallDialog::~IncomingCallDialog()
@@ -40,7 +40,7 @@ void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
 
 void IncomingCallDialog::on_pbAnswer_clicked()
 {
-  fshost->answer();
+  fs->answer();
 
   emit answered(_cid_name, _cid_number);
   lower();
@@ -49,7 +49,7 @@ void IncomingCallDialog::on_pbAnswer_clicked()
 
 void IncomingCallDialog::on_pbReject_clicked()
 {
-  fshost->hangup(false);
+  fs->hangup(false);
   lower();
   hide();
 }

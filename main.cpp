@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
 
   configureLogging();
 
-  fshost = new FSHost();
-  fshost->start();
+  fs = new FSHost();
+  fs->start();
 
   QSettings settings;
   qDebug() << settings.fileName();

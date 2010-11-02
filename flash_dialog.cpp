@@ -80,8 +80,8 @@ void FlashDialog::showEvent(QShowEvent * /*e*/)
 void FlashDialog::closeEvent(QCloseEvent* /*e*/)
 {
   // Make sure mic unmuted
-  fshost->unmute();
-  fshost->hangup(true);
+  fs->unmute();
+  fs->hangup(true);
   ui->webView->reload();
   lower();
 }
@@ -162,7 +162,7 @@ void FlashDialog::on_btnDisconnect_clicked()
   QSettings settings;
   QString url = settings.value("General/url").toString();
 
-  fshost->hangup(false);
+  fs->hangup(false);
 
   if (_tickCount < 450 ) {
     int ret = QMessageBox::warning(this, "Premature Ending",
@@ -316,10 +316,10 @@ void FlashDialog::onJSWindowObjectCleared()
 void FlashDialog::on_tbMute_clicked()
 {
   if (ui->tbMute->text() == "Mute") {
-    fshost->mute();
+    fs->mute();
     ui->tbMute->setText("UnMute");
   } else {
-    fshost->unmute();
+    fs->unmute();
     ui->tbMute->setText("Mute");
   }
 }

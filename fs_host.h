@@ -109,6 +109,6 @@ private:
   int _active_calls;
 };
 
-extern FSHost *fshost;
+extern FSHost *fs;
 
 #endif // FSHOST_H
