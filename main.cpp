@@ -11,16 +11,16 @@ void customMessageHandler(QtMsgType type, const char *msg)
 {
   switch (type) {
   case QtDebugMsg:
-    fprintf(_logFile, "Debug: %s\n", msg);
+    fprintf(_logFile, "DBUG: %s\n", msg);
     break;
   case QtWarningMsg:
-    fprintf(_logFile, "Warning: %s\n", msg);
+    fprintf(_logFile, "WARN: %s\n", msg);
     break;
   case QtCriticalMsg:
-    fprintf(_logFile, "Critical: %s\n", msg);
+    fprintf(_logFile, "CRIT: %s\n", msg);
     break;
   case QtFatalMsg:
-    fprintf(_logFile, "Fatal: %s\n", msg);
+    fprintf(_logFile, "FATL: %s\n", msg);
     abort();
   }
   fflush(_logFile);
