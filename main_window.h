@@ -25,7 +25,6 @@ protected:
 	QLayout *createBody();
 
 private:
-	MainWindow *ui;
 	QPushButton *btnState;
 	QLabel *lbStatus;
 	QLabel *lbSIPStatus;

@@ -12,7 +12,6 @@ QSystemTrayIcon *sysTray;
 MainWindow::MainWindow(QWidget *parent) :
 	QWidget(parent)
 {
-	ui = this;
 	createBody();
 
 	setWindowTitle("Trainer Studio - Idapted Ltd.");
@@ -27,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	incoming_call_dialog = new IncomingCallDialog();
 	settings_dialog = NULL;
 	_sipStateReady = false;
-	ui->btnState->setChecked(false);
+	btnState->setChecked(false);
 	_timer = new QTimer(this);
 	_timer->setInterval(20000);
 
@@ -102,7 +101,7 @@ void MainWindow::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 	switch (e->type()) {
 	case QEvent::LanguageChange:
-		// ui->retranslateUi(this);
+		// retranslateUi(this);
 		break;
 	default:
 		break;
@@ -142,21 +141,21 @@ void MainWindow::on_State_clicked()
 		QMessageBox::warning(this, QApplication::applicationName(), "Cannot Pause, VoIP not ready!");
 	}
 	// why isChecked shows reversed?
-	qDebug() << ui->btnState->isChecked();
-	ApplicationController::server()->pause(!ui->btnState->isChecked());
+	qDebug() << btnState->isChecked();
+	ApplicationController::server()->pause(!btnState->isChecked());
 }
 
 void MainWindow::onPaused(bool state)
 {
 	if (state){
-		ui->btnState->setText("> Start Working");
-		ui->btnState->setChecked(false);
+		btnState->setText("> Start Working");
+		btnState->setChecked(false);
 		QApplication::alert(this, 0);
 		_timer->start();
 	}
 	else {
-		ui->btnState->setText("|| Pause");
-		ui->btnState->setChecked(true);
+		btnState->setText("|| Pause");
+		btnState->setChecked(true);
 		_timer->stop();
 	}
 }
@@ -191,17 +190,17 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
-			if (ui->btnState->isChecked())
+			if (btnState->isChecked())
 				ApplicationController::server()->pause(true); //force pause
 		}
 	}
-	ui->lbSIPStatus->setText(QString("SIP State: %1").arg(state));
+	lbSIPStatus->setText(QString("SIP State: %1").arg(state));
 }
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
 {
 	QString msg = QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString());
-	ui->lbStatus->setText(msg);
+	lbStatus->setText(msg);
 	sysTray->showMessage(QApplication::applicationName(),msg, QSystemTrayIcon::Information, 3000);
 }
 
@@ -230,14 +229,14 @@ void MainWindow::on_Settings_clicked()
 void MainWindow::on_Echo_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
-	ui->lbStatus->setText("Echo test");
+	lbStatus->setText("Echo test");
 	parseCallResult(ApplicationController::fs()->call("echo"));
 }
 
 void MainWindow::on_Conference_clicked()
 {
 	if (!_activeUUID.isEmpty()) return;
-	ui->lbStatus->setText("Conference");
+	lbStatus->setText("Conference");
 	parseCallResult(ApplicationController::fs()->call("conf"));
 }
 
@@ -262,7 +261,7 @@ void MainWindow::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 
 	QString eventName = switch_event_get_header_nil(event, "Event-Name");
 	QString eventSubclass = switch_event_get_header_nil(event, "Event-Subclass");
-	ui->lbStatus->setText(eventName + "::" + eventSubclass);
+	lbStatus->setText(eventName + "::" + eventSubclass);
 
 	switch (event->event_id) {
 	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
@@ -285,7 +284,7 @@ void MainWindow::parseCallResult(QString res)
 	} else {
 		_activeUUID = "";
 		disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
-		ui->lbStatus->setText(res.trimmed());
+		lbStatus->setText(res.trimmed());
 	}
 }
 
