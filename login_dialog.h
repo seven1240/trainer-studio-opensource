@@ -17,51 +17,51 @@ QT_END_NAMESPACE
 class User;
 
 class LoginDialog : public QDialog {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
-  LoginDialog(QWidget *parent = 0);
-  ~LoginDialog();
+	LoginDialog(QWidget *parent = 0);
+	~LoginDialog();
 
 protected:
-  void changeEvent(QEvent *e);
-  void closeEvent(QCloseEvent *);
-  void KeyPressEvent(QKeyEvent *e);
+	void changeEvent(QEvent *e);
+	void closeEvent(QCloseEvent *);
+	void KeyPressEvent(QKeyEvent *e);
 
 private:
-  QLineEdit *_leUsername;
-  QLineEdit *_lePassword;
-  QPushButton *_pbSettings;
-  QPushButton *_pbLogin;
-  QPushButton *_pbCancel;
-  QLabel *_lbProgress;
-  QTextEdit *_teProgress;
-  QFrame *_loginFrame;
-  QFrame *_progressFrame;
-  bool _authenticated;
-  bool _abort;
-  User *_user;
+	QLineEdit *_leUsername;
+	QLineEdit *_lePassword;
+	QPushButton *_pbSettings;
+	QPushButton *_pbLogin;
+	QPushButton *_pbCancel;
+	QLabel *_lbProgress;
+	QTextEdit *_teProgress;
+	QFrame *_loginFrame;
+	QFrame *_progressFrame;
+	bool _authenticated;
+	bool _abort;
+	User *_user;
 
-  void abortLogin();
-  void abortLogin(QString msg);
+	void abortLogin();
+	void abortLogin(QString msg);
 
 private:
-  void showProgress();
-  void showLogin();
-  void setProgress(QString string);
+	void showProgress();
+	void showLogin();
+	void setProgress(QString string);
 
 public slots:
 
 private slots:
-  void onSettingsClicked();
-  void onAuthenticated(User *user);
-  void onAuthenticateError(QString);
-  void onAuthenticateTimeout();
-  void onSocketError(QString);
-  void onCancelClicked();
-  void onLoginClicked();
-  void onFSModuleLoaded(QString modType, QString modKey, QString modName);
-  void doRegisterToVoIP();
+	void onSettingsClicked();
+	void onAuthenticated(User *user);
+	void onAuthenticateError(QString);
+	void onAuthenticateTimeout();
+	void onSocketError(QString);
+	void onCancelClicked();
+	void onLoginClicked();
+	void onFSModuleLoaded(QString modType, QString modKey, QString modName);
+	void doRegisterToVoIP();
 };
 
 #endif // LOGINDIALOG_H

@@ -10,31 +10,31 @@ class QLabel;
 QT_END_NAMESPACE
 
 class EchoTestDialog : public QDialog {
-  Q_OBJECT
+	Q_OBJECT
 public:
-  EchoTestDialog(QWidget *parent = 0);
-  ~EchoTestDialog();
+	EchoTestDialog(QWidget *parent = 0);
+	~EchoTestDialog();
 
 protected:
-  void changeEvent(QEvent *e);
-  void closeEvent(QCloseEvent *e);
+	void changeEvent(QEvent *e);
+	void closeEvent(QCloseEvent *e);
 
 private:
-  QPushButton *_pbBegin;
-  QPushButton *_pbSkip;
-  QPushButton *_pbFinish;
-  QLabel *_lbProgress;
+	QPushButton *_pbBegin;
+	QPushButton *_pbSkip;
+	QPushButton *_pbFinish;
+	QLabel *_lbProgress;
 
 private:
-  void setProgress(QString string);
-  bool didTheyHearThemselves();
+	void setProgress(QString string);
+	bool didTheyHearThemselves();
 
 private slots:
-  void onSettingsClicked();
-  void onSkipClicked();
-  void onBeginClicked();
-  void onFinishClicked();
-  void onNewEvent(QSharedPointer<switch_event_t>);
+	void onSettingsClicked();
+	void onSkipClicked();
+	void onBeginClicked();
+	void onFinishClicked();
+	void onNewEvent(QSharedPointer<switch_event_t>);
 };
 
 #endif // ECHOTESTDIALOG_H

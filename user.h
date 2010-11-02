@@ -7,24 +7,23 @@
 
 class User : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
+
 public:
-  User(QVariantMap &details);
-  ~User();
-  QVariantMap &details() { return _details; }
-  QString getLogin() { return _details["login"].toString(); }
-  QString getVoipUsername() { return _details["voip_username"].toString(); }
-  QString getVoipPassword() { return _details["voip_password"].toString(); }
-  QString getVoipServer();
-  bool skipEchoTesting() { return _details["skip_echo_test"].toString() == "true"; }
+	User(QVariantMap &details);
+	~User();
+	QVariantMap &details() { return _details; }
+	QString getLogin() { return _details["login"].toString(); }
+	QString getVoipUsername() { return _details["voip_username"].toString(); }
+	QString getVoipPassword() { return _details["voip_password"].toString(); }
+	QString getVoipServer();
+	bool skipEchoTesting() { return _details["skip_echo_test"].toString() == "true"; }
 
 signals:
-
 public slots:
 
 private:
-  QVariantMap _details;
-
+	QVariantMap _details;
 };
 
 #endif // USER_H

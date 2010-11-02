@@ -40,73 +40,73 @@
 
 class FSHost : public QThread
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
-  FSHost(QObject *parent = 0);
-  bool isRunning() { return _running; }
-  bool isReady() { return _ready; }
-  bool isSofiaReady() { return _sofia_ready; }
-  bool isBusy() { return _active_calls > 0; }
+	FSHost(QObject *parent = 0);
+	bool isRunning() { return _running; }
+	bool isReady() { return _ready; }
+	bool isSofiaReady() { return _sofia_ready; }
+	bool isBusy() { return _active_calls > 0; }
 
 protected:
-  void run(void);
+	void run(void);
 
 public:
-  QString call(QString callee);
-  void reload();
-  switch_status_t mute();
-  switch_status_t unmute();
-  switch_status_t hold(QString uuid);
-  switch_status_t unhold(QString uuid);
-  void hangup(bool all);
-  switch_status_t recordStart(QString uuid, QString filename);
-  switch_status_t recordStop(QString uuid, QString filename);
-  void answer();
+	QString call(QString callee);
+	void reload();
+	switch_status_t mute();
+	switch_status_t unmute();
+	switch_status_t hold(QString uuid);
+	switch_status_t unhold(QString uuid);
+	void hangup(bool all);
+	switch_status_t recordStart(QString uuid, QString filename);
+	switch_status_t recordStop(QString uuid, QString filename);
+	void answer();
 
-  switch_status_t portAudioDtmf(char chr);
-  QString portAudioRescan();
-  void portAudioLoop();
-  void portAudioPlay(QString target);
-  QString portAudioDevices();
-  void portAudioInDevice(int index);
-  void portAudioOutDevice(int index);
-  void portAudioRingDevice(int index);
+	switch_status_t portAudioDtmf(char chr);
+	QString portAudioRescan();
+	void portAudioLoop();
+	void portAudioPlay(QString target);
+	QString portAudioDevices();
+	void portAudioInDevice(int index);
+	void portAudioOutDevice(int index);
+	void portAudioRingDevice(int index);
 
 public:
-  void generalEventHandler(switch_event_t *event);
-  void generalLoggerHandler(QSharedPointer<switch_log_node_t> node, switch_log_level_t level);
-  void printEventHeaders(QSharedPointer<switch_event_t> event);
-  void createFolders();
+	void generalEventHandler(switch_event_t *event);
+	void generalLoggerHandler(QSharedPointer<switch_log_node_t> node, switch_log_level_t level);
+	void printEventHeaders(QSharedPointer<switch_event_t> event);
+	void createFolders();
 
 signals:
-  /* Status signals */
-  void coreLoadingError(QString);
-  void loadingModules(QString, int, QColor);
-  void moduleLoaded(QString, QString, QString);
-  void ready(void);
+	/* Status signals */
+	void coreLoadingError(QString);
+	void loadingModules(QString, int, QColor);
+	void moduleLoaded(QString, QString, QString);
+	void ready(void);
 
-  /* Logging signals */
-  void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
-  void newEvent(QSharedPointer<switch_event_t>);    
+	/* Logging signals */
+	void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
+	void newEvent(QSharedPointer<switch_event_t>);    
 
-  /* Call signals */
-  void incomingCall(QSharedPointer<switch_event_t>event);
-  void gatewayStateChange(QString state);
+	/* Call signals */
+	void incomingCall(QSharedPointer<switch_event_t>event);
+	void gatewayStateChange(QString state);
 
 private slots:
-  void minimalModuleLoaded(QString, QString, QString);
+	void minimalModuleLoaded(QString, QString, QString);
 
 private:
-  switch_status_t sendCmd(const char *cmd, const char *args, QString *res);
-  QSharedPointer<Call> getCurrentActiveCall();
-  QList<QString> _loadedModules;
-  QHash<QString, QSharedPointer<Call> > _activeCalls;
-  QHash<QString, QSharedPointer<Channel> > _activeChannels;
-  bool _running;
-  bool _ready;
-  bool _sofia_ready;
-  int _active_calls;
+	switch_status_t sendCmd(const char *cmd, const char *args, QString *res);
+	QSharedPointer<Call> getCurrentActiveCall();
+	QList<QString> _loadedModules;
+	QHash<QString, QSharedPointer<Call> > _activeCalls;
+	QHash<QString, QSharedPointer<Channel> > _activeChannels;
+	bool _running;
+	bool _ready;
+	bool _sofia_ready;
+	int _active_calls;
 };
 
 extern FSHost *fs;

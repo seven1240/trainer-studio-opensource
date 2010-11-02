@@ -37,473 +37,473 @@ static switch_status_t loggerHandler(const switch_log_node_t *, switch_log_level
 FSHost *fs;
 
 FSHost::FSHost(QObject *parent) :
-  QThread(parent)
+	QThread(parent)
 {
-  qDebug() << "Initializing globals..." << endl;
-  switch_core_setrlimits();
-  switch_core_set_globals();
+	qDebug() << "Initializing globals..." << endl;
+	switch_core_setrlimits();
+	switch_core_set_globals();
 
-  qRegisterMetaType<QSharedPointer<switch_event_t> >("QSharedPointer<switch_event_t>");
-  qRegisterMetaType<QSharedPointer<switch_log_node_t> >("QSharedPointer<switch_log_node_t>");
-  qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
+	qRegisterMetaType<QSharedPointer<switch_event_t> >("QSharedPointer<switch_event_t>");
+	qRegisterMetaType<QSharedPointer<switch_log_node_t> >("QSharedPointer<switch_log_node_t>");
+	qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
 
-  _running = false;
-  _ready = false;
-  _sofia_ready = false;
-  _active_calls = 0;
+	_running = false;
+	_ready = false;
+	_sofia_ready = false;
+	_active_calls = 0;
 
 }
 
 void FSHost::createFolders()
 {
-  /* Create directory structure for softphone with default configs */
-  QDir conf_dir = QDir::home();
-  if (!conf_dir.exists(DOTDIR))
-    conf_dir.mkpath(DOTDIR);
-  if (!conf_dir.exists(DOTDIR "/recordings"))
-    conf_dir.mkpath(DOTDIR "/recordings");
-  if (!conf_dir.exists(DOTDIR "/sounds")) {
-    conf_dir.mkpath(DOTDIR "/sounds");
-  }
-  if(!QFile::exists(QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
-    conf_dir.mkdir(DOTDIR "/conf");
-    QFile rootXML(":/conf/freeswitch.xml");
-    qDebug() << rootXML.exists(":conf/freeswitch.xml");
-    QString dest = QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath());
-    rootXML.copy(dest);
-    QFile destFile(dest);
-    destFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
-  }
+	/* Create directory structure for softphone with default configs */
+	QDir conf_dir = QDir::home();
+	if (!conf_dir.exists(DOTDIR))
+		conf_dir.mkpath(DOTDIR);
+	if (!conf_dir.exists(DOTDIR "/recordings"))
+		conf_dir.mkpath(DOTDIR "/recordings");
+	if (!conf_dir.exists(DOTDIR "/sounds")) {
+		conf_dir.mkpath(DOTDIR "/sounds");
+	}
+	if(!QFile::exists(QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
+		conf_dir.mkdir(DOTDIR "/conf");
+		QFile rootXML(":/conf/freeswitch.xml");
+		qDebug() << rootXML.exists(":conf/freeswitch.xml");
+		QString dest = QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath());
+		rootXML.copy(dest);
+		QFile destFile(dest);
+		destFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
+	}
 
-  /* Set all directories to the home user directory */
-  if (conf_dir.cd(DOTDIR))
-  {
-    SWITCH_GLOBAL_dirs.conf_dir = (char *) malloc(strlen(QString("%1/conf").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.conf_dir) {
-      emit coreLoadingError("Cannot allocate memory for conf_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.conf_dir, QString("%1/conf").arg(conf_dir.absolutePath()).toAscii().constData());
+	/* Set all directories to the home user directory */
+	if (conf_dir.cd(DOTDIR))
+	{
+		SWITCH_GLOBAL_dirs.conf_dir = (char *) malloc(strlen(QString("%1/conf").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.conf_dir) {
+			emit coreLoadingError("Cannot allocate memory for conf_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.conf_dir, QString("%1/conf").arg(conf_dir.absolutePath()).toAscii().constData());
 
-    SWITCH_GLOBAL_dirs.log_dir = (char *) malloc(strlen(QString("%1/log").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.log_dir) {
-      emit coreLoadingError("Cannot allocate memory for log_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.log_dir, QString("%1/log").arg(conf_dir.absolutePath()).toAscii().constData());
+		SWITCH_GLOBAL_dirs.log_dir = (char *) malloc(strlen(QString("%1/log").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.log_dir) {
+			emit coreLoadingError("Cannot allocate memory for log_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.log_dir, QString("%1/log").arg(conf_dir.absolutePath()).toAscii().constData());
 
-    SWITCH_GLOBAL_dirs.run_dir = (char *) malloc(strlen(QString("%1/run").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.run_dir) {
-      emit coreLoadingError("Cannot allocate memory for run_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.run_dir, QString("%1/run").arg(conf_dir.absolutePath()).toAscii().constData());
+		SWITCH_GLOBAL_dirs.run_dir = (char *) malloc(strlen(QString("%1/run").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.run_dir) {
+			emit coreLoadingError("Cannot allocate memory for run_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.run_dir, QString("%1/run").arg(conf_dir.absolutePath()).toAscii().constData());
 
-    SWITCH_GLOBAL_dirs.db_dir = (char *) malloc(strlen(QString("%1/db").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.db_dir) {
-      emit coreLoadingError("Cannot allocate memory for db_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.db_dir, QString("%1/db").arg(conf_dir.absolutePath()).toAscii().constData());
+		SWITCH_GLOBAL_dirs.db_dir = (char *) malloc(strlen(QString("%1/db").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.db_dir) {
+			emit coreLoadingError("Cannot allocate memory for db_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.db_dir, QString("%1/db").arg(conf_dir.absolutePath()).toAscii().constData());
 
-    SWITCH_GLOBAL_dirs.script_dir = (char *) malloc(strlen(QString("%1/script").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.script_dir) {
-      emit coreLoadingError("Cannot allocate memory for script_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.script_dir, QString("%1/script").arg(conf_dir.absolutePath()).toAscii().constData());
+		SWITCH_GLOBAL_dirs.script_dir = (char *) malloc(strlen(QString("%1/script").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.script_dir) {
+			emit coreLoadingError("Cannot allocate memory for script_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.script_dir, QString("%1/script").arg(conf_dir.absolutePath()).toAscii().constData());
 
-    SWITCH_GLOBAL_dirs.htdocs_dir = (char *) malloc(strlen(QString("%1/htdocs").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
-    if (!SWITCH_GLOBAL_dirs.htdocs_dir) {
-      emit coreLoadingError("Cannot allocate memory for htdocs_dir.");
-    }
-    strcpy(SWITCH_GLOBAL_dirs.htdocs_dir, QString("%1/htdocs").arg(conf_dir.absolutePath()).toAscii().constData());
-  }
+		SWITCH_GLOBAL_dirs.htdocs_dir = (char *) malloc(strlen(QString("%1/htdocs").arg(conf_dir.absolutePath()).toAscii().constData()) + 1);
+		if (!SWITCH_GLOBAL_dirs.htdocs_dir) {
+			emit coreLoadingError("Cannot allocate memory for htdocs_dir.");
+		}
+		strcpy(SWITCH_GLOBAL_dirs.htdocs_dir, QString("%1/htdocs").arg(conf_dir.absolutePath()).toAscii().constData());
+	}
 }
 
 void FSHost::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level)
 {
-  emit eventLog(node, level);
+	emit eventLog(node, level);
 }
 
 void FSHost::run(void)
 {
-  switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT;
-  const char *err = NULL;
-  switch_bool_t console = SWITCH_FALSE;
-  switch_status_t destroy_status;
+	switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT;
+	const char *err = NULL;
+	switch_bool_t console = SWITCH_FALSE;
+	switch_status_t destroy_status;
 
-  createFolders();
+	createFolders();
 
-  ISettings *settings = new ISettings();
-  settings->resetGateway();
-  settings->saveToFile();
-  delete settings;
+	ISettings *settings = new ISettings();
+	settings->resetGateway();
+	settings->saveToFile();
+	delete settings;
 
-  _running = true;
+	_running = true;
 
-  /* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
-  qDebug() << "Initializing core...";
-  /* Initialize the core and load modules, that will startup FS completely */
-  if (switch_core_init(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
-    fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
-    emit coreLoadingError(err);
-  }
+	/* If you need to override configuration directories, you need to change them in the SWITCH_GLOBAL_dirs global structure */
+	qDebug() << "Initializing core...";
+	/* Initialize the core and load modules, that will startup FS completely */
+	if (switch_core_init(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
+		fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
+		emit coreLoadingError(err);
+	}
 
-  qDebug() << "Everything OK, Entering runtime loop ...";
+	qDebug() << "Everything OK, Entering runtime loop ...";
 
-  if (switch_event_bind("TS", SWITCH_EVENT_ALL, SWITCH_EVENT_SUBCLASS_ANY, eventHandlerCallback, NULL) != SWITCH_STATUS_SUCCESS) {
-    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Couldn't bind!\n");
-  }
+	if (switch_event_bind("TS", SWITCH_EVENT_ALL, SWITCH_EVENT_SUBCLASS_ANY, eventHandlerCallback, NULL) != SWITCH_STATUS_SUCCESS) {
+		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Couldn't bind!\n");
+	}
 
-  emit loadingModules("Loading modules...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
-  if (switch_core_init_and_modload(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
-    fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
-    emit coreLoadingError(err);
-  }
+	emit loadingModules("Loading modules...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
+	if (switch_core_init_and_modload(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
+		fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
+		emit coreLoadingError(err);
+	}
 
-  switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
-  _ready = true;
-  emit ready();
+	switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
+	_ready = true;
+	emit ready();
 
-  /* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
-   * If its false, it initializes the libedit for the console, then does the same thing */
-  switch_core_runtime_loop(!console);
-  fflush(stdout);
+	/* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
+	 * If its false, it initializes the libedit for the console, then does the same thing */
+	switch_core_runtime_loop(!console);
+	fflush(stdout);
 
 
-  switch_event_unbind_callback(eventHandlerCallback);
-  destroy_status = switch_core_destroy();
-  if (destroy_status == SWITCH_STATUS_SUCCESS)
-  {
-    qDebug() << "We have properly shutdown the core.";
-    _running = false;
-  }
+	switch_event_unbind_callback(eventHandlerCallback);
+	destroy_status = switch_core_destroy();
+	if (destroy_status == SWITCH_STATUS_SUCCESS)
+	{
+		qDebug() << "We have properly shutdown the core.";
+		_running = false;
+	}
 }
 
 void FSHost::generalEventHandler(switch_event_t *switchEvent)
 {
-  QSharedPointer<switch_event_t> event(switchEvent);
-  QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
+	QSharedPointer<switch_event_t> event(switchEvent);
+	QString uuid = switch_event_get_header_nil(event.data(), "Unique-ID");
 
-  switch (event.data()->event_id) {
-    // case SWITCH_EVENT_CUSTOM: break;
-    case SWITCH_EVENT_CLONE: break;
-    // case SWITCH_EVENT_CHANNEL_CREATE: break;
-    case SWITCH_EVENT_CHANNEL_DESTROY: break;
-    case SWITCH_EVENT_CHANNEL_STATE: break;
-    case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
-    case SWITCH_EVENT_CHANNEL_ANSWER: break;
-    case SWITCH_EVENT_CHANNEL_HANGUP: break;
-    case SWITCH_EVENT_CHANNEL_EXECUTE: break;
-    case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE: break;
-    case SWITCH_EVENT_CHANNEL_HOLD: break;
-    case SWITCH_EVENT_CHANNEL_UNHOLD: break;
-    // case SWITCH_EVENT_CHANNEL_BRIDGE: break;
-    // case SWITCH_EVENT_CHANNEL_UNBRIDGE: break;
-    case SWITCH_EVENT_CHANNEL_PROGRESS: break;
-    case SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA: break;
-    case SWITCH_EVENT_CHANNEL_OUTGOING: break;
-    case SWITCH_EVENT_CHANNEL_PARK: break;
-    case SWITCH_EVENT_CHANNEL_UNPARK: break;
-    case SWITCH_EVENT_CHANNEL_APPLICATION: break;
-    case SWITCH_EVENT_CHANNEL_ORIGINATE: break;
-    case SWITCH_EVENT_CHANNEL_UUID: break;
-    case SWITCH_EVENT_API: break;
-    case SWITCH_EVENT_LOG: break;
-    case SWITCH_EVENT_INBOUND_CHAN: break;
-    case SWITCH_EVENT_OUTBOUND_CHAN: break;
-    case SWITCH_EVENT_STARTUP: break;
-    case SWITCH_EVENT_SHUTDOWN: break;
-    case SWITCH_EVENT_PUBLISH: break;
-    case SWITCH_EVENT_UNPUBLISH: break;
-    case SWITCH_EVENT_TALK: break;
-    case SWITCH_EVENT_NOTALK: break;
-    case SWITCH_EVENT_SESSION_CRASH: break;
-    // case SWITCH_EVENT_MODULE_LOAD: break;
-    case SWITCH_EVENT_MODULE_UNLOAD: break;
-    case SWITCH_EVENT_DTMF: break;
-    case SWITCH_EVENT_MESSAGE: break;
-    case SWITCH_EVENT_PRESENCE_IN: break;
-    case SWITCH_EVENT_NOTIFY_IN: break;
-    case SWITCH_EVENT_PRESENCE_OUT: break;
-    case SWITCH_EVENT_PRESENCE_PROBE: break;
-    case SWITCH_EVENT_MESSAGE_WAITING: break;
-    case SWITCH_EVENT_MESSAGE_QUERY: break;
-    case SWITCH_EVENT_ROSTER: break;
-    case SWITCH_EVENT_CODEC: break;
-    case SWITCH_EVENT_BACKGROUND_JOB: break;
-    case SWITCH_EVENT_DETECTED_SPEECH: break;
-    case SWITCH_EVENT_DETECTED_TONE: break;
-    case SWITCH_EVENT_PRIVATE_COMMAND: break;
-    case SWITCH_EVENT_HEARTBEAT: break;
-    case SWITCH_EVENT_TRAP: break;
-    case SWITCH_EVENT_ADD_SCHEDULE: break;
-    case SWITCH_EVENT_DEL_SCHEDULE: break;
-    case SWITCH_EVENT_EXE_SCHEDULE: break;
-    case SWITCH_EVENT_RE_SCHEDULE: break;
-    case SWITCH_EVENT_RELOADXML: break;
-    case SWITCH_EVENT_NOTIFY: break;
-    case SWITCH_EVENT_SEND_MESSAGE: break;
-    case SWITCH_EVENT_RECV_MESSAGE: break;
-    case SWITCH_EVENT_REQUEST_PARAMS: break;
-    case SWITCH_EVENT_CHANNEL_DATA: break;
-    case SWITCH_EVENT_GENERAL: break;
-    case SWITCH_EVENT_COMMAND: break;
-    case SWITCH_EVENT_SESSION_HEARTBEAT: break;
-    case SWITCH_EVENT_CLIENT_DISCONNECTED: break;
-    case SWITCH_EVENT_SERVER_DISCONNECTED: break;
-    case SWITCH_EVENT_SEND_INFO: break;
-    case SWITCH_EVENT_RECV_INFO: break;
-    case SWITCH_EVENT_RECV_RTCP_MESSAGE: break;
-    case SWITCH_EVENT_CALL_SECURE: break;
-    case SWITCH_EVENT_NAT: break;
-    case SWITCH_EVENT_RECORD_START: break;
-    case SWITCH_EVENT_RECORD_STOP: break;
-    case SWITCH_EVENT_CALL_UPDATE: break;
-    case SWITCH_EVENT_FAILURE: break;
-    case SWITCH_EVENT_SOCKET_DATA: break;
-    case SWITCH_EVENT_MEDIA_BUG_START: break;
-    case SWITCH_EVENT_MEDIA_BUG_STOP: break;
-    case SWITCH_EVENT_ALL: break;
-    case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
-    {
-      if (_active_calls > 0) {
-        QString res;
-        sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
-        qDebug() << "hangup " << res;
-      }
-      break;
-    }
-    case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
-    {
-      _active_calls++;
-      break;
-    }
-    case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
-    {
-      if (--_active_calls < 0)
-        _active_calls = 0;
-      break;
-    }
-    case SWITCH_EVENT_CUSTOM:/*5A*/
-    {
-      if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
-        emit incomingCall(event);
-      }
-      else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
-        QString state = switch_event_get_header_nil(event.data(), "State");
-        emit gatewayStateChange(state);
-      }
+	switch (event.data()->event_id) {
+		// case SWITCH_EVENT_CUSTOM: break;
+	case SWITCH_EVENT_CLONE: break;
+							 // case SWITCH_EVENT_CHANNEL_CREATE: break;
+	case SWITCH_EVENT_CHANNEL_DESTROY: break;
+	case SWITCH_EVENT_CHANNEL_STATE: break;
+	case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
+	case SWITCH_EVENT_CHANNEL_ANSWER: break;
+	case SWITCH_EVENT_CHANNEL_HANGUP: break;
+	case SWITCH_EVENT_CHANNEL_EXECUTE: break;
+	case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE: break;
+	case SWITCH_EVENT_CHANNEL_HOLD: break;
+	case SWITCH_EVENT_CHANNEL_UNHOLD: break;
+									  // case SWITCH_EVENT_CHANNEL_BRIDGE: break;
+									  // case SWITCH_EVENT_CHANNEL_UNBRIDGE: break;
+	case SWITCH_EVENT_CHANNEL_PROGRESS: break;
+	case SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA: break;
+	case SWITCH_EVENT_CHANNEL_OUTGOING: break;
+	case SWITCH_EVENT_CHANNEL_PARK: break;
+	case SWITCH_EVENT_CHANNEL_UNPARK: break;
+	case SWITCH_EVENT_CHANNEL_APPLICATION: break;
+	case SWITCH_EVENT_CHANNEL_ORIGINATE: break;
+	case SWITCH_EVENT_CHANNEL_UUID: break;
+	case SWITCH_EVENT_API: break;
+	case SWITCH_EVENT_LOG: break;
+	case SWITCH_EVENT_INBOUND_CHAN: break;
+	case SWITCH_EVENT_OUTBOUND_CHAN: break;
+	case SWITCH_EVENT_STARTUP: break;
+	case SWITCH_EVENT_SHUTDOWN: break;
+	case SWITCH_EVENT_PUBLISH: break;
+	case SWITCH_EVENT_UNPUBLISH: break;
+	case SWITCH_EVENT_TALK: break;
+	case SWITCH_EVENT_NOTALK: break;
+	case SWITCH_EVENT_SESSION_CRASH: break;
+									 // case SWITCH_EVENT_MODULE_LOAD: break;
+	case SWITCH_EVENT_MODULE_UNLOAD: break;
+	case SWITCH_EVENT_DTMF: break;
+	case SWITCH_EVENT_MESSAGE: break;
+	case SWITCH_EVENT_PRESENCE_IN: break;
+	case SWITCH_EVENT_NOTIFY_IN: break;
+	case SWITCH_EVENT_PRESENCE_OUT: break;
+	case SWITCH_EVENT_PRESENCE_PROBE: break;
+	case SWITCH_EVENT_MESSAGE_WAITING: break;
+	case SWITCH_EVENT_MESSAGE_QUERY: break;
+	case SWITCH_EVENT_ROSTER: break;
+	case SWITCH_EVENT_CODEC: break;
+	case SWITCH_EVENT_BACKGROUND_JOB: break;
+	case SWITCH_EVENT_DETECTED_SPEECH: break;
+	case SWITCH_EVENT_DETECTED_TONE: break;
+	case SWITCH_EVENT_PRIVATE_COMMAND: break;
+	case SWITCH_EVENT_HEARTBEAT: break;
+	case SWITCH_EVENT_TRAP: break;
+	case SWITCH_EVENT_ADD_SCHEDULE: break;
+	case SWITCH_EVENT_DEL_SCHEDULE: break;
+	case SWITCH_EVENT_EXE_SCHEDULE: break;
+	case SWITCH_EVENT_RE_SCHEDULE: break;
+	case SWITCH_EVENT_RELOADXML: break;
+	case SWITCH_EVENT_NOTIFY: break;
+	case SWITCH_EVENT_SEND_MESSAGE: break;
+	case SWITCH_EVENT_RECV_MESSAGE: break;
+	case SWITCH_EVENT_REQUEST_PARAMS: break;
+	case SWITCH_EVENT_CHANNEL_DATA: break;
+	case SWITCH_EVENT_GENERAL: break;
+	case SWITCH_EVENT_COMMAND: break;
+	case SWITCH_EVENT_SESSION_HEARTBEAT: break;
+	case SWITCH_EVENT_CLIENT_DISCONNECTED: break;
+	case SWITCH_EVENT_SERVER_DISCONNECTED: break;
+	case SWITCH_EVENT_SEND_INFO: break;
+	case SWITCH_EVENT_RECV_INFO: break;
+	case SWITCH_EVENT_RECV_RTCP_MESSAGE: break;
+	case SWITCH_EVENT_CALL_SECURE: break;
+	case SWITCH_EVENT_NAT: break;
+	case SWITCH_EVENT_RECORD_START: break;
+	case SWITCH_EVENT_RECORD_STOP: break;
+	case SWITCH_EVENT_CALL_UPDATE: break;
+	case SWITCH_EVENT_FAILURE: break;
+	case SWITCH_EVENT_SOCKET_DATA: break;
+	case SWITCH_EVENT_MEDIA_BUG_START: break;
+	case SWITCH_EVENT_MEDIA_BUG_STOP: break;
+	case SWITCH_EVENT_ALL: break;
+	case SWITCH_EVENT_CHANNEL_CREATE: /*1A - 17B*/
+						   {
+							   if (_active_calls > 0) {
+								   QString res;
+								   sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
+								   qDebug() << "hangup " << res;
+							   }
+							   break;
+						   }
+	case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
+						   {
+							   _active_calls++;
+							   break;
+						   }
+	case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
+						   {
+							   if (--_active_calls < 0)
+								   _active_calls = 0;
+							   break;
+						   }
+	case SWITCH_EVENT_CUSTOM:/*5A*/
+						   {
+							   if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
+								   emit incomingCall(event);
+							   }
+							   else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
+								   QString state = switch_event_get_header_nil(event.data(), "State");
+								   emit gatewayStateChange(state);
+							   }
 
-      //            }
-      //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
-      //            {
-      //                QString gw = switch_event_get_header_nil(event.data(), "Gateway");
-      //                Account * accPtr = new Account(gw);
-      //                QSharedPointer<Account> acc = QSharedPointer<Account>(accPtr);
-      //                acc.data()->setState(FSCOMM_GW_STATE_NOAVAIL);
-      //                _accounts.insert(gw, acc);
-      //                emit newAccount(acc);
-      //            }
-      //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_delete") == 0)
-      //            {
-      //                QSharedPointer<Account> acc = _accounts.take(switch_event_get_header_nil(event.data(), "Gateway"));
-      //                if (!acc.isNull())
-      //                    emit delAccount(acc);
-      //            }
-      //            else
-      //            {
-      //                //printEventHeaders(event);
-      //            }
-      break;
-    }
-    case SWITCH_EVENT_MODULE_LOAD:
-    {
-      QString modType = switch_event_get_header_nil(event.data(), "type");
-      QString modKey = switch_event_get_header_nil(event.data(), "key");
-      QString modName = switch_event_get_header_nil(event.data(), "name");
-      if (modKey == "mod_sofia") {
-        _sofia_ready = true;
-      }
-      emit moduleLoaded(modType, modKey, modName);
-      break;
-    }
-    default:
-      break;
-  }
+							   //            }
+							   //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
+							   //            {
+							   //                QString gw = switch_event_get_header_nil(event.data(), "Gateway");
+							   //                Account * accPtr = new Account(gw);
+							   //                QSharedPointer<Account> acc = QSharedPointer<Account>(accPtr);
+							   //                acc.data()->setState(FSCOMM_GW_STATE_NOAVAIL);
+							   //                _accounts.insert(gw, acc);
+							   //                emit newAccount(acc);
+							   //            }
+							   //            else if (strcmp(event.data()->subclass_name, "sofia::gateway_delete") == 0)
+							   //            {
+							   //                QSharedPointer<Account> acc = _accounts.take(switch_event_get_header_nil(event.data(), "Gateway"));
+							   //                if (!acc.isNull())
+							   //                    emit delAccount(acc);
+							   //            }
+							   //            else
+							   //            {
+							   //                //printEventHeaders(event);
+							   //            }
+							   break;
+	}
+case SWITCH_EVENT_MODULE_LOAD:
+	{
+		QString modType = switch_event_get_header_nil(event.data(), "type");
+		QString modKey = switch_event_get_header_nil(event.data(), "key");
+		QString modName = switch_event_get_header_nil(event.data(), "name");
+		if (modKey == "mod_sofia") {
+			_sofia_ready = true;
+		}
+		emit moduleLoaded(modType, modKey, modName);
+		break;
+	}
+default:
+	break;
+}
 
-  emit newEvent(event);
+emit newEvent(event);
 }
 
 void FSHost::minimalModuleLoaded(QString modType, QString modKey, QString /*modName*/)
 {
-  if (modType == "endpoint")
-  {
-    _loadedModules.append(modKey);
-  }
+	if (modType == "endpoint")
+	{
+		_loadedModules.append(modKey);
+	}
 }
 
 switch_status_t FSHost::sendCmd(const char *cmd, const char *args, QString *res)
 {
-  switch_status_t status = SWITCH_STATUS_FALSE;
-  switch_stream_handle_t stream;
-  SWITCH_STANDARD_STREAM(stream);
-  status = switch_api_execute(cmd, args, NULL, &stream);
-  *res = switch_str_nil((char *) stream.data);
-  switch_safe_free(stream.data);
+	switch_status_t status = SWITCH_STATUS_FALSE;
+	switch_stream_handle_t stream;
+	SWITCH_STANDARD_STREAM(stream);
+	status = switch_api_execute(cmd, args, NULL, &stream);
+	*res = switch_str_nil((char *) stream.data);
+	switch_safe_free(stream.data);
 
-  return status;
+	return status;
 }
 
 QSharedPointer<Call> FSHost::getCurrentActiveCall()
 {
-  foreach (QSharedPointer<Call> call, _activeCalls.values())
-  {
-    if (call.data()->isActive())
-      return call;
-  }
-  return QSharedPointer<Call>();
+	foreach (QSharedPointer<Call> call, _activeCalls.values())
+	{
+		if (call.data()->isActive())
+			return call;
+	}
+	return QSharedPointer<Call>();
 }
 
 void FSHost::printEventHeaders(QSharedPointer<switch_event_t>event)
 {
-  switch_event_header_t *hp;
-  qDebug() << QString("Received event: %1(%2)").arg(switch_event_name(event.data()->event_id), switch_event_get_header_nil(event.data(), "Event-Subclass"));
-  for (hp = event.data()->headers; hp; hp = hp->next) {
-    qDebug() << hp->name << "=" << hp->value;
-  }
-  qDebug() << "\n\n";
+	switch_event_header_t *hp;
+	qDebug() << QString("Received event: %1(%2)").arg(switch_event_name(event.data()->event_id), switch_event_get_header_nil(event.data(), "Event-Subclass"));
+	for (hp = event.data()->headers; hp; hp = hp->next) {
+		qDebug() << hp->name << "=" << hp->value;
+	}
+	qDebug() << "\n\n";
 }
 
 QString FSHost::call(QString callee)
 {
-  QString res;
-  sendCmd("pa", ("call " + callee).toAscii(), &res);
-  return res;
+	QString res;
+	sendCmd("pa", ("call " + callee).toAscii(), &res);
+	return res;
 }
 
 void FSHost::reload()
 {
-  QString res;
-  sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+	QString res;
+	sendCmd("sofia", "profile softphone rescan reloadxml", &res);
 }
 
 switch_status_t FSHost::mute()
 {
-  QString res;
-  return sendCmd("pa", "flags off mouth", &res);
+	QString res;
+	return sendCmd("pa", "flags off mouth", &res);
 }
 
 switch_status_t FSHost::unmute()
 {
-  QString res;
-  return sendCmd("pa", "flags on mouth", &res);
+	QString res;
+	return sendCmd("pa", "flags on mouth", &res);
 }
 
 switch_status_t FSHost::hold(QString uuid)
 {
-  QString res;
-  return sendCmd("uuid_hold", uuid.toAscii(), &res);
+	QString res;
+	return sendCmd("uuid_hold", uuid.toAscii(), &res);
 }
 
 switch_status_t FSHost::unhold(QString uuid)
 {
-  QString res;
-  return sendCmd("uuid_hold", ("off " + uuid).toAscii(), &res);
+	QString res;
+	return sendCmd("uuid_hold", ("off " + uuid).toAscii(), &res);
 }
 
 void FSHost::hangup(bool all)
 {
-  QString res;
-  if (all) {
-    sendCmd("hupall", "", &res);
-  }
-  else {
-    sendCmd("pa", "hangup", &res);
-  }
+	QString res;
+	if (all) {
+		sendCmd("hupall", "", &res);
+	}
+	else {
+		sendCmd("pa", "hangup", &res);
+	}
 }
 
 switch_status_t FSHost::recordStart(QString uuid, QString filename)
 {
-  QString res;
-  return sendCmd("uuid_record", QString("%1 start %2").arg(uuid, filename).toAscii().data(), &res);
+	QString res;
+	return sendCmd("uuid_record", QString("%1 start %2").arg(uuid, filename).toAscii().data(), &res);
 }
 
 switch_status_t FSHost::recordStop(QString uuid, QString filename)
 {
-  QString res;
-  return sendCmd("uuid_record", QString("%1 stop %2").arg(uuid, filename).toAscii().data(), &res);
+	QString res;
+	return sendCmd("uuid_record", QString("%1 stop %2").arg(uuid, filename).toAscii().data(), &res);
 }
 
 void FSHost::answer()
 {
-  QString res;
-  sendCmd("pa", "answer", &res);
+	QString res;
+	sendCmd("pa", "answer", &res);
 }
 
 switch_status_t FSHost::portAudioDtmf(char chr)
 {
-  QString res;
-  QString params = QString("dtmf %1").arg(chr);
-  return sendCmd("pa", params.toAscii(), &res);
+	QString res;
+	QString params = QString("dtmf %1").arg(chr);
+	return sendCmd("pa", params.toAscii(), &res);
 }
 
 QString FSHost::portAudioRescan()
 {
-  QString devices;
-  sendCmd("pa", "rescan", &devices);
-  return devices;
+	QString devices;
+	sendCmd("pa", "rescan", &devices);
+	return devices;
 }
 
 void FSHost::portAudioLoop()
 {
-  QString res;
-  sendCmd("pa", "looptest", &res);
+	QString res;
+	sendCmd("pa", "looptest", &res);
 }
 
 void FSHost::portAudioPlay(QString target)
 {
-  QString res;
-  sendCmd("pa", QString("play %1").arg(target).toAscii(), &res);
+	QString res;
+	sendCmd("pa", QString("play %1").arg(target).toAscii(), &res);
 }
 
 QString FSHost::portAudioDevices()
 {
-  QString devices;
-  switch_status_t status = fs->sendCmd("pa", "devlist", &devices);
-  if (SWITCH_STATUS_SUCCESS != status) {
-    return "";
-  }
-  return devices;
+	QString devices;
+	switch_status_t status = fs->sendCmd("pa", "devlist", &devices);
+	if (SWITCH_STATUS_SUCCESS != status) {
+		return "";
+	}
+	return devices;
 }
 
 void FSHost::portAudioInDevice(int index)
 {
-  QString res;
-  sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
+	QString res;
+	sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
 }
 
 void FSHost::portAudioOutDevice(int index)
 {
-  QString res;
-  sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
+	QString res;
+	sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
 }
 
 void FSHost::portAudioRingDevice(int index)
 {
-  QString res;
-  sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
+	QString res;
+	sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
 }
 
 static void eventHandlerCallback(switch_event_t *event)
 {
-  switch_event_t *clone = NULL;
-  if (switch_event_dup(&clone, event) == SWITCH_STATUS_SUCCESS) {
-    fs->generalEventHandler(clone);
-  }
+	switch_event_t *clone = NULL;
+	if (switch_event_dup(&clone, event) == SWITCH_STATUS_SUCCESS) {
+		fs->generalEventHandler(clone);
+	}
 }
 
 static switch_status_t loggerHandler(const switch_log_node_t *node, switch_log_level_t level)
 {
-  switch_log_node_t *clone = switch_log_node_dup(node);
-  QSharedPointer<switch_log_node_t> l(clone);
-  fs->generalLoggerHandler(l, level);
-  return SWITCH_STATUS_SUCCESS;
+	switch_log_node_t *clone = switch_log_node_dup(node);
+	QSharedPointer<switch_log_node_t> l(clone);
+	fs->generalLoggerHandler(l, level);
+	return SWITCH_STATUS_SUCCESS;
 }
 
