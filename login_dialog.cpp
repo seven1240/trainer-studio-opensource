@@ -65,13 +65,13 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	_authenticated = false;
 	_leUsername->setText(settings.value("StoredData/Username", "").toString());
 
-	this->connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
-	this->connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
-	this->connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
-	this->connect(fs, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
-	this->connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
-	this->connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
-	this->connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+	connect(server_connection, SIGNAL(authenticated(User*)), this, SLOT(onAuthenticated(User*)));
+	connect(server_connection, SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
+	connect(server_connection, SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
+	connect(fs, SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
+	connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
+	connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
+	connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 }
 
 LoginDialog::~LoginDialog()
@@ -109,7 +109,7 @@ void LoginDialog::abortLogin()
 void LoginDialog::abortLogin(QString msg)
 {
 	abortLogin();
-	QMessageBox::critical( this, QApplication::applicationName(), msg);
+	QMessageBox::critical(this, QApplication::applicationName(), msg);
 }
 
 void LoginDialog::onCancelClicked()
@@ -197,7 +197,6 @@ void LoginDialog::onLoginClicked()
 	server_connection->login(_leUsername->text(), _lePassword->text());
 
 	QTimer::singleShot(20000, this, SLOT(onAuthenticateTimeout()));
-
 }
 
 void LoginDialog::doRegisterToVoIP()

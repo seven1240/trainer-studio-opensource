@@ -55,15 +55,14 @@ QLayout *MainWindow::createBody()
 {
 	QPushButton *settingsButton = new QPushButton("Settings");
 	settingsButton->setObjectName("Settings");
-
 	QPushButton *loginButton = new QPushButton("Login");
+	loginButton->setObjectName("Login");
 	QPushButton *echoButton = new QPushButton("Echo");
 	echoButton->setObjectName("Echo");
-
 	QPushButton *pauseButton = new QPushButton("Pause");
+	pauseButton->setObjectName("State");
 	QPushButton *closeButton = new QPushButton("Close");
 	closeButton->setObjectName("Close");
-
 	QPushButton *aboutButton = new QPushButton("About");
 	aboutButton->setObjectName("About");
 
@@ -122,7 +121,6 @@ void MainWindow::showLoginDialog()
 	login_dialog->raise();
 	login_dialog->show();
 	login_dialog->activateWindow();
-
 }
 
 void MainWindow::on_Flash_clicked()
@@ -132,9 +130,9 @@ void MainWindow::on_Flash_clicked()
 	flash_dialog->activateWindow();
 }
 
-void MainWindow::onLogin()
+void MainWindow::on_Login_clicked()
 {
-	show();
+	showLoginDialog();
 }
 
 void MainWindow::onAuthenticated(User *user)
@@ -179,12 +177,11 @@ void MainWindow::onForcedPause(QString reason)
 void MainWindow::onAnswered(QString cid_name, QString /*cid_number*/)
 {
 	if (cid_name.left(2) == "IT") {
-		//Interaction
 		flash_dialog->raise();
 		flash_dialog->show();
 		flash_dialog->activateWindow();
-	} else {
-		//Other
+	}
+	else {
 	}
 }
 
@@ -201,7 +198,8 @@ void MainWindow::onGatewayStateChange(QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
-			if (ui->btnState->isChecked()) server_connection->pause(true); //force pause
+			if (ui->btnState->isChecked())
+				server_connection->pause(true); //force pause
 		}
 	}
 	ui->lbSIPStatus->setText(QString("SIP State: %1").arg(state));
@@ -218,7 +216,7 @@ void MainWindow::onSocketDisconnected()
 {
 	QMessageBox::critical(this,QApplication::applicationName(), "Socket Broken!!");
 	showLoginDialog();
-	this->hide();
+	hide();
 	delete flash_dialog;
 	flash_dialog = new FlashDialog(this);
 }
