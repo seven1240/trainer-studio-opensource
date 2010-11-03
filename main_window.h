@@ -24,24 +24,25 @@ protected:
 	QLayout *createBody();
 
 private:
-	QPushButton *btnState;
-	QLabel *lbStatus;
-	QLabel *lbSIPStatus;
+	QPushButton *_state;
+	QLabel *_sipStatusLabel;
 	bool _sipStateReady;
 	QString _activeUUID;
+	QTimer *_timer;
 	void keyPressEvent(QKeyEvent *event);
 	void parseCallResult(QString res);
-	QTimer *_timer;
+
+signals:
+	void beginEcho();
+	void beginFlashDemo();
 
 private slots:
 	void on_Hangup_clicked();
 	void on_Conference_clicked();
 	void on_Echo_clicked();
-	void on_Settings_clicked();
 	void on_State_clicked();
 	void on_Flash_clicked();
 	void on_About_clicked();
-	void on_Login_clicked();
 	void on_Logout_clicked();
 	void on_Close_clicked();
 	void onPaused(bool);
@@ -49,8 +50,7 @@ private slots:
 	void onAnswered(QString cid_name, QString cid_number);
 	void onGatewayStateChange(QString name, QString state);
 	void onReservedForInteraction(QVariantMap);
-	void onNewEvent(QSharedPointer<switch_event_t>);
-	void onTimerTimeout();
+	void onTimer();
 };
 
 #endif // MAIN_WINDOW_H

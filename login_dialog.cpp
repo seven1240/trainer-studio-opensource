@@ -14,6 +14,7 @@
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
 #include "progress_widget.h"
+#include "utils.h"
 
 LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent) :
 	QDialog(parent)
@@ -60,6 +61,7 @@ LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent
 
 	setFixedSize(320, 240);
 	setWindowTitle("Login");
+	Utils::centerWindowOnDesktop(this);
 
 	showLogin();
 

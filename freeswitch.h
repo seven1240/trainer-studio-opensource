@@ -89,11 +89,15 @@ signals:
 	void ready();
 	void sofiaReady();
 	void gatewayStateChange(QString name, QString state);
+	void gatewayReady(QString name, bool registered);
 	void gatewayAdded(QString name);
 	void gatewayDeleted(QString name);
 	void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
 	void newEvent(QSharedPointer<switch_event_t>);    
-	void incomingCall(QSharedPointer<switch_event_t>event);
+	void callIncoming(QString id);
+	void callOutgoing(QString id);
+	void callAnswered(QString id);
+	void callEnded(QString id);
 
 private slots:
 	void minimalModuleLoaded(QString, QString, QString);

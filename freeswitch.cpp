@@ -213,7 +213,16 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CHANNEL_STATE: break;
 	case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
 	case SWITCH_EVENT_CHANNEL_ANSWER: break;
+	{
+		emit callAnswered(uuid);
+		break;
+	}
 	case SWITCH_EVENT_CHANNEL_HANGUP: break;
+	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
+	{
+		emit callEnded(uuid);
+		break;
+	}
 	case SWITCH_EVENT_CHANNEL_EXECUTE: break;
 	case SWITCH_EVENT_CHANNEL_EXECUTE_COMPLETE: break;
 	case SWITCH_EVENT_CHANNEL_HOLD: break;
@@ -305,13 +314,14 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CUSTOM:/*5A*/
 	{
 		if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
-			emit incomingCall(event);
+			emit callIncoming(uuid);
 		}
 		else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
 			QString gw = switch_event_get_header_nil(event.data(), "Gateway");
 			QString state = switch_event_get_header_nil(event.data(), "State");
 			qDebug() << "Gateway State:" << gw << " " << state;
 			emit gatewayStateChange(gw, state);
+			emit gatewayReady(gw, state == "REGED");
 		}
 		else if (strcmp(event.data()->subclass_name, "sofia::gateway_add") == 0)
 		{
@@ -405,7 +415,11 @@ QString FreeSwitch::call(QString callee)
 {
 	QString res;
 	sendCmd("pa", ("call " + callee).toAscii(), &res);
-	return res;
+	qDebug() << "Call: " << res.trimmed();
+	QStringList sl = res.split(":");
+	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
+		emit callOutgoing(sl.at(2).trimmed());
+	}
 }
 
 void FreeSwitch::reload()

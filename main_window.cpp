@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	Utils::centerWindowOnDesktop(this);
 
 	_sipStateReady = false;
-	btnState->setChecked(false);
+	_state->setChecked(false);
 	_timer = new QTimer(this);
 	_timer->setInterval(20000);
 
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
 	connect(ApplicationController::server(), SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
 	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
-	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
+	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimer()));
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -41,37 +41,33 @@ QLayout *MainWindow::createBody()
 {
 	QPushButton *settingsButton = new QPushButton("Settings");
 	settingsButton->setObjectName("Settings");
-	QPushButton *loginButton = new QPushButton("Login");
-	loginButton->setObjectName("Login");
 	QPushButton *logoutButton = new QPushButton("Logout");
 	logoutButton->setObjectName("Logout");
 	QPushButton *echoButton = new QPushButton("Echo");
 	echoButton->setObjectName("Echo");
-	QPushButton *pauseButton = new QPushButton("Pause");
+	QPushButton *pauseButton = new QPushButton("|| Pause");
 	pauseButton->setObjectName("State");
 	QPushButton *closeButton = new QPushButton("Close");
 	closeButton->setObjectName("Close");
 	QPushButton *aboutButton = new QPushButton("About");
 	aboutButton->setObjectName("About");
 
+	pauseButton->setCheckable(true);
+	settingsButton->setVisible(false);
+
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(settingsButton);
-	layout->addWidget(loginButton);
 	layout->addWidget(logoutButton);
 	layout->addWidget(echoButton);
 	layout->addWidget(pauseButton);
 	layout->addWidget(closeButton);
 	layout->addWidget(aboutButton);
 
-	QLabel *connectionLabel = new QLabel("Connection: No");
-	layout->addWidget(connectionLabel);
-
 	QLabel *sipLabel = new QLabel("SIP: None");
 	layout->addWidget(sipLabel);
 
-	btnState = pauseButton;
-	lbStatus = connectionLabel;
-	lbSIPStatus = sipLabel;
+	_state = pauseButton;
+	_sipStatusLabel = sipLabel;
 
 	setLayout(layout);
 
@@ -104,10 +100,6 @@ void MainWindow::on_Close_clicked()
 	close();
 }
 
-void MainWindow::on_Login_clicked()
-{
-}
-
 void MainWindow::on_Logout_clicked()
 {
 	ApplicationController::server()->logout();
@@ -118,22 +110,19 @@ void MainWindow::on_State_clicked()
 	if (!_sipStateReady) {
 		QMessageBox::warning(this, QApplication::applicationName(), "Cannot Pause, VoIP not ready!");
 	}
-	// why isChecked shows reversed?
-	qDebug() << btnState->isChecked();
-	ApplicationController::server()->pause(!btnState->isChecked());
+	ApplicationController::server()->pause(_state->isChecked());
 }
 
 void MainWindow::onPaused(bool state)
 {
+	_state->setChecked(state);
 	if (state) {
-		btnState->setText("> Start Working");
-		btnState->setChecked(false);
+		_state->setText("> Start Working");
 		QApplication::alert(this, 0);
 		_timer->start();
 	}
 	else {
-		btnState->setText("|| Pause");
-		btnState->setChecked(true);
+		_state->setText("|| Pause");
 		_timer->stop();
 	}
 }
@@ -165,18 +154,17 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
-			if (btnState->isChecked())
+			if (_state->isChecked())
 				ApplicationController::server()->pause(true); //force pause
 		}
 	}
-	lbSIPStatus->setText(QString("SIP State: %1").arg(state));
+	_sipStatusLabel->setText(QString("SIP State: %1").arg(state));
 }
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
 {
 	QString msg = QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString());
-	lbStatus->setText(msg);
-	sysTray->showMessage(QApplication::applicationName(),msg, QSystemTrayIcon::Information, 3000);
+	sysTray->showMessage(QApplication::applicationName(), msg, QSystemTrayIcon::Information, 3000);
 }
 
 void MainWindow::on_About_clicked()
@@ -185,22 +173,15 @@ void MainWindow::on_About_clicked()
 					   QString("Version: %1\n\nCopyright(c): Idapted Ltd.").arg(QApplication::applicationVersion()));
 }
 
-void MainWindow::on_Settings_clicked()
-{
-}
-
 void MainWindow::on_Echo_clicked()
 {
-	if (!_activeUUID.isEmpty()) return;
-	lbStatus->setText("Echo test");
-	parseCallResult(ApplicationController::fs()->call("echo"));
+	ApplicationController::fs()->call("echo");
+	emit beginEcho();
 }
 
 void MainWindow::on_Conference_clicked()
 {
-	if (!_activeUUID.isEmpty()) return;
-	lbStatus->setText("Conference");
-	parseCallResult(ApplicationController::fs()->call("conf"));
+	ApplicationController::fs()->call("conf");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -214,49 +195,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-void MainWindow::onNewEvent(QSharedPointer<switch_event_t> spEvent)
-{
-	switch_event_t *event = spEvent.data();
-
-	QString uuid = switch_event_get_header_nil(event, "Unique-ID");
-
-	if (uuid != _activeUUID )  return;
-
-	QString eventName = switch_event_get_header_nil(event, "Event-Name");
-	QString eventSubclass = switch_event_get_header_nil(event, "Event-Subclass");
-	lbStatus->setText(eventName + "::" + eventSubclass);
-
-	switch (event->event_id) {
-	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
-		{
-			_activeUUID = "";
-			break;
-		}
-	default:
-		break;
-	}
-}
-
-void MainWindow::parseCallResult(QString res)
-{
-	qDebug() << "Parse: " << res;
-	QStringList sl = res.split(":");
-	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
-		_activeUUID = sl.at(2).trimmed();
-		connect(ApplicationController::fs(), SIGNAL(newEvent(QSharedPointer<switch_event_t>)), this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
-	} else {
-		_activeUUID = "";
-		disconnect(this, SLOT(onNewEvent(QSharedPointer<switch_event_t>)));
-		lbStatus->setText(res.trimmed());
-	}
-}
-
 void MainWindow::on_Hangup_clicked()
 {
 	ApplicationController::fs()->hangup(true);
 }
 
-void MainWindow::onTimerTimeout()
+void MainWindow::onTimer()
 {
 	sysTray->showMessage(QApplication::applicationName(), "Trainer Studio Paused!", QSystemTrayIcon::Information, 1000);
 }

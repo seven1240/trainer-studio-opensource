@@ -57,6 +57,11 @@ QStateMachine *ServerConnection::createStateMachine()
 	paused->addTransition(this, SIGNAL(unpausing()), unpausing);
 	unpausing->addTransition(this, SIGNAL(working()), unpausing);
 
+	working->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+	pausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+	paused->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+	unpausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+
 	QStateMachine *machine = new QStateMachine();
 	machine->addState(disconnected);
 	machine->addState(connecting);
@@ -89,7 +94,7 @@ void ServerConnection::run()
 	_running = true;
 	int32_t counter = 0;
 	while (_running) {
-		if (counter++ == 10) {
+		if (counter++ == 5) {
 			qDebug() << "ServerConnection:" << _socket->state() << _connected;
 			counter = 0;
 		}
@@ -302,7 +307,7 @@ bool ServerConnection::isConnected()
 
 void ServerConnection::pause(bool action)
 {
-	qDebug() << "Pause: " << action;
+	qDebug() << "Sending Pause: " << action;
 	if (action) {
 		sendAction("Pause");
 		emit pausing();
