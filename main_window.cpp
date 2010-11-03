@@ -7,15 +7,13 @@
 #include "isettings.h"
 #include "utils.h"
 
-QSystemTrayIcon *sysTray;
-
 MainWindow::MainWindow(QWidget *parent) :
 	QWidget(parent)
 {
 	createBody();
 
 	setWindowTitle("Trainer Studio - Idapted Ltd.");
-	setFixedSize(218, 430);
+	setFixedSize(218, 330);
 	Utils::centerWindowOnDesktop(this);
 
 	_sipStateReady = false;
@@ -23,10 +21,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	_timer = new QTimer(this);
 	_timer->setInterval(20000);
 
-	sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
-	sysTray->setToolTip(QApplication::applicationName());
-	sysTray->show();
-	sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
+	_systemTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
+	_systemTray->setToolTip(QApplication::applicationName());
+	_systemTray->show();
+	_systemTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
 	connect(ApplicationController::server(), SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
@@ -164,8 +162,8 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
 {
-	QString msg = QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString());
-	sysTray->showMessage(QApplication::applicationName(), msg, QSystemTrayIcon::Information, 3000);
+	QString msg = QString("New learner incoming with interaction #%1").arg(data["interaction_id"].toString());
+	_systemTray->showMessage(QApplication::applicationName(), msg, QSystemTrayIcon::Information, 3000);
 }
 
 void MainWindow::on_About_clicked()
@@ -202,5 +200,5 @@ void MainWindow::on_Hangup_clicked()
 
 void MainWindow::onTimer()
 {
-	sysTray->showMessage(QApplication::applicationName(), "Trainer Studio Paused!", QSystemTrayIcon::Information, 1000);
+	_systemTray->showMessage(QApplication::applicationName(), "Trainer Studio Paused!", QSystemTrayIcon::Information, 1000);
 }

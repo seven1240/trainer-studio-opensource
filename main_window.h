@@ -13,6 +13,10 @@
 #include "freeswitch.h"
 #include "user.h"
 
+QT_BEGIN_NAMESPACE
+class QSystemTrayIcon;
+QT_END_NAMESPACE
+
 class MainWindow : public QWidget {
 	Q_OBJECT
 public:
@@ -28,6 +32,7 @@ private:
 	QLabel *_sipStatusLabel;
 	bool _sipStateReady;
 	QString _activeUUID;
+	QSystemTrayIcon *_systemTray;
 	QTimer *_timer;
 	void keyPressEvent(QKeyEvent *event);
 	void parseCallResult(QString res);
