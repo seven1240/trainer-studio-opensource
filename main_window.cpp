@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	createBody();
 
 	setWindowTitle("Trainer Studio - Idapted Ltd.");
-	setFixedSize(218, 330);
+	setFixedSize(228, 350);
 	Utils::centerWindowOnDesktop(this);
 
 	_sipStateReady = false;
@@ -39,15 +39,18 @@ QLayout *MainWindow::createBody()
 {
 	QPushButton *settingsButton = new QPushButton("Settings");
 	QPushButton *logoutButton = new QPushButton("Logout");
-	QPushButton *echoButton = new QPushButton("Echo");
+	QPushButton *testEchoButton = new QPushButton("Echo");
+	QPushButton *testFlashButton = new QPushButton("Flash");
 	QPushButton *stateButton = new QPushButton("|| Pause");
 	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *closeButton = new QPushButton("Close");
 	QPushButton *aboutButton = new QPushButton("About");
+	QLabel *sipLabel = new QLabel("SIP: None");
 
 	settingsButton->setObjectName("Settings");
 	logoutButton->setObjectName("Logout");
-	echoButton->setObjectName("Echo");
+	testEchoButton->setObjectName("Echo");
+	testFlashButton->setObjectName("Flash");
 	stateButton->setObjectName("State");
 	hangupButton->setObjectName("Hangup");
 	closeButton->setObjectName("Close");
@@ -56,22 +59,30 @@ QLayout *MainWindow::createBody()
 	stateButton->setCheckable(true);
 	settingsButton->setVisible(false);
 
-	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(echoButton);
-	layout->addWidget(hangupButton);
-	layout->addWidget(stateButton);
-	layout->addWidget(logoutButton);
-	layout->addWidget(settingsButton);
-	layout->addWidget(closeButton);
-	layout->addWidget(aboutButton);
+	QGroupBox *commonBox = new QGroupBox("Trainer");
+	QVBoxLayout *commonLayout = new QVBoxLayout();
+	commonLayout->addWidget(hangupButton);
+	commonLayout->addWidget(stateButton);
+	commonLayout->addWidget(logoutButton);
+	commonLayout->addWidget(settingsButton);
+	commonLayout->addWidget(closeButton);
+	commonBox->setLayout(commonLayout);
 
-	QLabel *sipLabel = new QLabel("SIP: None");
+	QGroupBox *testsBox = new QGroupBox("Diagnostics");
+	QVBoxLayout *testsLayout = new QVBoxLayout();
+	testsLayout->addWidget(testEchoButton);
+	testsLayout->addWidget(testFlashButton);
+	testsLayout->addWidget(aboutButton);
+	testsBox->setLayout(testsLayout);
+
+	QVBoxLayout *layout = new QVBoxLayout();
+	layout->addWidget(commonBox);
+	layout->addWidget(testsBox);
 	layout->addWidget(sipLabel);
+	setLayout(layout);
 
 	_state = stateButton;
 	_sipStatusLabel = sipLabel;
-
-	setLayout(layout);
 
 	return layout;
 }
@@ -132,14 +143,6 @@ void MainWindow::onForcedPause(QString reason)
 	onPaused(true);
 }
 
-void MainWindow::onAnswered(QString cid_name, QString /*cid_number*/)
-{
-	if (cid_name.left(2) == "IT") {
-	}
-	else {
-	}
-}
-
 void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 {
 	if (state == "REGED") {
@@ -169,7 +172,7 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 void MainWindow::on_About_clicked()
 {
 	QMessageBox::about(this, QApplication::applicationName(),
-					   QString("Version: %1\n\nCopyright(c): Idapted Ltd.").arg(QApplication::applicationVersion()));
+					   QString("Version: %1\n\nCopyright (C): Idapted Ltd.").arg(QApplication::applicationVersion()));
 }
 
 void MainWindow::on_Echo_clicked()

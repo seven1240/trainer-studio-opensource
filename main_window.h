@@ -52,7 +52,6 @@ private slots:
 	void on_Close_clicked();
 	void onPaused(bool);
 	void onForcedPause(QString reason);
-	void onAnswered(QString cid_name, QString cid_number);
 	void onGatewayStateChange(QString name, QString state);
 	void onReservedForInteraction(QVariantMap);
 	void onTimer();
