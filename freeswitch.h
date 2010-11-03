@@ -103,7 +103,7 @@ private slots:
 	void minimalModuleLoaded(QString, QString, QString);
 
 private:
-	switch_status_t sendCmd(const char *cmd, const char *args, QString *res);
+	switch_status_t command(const char *cmd, const char *args, QString *res);
 	QSharedPointer<Call> getCurrentActiveCall();
 	QList<QString> _loadedModules;
 	QHash<QString, QSharedPointer<Call> > _activeCalls;

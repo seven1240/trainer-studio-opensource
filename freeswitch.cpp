@@ -124,7 +124,7 @@ void FreeSwitch::shutdown()
 {
 	QString res;
 	_running = false;
-	sendCmd("fsctl", "shutdown", &res);
+	command("fsctl", "shutdown", &res);
 }
 
 void FreeSwitch::run(void)
@@ -311,7 +311,7 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 		if (_active_calls > 0) {
 			qDebug() << "Channel Create" << uuid << "(we're busy)";
 			QString res;
-			sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
+			command("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
 		}
 		else {
 			qDebug() << "Channel Create" << uuid;
@@ -408,13 +408,15 @@ void FreeSwitch::minimalModuleLoaded(QString modType, QString modKey, QString /*
 	}
 }
 
-switch_status_t FreeSwitch::sendCmd(const char *cmd, const char *args, QString *res)
+switch_status_t FreeSwitch::command(const char *cmd, const char *args, QString *res)
 {
+	qDebug() << "FS: " << cmd << args;
 	switch_status_t status = SWITCH_STATUS_FALSE;
 	switch_stream_handle_t stream;
 	SWITCH_STANDARD_STREAM(stream);
 	status = switch_api_execute(cmd, args, NULL, &stream);
-	*res = switch_str_nil((char *) stream.data);
+	if (res != NULL)
+		*res = switch_str_nil((char *) stream.data);
 	switch_safe_free(stream.data);
 
 	return status;
@@ -443,7 +445,7 @@ void FreeSwitch::printEventHeaders(QSharedPointer<switch_event_t>event)
 QString FreeSwitch::call(QString callee)
 {
 	QString res;
-	sendCmd("pa", ("call " + callee).toAscii(), &res);
+	command("pa", ("call " + callee).toAscii(), &res);
 	qDebug() << "Call: " << res.trimmed();
 	QStringList sl = res.split(":");
 	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
@@ -455,7 +457,7 @@ QString FreeSwitch::call(QString callee)
 void FreeSwitch::reload()
 {
 	QString res;
-	sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+	command("sofia", "profile softphone rescan reloadxml", &res);
 }
 
 void FreeSwitch::setupGateway(QString username, QString password, QString realm, bool tcp)
@@ -478,86 +480,86 @@ void FreeSwitch::setupGateway(QString username, QString password, QString realm,
 switch_status_t FreeSwitch::mute()
 {
 	QString res;
-	return sendCmd("pa", "flags off mouth", &res);
+	return command("pa", "flags off mouth", &res);
 }
 
 switch_status_t FreeSwitch::unmute()
 {
 	QString res;
-	return sendCmd("pa", "flags on mouth", &res);
+	return command("pa", "flags on mouth", &res);
 }
 
 switch_status_t FreeSwitch::hold(QString uuid)
 {
 	QString res;
-	return sendCmd("uuid_hold", uuid.toAscii(), &res);
+	return command("uuid_hold", uuid.toAscii(), &res);
 }
 
 switch_status_t FreeSwitch::unhold(QString uuid)
 {
 	QString res;
-	return sendCmd("uuid_hold", ("off " + uuid).toAscii(), &res);
+	return command("uuid_hold", ("off " + uuid).toAscii(), &res);
 }
 
 void FreeSwitch::hangup(bool all)
 {
 	QString res;
 	if (all) {
-		sendCmd("hupall", "", &res);
+		command("hupall", "", &res);
 	}
 	else {
-		sendCmd("pa", "hangup", &res);
+		command("pa", "hangup", &res);
 	}
 }
 
 switch_status_t FreeSwitch::recordStart(QString uuid, QString filename)
 {
 	QString res;
-	return sendCmd("uuid_record", QString("%1 start %2").arg(uuid, filename).toAscii().data(), &res);
+	return command("uuid_record", QString("%1 start %2").arg(uuid, filename).toAscii().data(), &res);
 }
 
 switch_status_t FreeSwitch::recordStop(QString uuid, QString filename)
 {
 	QString res;
-	return sendCmd("uuid_record", QString("%1 stop %2").arg(uuid, filename).toAscii().data(), &res);
+	return command("uuid_record", QString("%1 stop %2").arg(uuid, filename).toAscii().data(), &res);
 }
 
 void FreeSwitch::answer()
 {
 	QString res;
-	sendCmd("pa", "answer", &res);
+	command("pa", "answer", &res);
 }
 
 switch_status_t FreeSwitch::portAudioDtmf(char chr)
 {
 	QString res;
 	QString params = QString("dtmf %1").arg(chr);
-	return sendCmd("pa", params.toAscii(), &res);
+	return command("pa", params.toAscii(), &res);
 }
 
 QString FreeSwitch::portAudioRescan()
 {
 	QString devices;
-	sendCmd("pa", "rescan", &devices);
+	command("pa", "rescan", &devices);
 	return devices;
 }
 
 void FreeSwitch::portAudioLoop()
 {
 	QString res;
-	sendCmd("pa", "looptest", &res);
+	command("pa", "looptest", &res);
 }
 
 void FreeSwitch::portAudioPlay(QString target)
 {
 	QString res;
-	sendCmd("pa", QString("play %1").arg(target).toAscii(), &res);
+	command("pa", QString("play %1").arg(target).toAscii(), &res);
 }
 
 QString FreeSwitch::portAudioDevices()
 {
 	QString devices;
-	switch_status_t status = sendCmd("pa", "devlist", &devices);
+	switch_status_t status = command("pa", "devlist", &devices);
 	if (SWITCH_STATUS_SUCCESS != status) {
 		return "";
 	}
@@ -567,19 +569,19 @@ QString FreeSwitch::portAudioDevices()
 void FreeSwitch::portAudioInDevice(int index)
 {
 	QString res;
-	sendCmd("pa", QString("indev #%1").arg(index).toAscii(), &res);
+	command("pa", QString("indev #%1").arg(index).toAscii(), &res);
 }
 
 void FreeSwitch::portAudioOutDevice(int index)
 {
 	QString res;
-	sendCmd("pa", QString("outdev #%1").arg(index).toAscii(), &res);
+	command("pa", QString("outdev #%1").arg(index).toAscii(), &res);
 }
 
 void FreeSwitch::portAudioRingDevice(int index)
 {
 	QString res;
-	sendCmd("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
+	command("pa", QString("ringdev #%1").arg(index).toAscii(), &res);
 }
 
 static void eventHandlerCallback(switch_event_t *event)
