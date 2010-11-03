@@ -8,6 +8,7 @@
 #include <QUrl.h>
 #include "trainer_studio.h"
 #include "application_controller.h"
+#include "flash_controller.h"
 #include "server_connection.h"
 #include "freeswitch.h"
 #include "flash_dialog.h"
@@ -18,9 +19,10 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent)
 {
 	_webView = new QWebView();
-	_disconnect = new QPushButton("Disconnect");
-	_reconnect = new QPushButton("Reconnect");
+	_hangup = new QPushButton("Hangup");
+	_reconnection = new QPushButton("Reconnect");
 	_mute = new QPushButton("Mute");
+	_mute->setCheckable(true);
 	_test = new QPushButton("Test");
 	_time = new QLabel();
 
@@ -29,8 +31,8 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	topLayout->addWidget(_time);
 	topLayout->addWidget(_mute);
 	topLayout->addWidget(_test);
-	topLayout->addWidget(_reconnect);
-	topLayout->addWidget(_disconnect);
+	topLayout->addWidget(_hangup);
+	topLayout->addWidget(_reconnection);
 	topFrame->setLayout(topLayout);
 	topFrame->setFixedHeight(40);
 
@@ -52,8 +54,8 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
 	connect(_webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
-	connect(_disconnect, SIGNAL(clicked()), this, SLOT(onDisconnectClicked()));
-	connect(_reconnect, SIGNAL(clicked()), this, SLOT(onReconnectClicked()));
+	connect(_hangup, SIGNAL(clicked()), this, SLOT(onHangupClicked()));
+	connect(_reconnection, SIGNAL(clicked()), this, SLOT(onReconnectionClicked()));
 	connect(_mute, SIGNAL(clicked()), this, SLOT(onMuteClicked()));
 	connect(_test, SIGNAL(clicked()), this, SLOT(onTestClicked()));
 
@@ -149,9 +151,7 @@ void FlashDialog::onReservedForInteraction(QVariantMap data)
 	 arg(url);
 
 	loadMovie(params);
-	_reconnect->setStyleSheet("background-color: ;");
-	_reconnect->setText("Reconnect");
-	_reconnect->setEnabled(true);
+	reconnectingStatus(false);
 }
 
 void FlashDialog::onLoadFinished(bool)
@@ -179,7 +179,7 @@ void FlashDialog::onLoadFinished(bool)
 	//    e.evaluateJavaScript("alert(this);this.FlashVars='aaaa=b';this.LoadMovie(0, 'http://www.eqenglish.com/flex/interaction/trainer/interaction.swf');");
 }
 
-void FlashDialog::onDisconnectClicked()
+void FlashDialog::onHangupClicked()
 {
 	_timer->stop();
 
@@ -282,35 +282,45 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
 	}
 }
 
-void FlashDialog::onReconnectClicked()
+void FlashDialog::onReconnectionClicked()
 {
-	int ret = QMessageBox::warning(this, "TS",
-								   "This will attempt to re-connect you to the student and fix sound issues."
-								   "The student will be disconnected and re-called."
-								   "Please do not hit this button twice."
-								   "This re-connect may take a few seconds."
-								   "Are you sure you want to continue?",
-								   QMessageBox::Yes | QMessageBox::No);
-	if (ret == QMessageBox::No) return;
-
+	QString message = "This will attempt to re-connect you to the student and fix sound issues. "
+					  "The student will be disconnected and re-called. "
+					  "Please do not hit this button twice. "
+					  "This re-connect may take a few seconds. "
+					  "Are you sure you want to continue?";
+	if (QMessageBox::No == QMessageBox::warning(this, "TS", message, QMessageBox::Yes | QMessageBox::No))
+		return;
 	ApplicationController::server()->startInteractionReconnection(_interactionId);
 	onLostConnection();
 }
 
 void FlashDialog::onLostConnection()
 {
-	_timer->stop();
-	_reconnect->setStyleSheet("background-color: red;");
-	_reconnect->setText("Reconnecting...");
-	_reconnect->setEnabled(false);
+	reconnectingStatus(true);
 }
 
 void FlashDialog::onInteractionReconnected()
 {
-	_timer->start();
-	_reconnect->setStyleSheet("background-color: ;");
-	_reconnect->setText("Reconnect");
-	_reconnect->setEnabled(true);
+	reconnectingStatus(false);
+}
+
+void FlashDialog::reconnectingStatus(bool reconnecting)
+{
+	if (reconnecting)
+	{
+		_reconnection->setStyleSheet("background-color: #ffaaaa; color: #000;");
+		_reconnection->setText("Reconnecting...");
+		_reconnection->setEnabled(false);
+		_timer->stop();
+	}
+	else
+	{
+		_reconnection->setStyleSheet("background-color: ; color: ;");
+		_reconnection->setText("Reconnect");
+		_reconnection->setEnabled(true);
+		_timer->start();
+	}
 }
 
 void FlashDialog::onInvokeMessage(QString msg)
@@ -332,12 +342,14 @@ void FlashDialog::onJSWindowObjectCleared()
 
 void FlashDialog::onMuteClicked()
 {
-	if (_mute->text() == "Mute") {
-		ApplicationController::fs()->mute();
-		_mute->setText("UnMute");
-	}
-	else {
+	if (_mute->isChecked()) {
 		ApplicationController::fs()->unmute();
 		_mute->setText("Mute");
+		_mute->setChecked(false);
+	}
+	else {
+		ApplicationController::fs()->mute();
+		_mute->setText("Unmute");
+		_mute->setChecked(true);
 	}
 }

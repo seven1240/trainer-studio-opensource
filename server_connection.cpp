@@ -147,8 +147,6 @@ void ServerConnection::login(QString username, QString password)
 	json = cJSON_Print(cj);
 	cJSON_Delete(cj);
 
-	qDebug() << "SC:" << json;
-
 	startTimer(5000);
 	emit authenticating();
 
@@ -277,6 +275,7 @@ void ServerConnection::sendAction(const char *action)
 
 void ServerConnection::write(QByteArray ba)
 {
+	qDebug() << "SC:" << ba;
 	_socket->write(ba.append("\n"));
 }
 

@@ -19,6 +19,7 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
 	setLayout(layout);
 
 	setFixedSize(320, 140);
+	setWindowTitle("Incoming Call");
 
 	connect(_answer, SIGNAL(clicked()), this, SLOT(onAnswerClicked()));
 	connect(_reject, SIGNAL(clicked()), this, SLOT(onRejectClicked()));

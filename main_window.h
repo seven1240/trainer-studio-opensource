@@ -5,9 +5,6 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 #include <QKeyEvent>
-#include "flash_dialog.h"
-#include "login_dialog.h"
-#include "incoming_call_dialog.h"
 #include "settings_dialog.h"
 #include "trainer_studio.h"
 #include "freeswitch.h"

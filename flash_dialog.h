@@ -30,9 +30,9 @@ public slots:
 
 private slots:
 	void onMuteClicked();
-	void onReconnectClicked();
+	void onReconnectionClicked();
 	void onTestClicked();
-	void onDisconnectClicked();
+	void onHangupClicked();
 	void onReservedForInteraction(QVariantMap);
 	void onLoadFinished(bool);
 	void onLostConnection();
@@ -44,8 +44,8 @@ signals:
 	void closed();
 
 private:
-	QPushButton *_disconnect;
-	QPushButton *_reconnect;
+	QPushButton *_hangup;
+	QPushButton *_reconnection;
 	QPushButton *_mute;
 	QPushButton *_test;
 	QLabel *_time;
@@ -53,6 +53,7 @@ private:
 	QString _js;
 	QString _interactionId;
 	void loadMovie(QString params);
+	void reconnectingStatus(bool reconnecting);
 	int _seconds;
 	QTimer *_timer;
 };

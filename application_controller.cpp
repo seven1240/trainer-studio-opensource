@@ -3,6 +3,8 @@
 #include "main_window.h"
 #include "progress_dialog.h"
 #include "progress_controller.h"
+#include "flash_dialog.h"
+#include "flash_controller.h"
 #include "login_dialog.h"
 #include "echo_test_dialog.h"
 #include "incoming_call_dialog.h"
@@ -20,10 +22,12 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_server = NULL;
 	_fs = NULL;
 	_loginDialog = NULL;
+	_progressController = NULL;
 	_progressDialog = NULL;
 	_echoTestDialog = NULL;
 	_incomingCallDialog = NULL;
 	_flashDialog = NULL;
+	_flashController = NULL;
 	_user = NULL;
 }
 
@@ -68,6 +72,7 @@ int ApplicationController::run()
 	_server->start();
 
 	_progressController = new ProgressController(this);
+	_flashController = new FlashController(flashDialog(), this);
 
 	connect(server(), SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
 
