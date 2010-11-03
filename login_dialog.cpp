@@ -182,7 +182,7 @@ void LoginDialog::onLoginClicked()
 	int port = settings.value("trainer_server_port").toInt();
 	host = host.isEmpty() ? "voip.idapted.com" : host;
 	port = port == 0 ? 7000 : port;
-	host = "192.168.0.127";
+	// host = "192.168.0.127";
 
 	qDebug() << host << ":" << port;
 	_abort = false;
