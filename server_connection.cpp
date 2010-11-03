@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <switch.h>
 #include "server_connection.h"
+#include "state_machines.h"
 #include "qJSON.h"
 #include "utils.h"
 
@@ -22,7 +23,6 @@ ServerConnection::ServerConnection()
 static QState *createState(ServerConnection *connection, QString name)
 {
 	QState *state = new QState();
-	connection->connect(state, SIGNAL(entered()), connection, SLOT(changed()));
 	state->setObjectName(name);
 	return state;
 }
@@ -63,6 +63,7 @@ QStateMachine *ServerConnection::createStateMachine()
 	unpausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 
 	QStateMachine *machine = new QStateMachine();
+	machine->setObjectName("SC");
 	machine->addState(disconnected);
 	machine->addState(connecting);
 	machine->addState(timeout);
@@ -73,20 +74,9 @@ QStateMachine *ServerConnection::createStateMachine()
 	machine->addState(unpausing);
 	machine->addState(pausing);
 	machine->addState(working);
-
 	machine->setInitialState(disconnected);
 	machine->start();
-
-	return machine;
-}
-
-void ServerConnection::changed()
-{
-	QSetIterator<QAbstractState*> i(_machine->configuration());
-	while (i.hasNext())
-	{
-		qDebug() << "SC:" << i.next()->objectName();
-	}
+	return jDebugStateMachine(machine);
 }
 
 void ServerConnection::run()

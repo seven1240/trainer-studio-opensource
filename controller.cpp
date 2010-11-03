@@ -1,6 +1,7 @@
 #include <QStateMachine>
 #include <QDebug>
 #include "controller.h"
+#include "state_machines.h"
 
 Controller::Controller(QObject *parent) :
 	QObject(parent)
@@ -15,7 +16,7 @@ Controller::~Controller()
 QStateMachine *Controller::stateMachine()
 {
 	if (_state_machine == NULL) {
-		_state_machine = createStateMachine();
+		_state_machine = jDebugStateMachine(createStateMachine());
 	}
 	return _state_machine;
 }
