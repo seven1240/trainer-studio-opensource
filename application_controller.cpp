@@ -58,7 +58,8 @@ ApplicationController::~ApplicationController()
 		_server->wait();
 		delete _server;
 	}
-	if (_user != NULL) delete _user;
+	if (_user != NULL)
+		delete _user;
 	qDebug() << "Stopped";
 }
 
@@ -169,9 +170,8 @@ void ApplicationController::incoming()
 
 void ApplicationController::authenticated(User *user)
 {
-	if (_user != NULL) {
+	if (_user != NULL)
 		delete _user;
-	}
 	_user = user;
 	progressDialog()->hide();
 	loginDialog()->hide();
@@ -205,41 +205,36 @@ MainWindow *ApplicationController::mainWindow()
 
 EchoTestDialog *ApplicationController::echoTestDialog()
 {
-	if (_echoTestDialog == NULL) {
+	if (_echoTestDialog == NULL)
 		_echoTestDialog = new EchoTestDialog();
-	}
 	return _echoTestDialog;
 }
 
 FlashDialog *ApplicationController::flashDialog()
 {
-	if (_flashDialog == NULL) {
+	if (_flashDialog == NULL)
 		_flashDialog = new FlashDialog();
-	}
 	return _flashDialog;
 }
 
 IncomingCallDialog *ApplicationController::incomingCallDialog()
 {
-	if (_incomingCallDialog == NULL) {
+	if (_incomingCallDialog == NULL)
 		_incomingCallDialog = new IncomingCallDialog();
-	}
 	return _incomingCallDialog;
 }
 
 ProgressDialog *ApplicationController::progressDialog()
 {
-	if (_progressDialog == NULL) {
+	if (_progressDialog == NULL)
 		_progressDialog = new ProgressDialog(_progressWidget);
-	}
 	return _progressDialog;
 }
 
 LoginDialog *ApplicationController::loginDialog()
 {
-	if (_loginDialog == NULL) {
+	if (_loginDialog == NULL)
 		_loginDialog = new LoginDialog(_progressWidget);
-	}
 	return _loginDialog;
 }
 

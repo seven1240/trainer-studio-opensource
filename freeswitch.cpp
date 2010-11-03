@@ -34,7 +34,7 @@
 static void eventHandlerCallback(switch_event_t *event);
 static switch_status_t loggerHandler(const switch_log_node_t *, switch_log_level_t);
 
-static FreeSwitch *_fs_instance;
+static FreeSwitch *_fs_instance = NULL;
 
 FreeSwitch::FreeSwitch(QObject *parent) :
 	QThread(parent)
@@ -45,6 +45,12 @@ FreeSwitch::FreeSwitch(QObject *parent) :
 	qRegisterMetaType<QSharedPointer<switch_event_t> >("QSharedPointer<switch_event_t>");
 	qRegisterMetaType<QSharedPointer<switch_log_node_t> >("QSharedPointer<switch_log_node_t>");
 	qRegisterMetaType<switch_log_level_t>("switch_log_level_t");
+
+	setObjectName("FS");
+
+	if (_fs_instance != NULL) {
+		qDebug() << "You should only create one FS instance!";
+	}
 
 	_running = false;
 	_ready = false;
