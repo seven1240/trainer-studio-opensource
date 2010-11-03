@@ -4,9 +4,10 @@
 #include <QDialog>
 #include <switch.h>
 
-namespace Ui {
-	class IncomingCallDialog;
-}
+QT_BEGIN_NAMESPACE
+class QPushButton;
+class QLabel;
+QT_END_NAMESPACE
 
 class IncomingCallDialog : public QDialog {
 	Q_OBJECT
@@ -18,19 +19,17 @@ public:
 protected:
 	void changeEvent(QEvent *e);
 
-signals:
-	void answered(QString cid_name, QString cid_number);
-
 private slots:
-	void on_pbReject_clicked();
-	void on_pbAnswer_clicked();
-	void onIncomingCall(QSharedPointer<switch_event_t>event);
+	void onRejectClicked();
+	void onAnswerClicked();
+	void onIncomingCall(QString uuid, QString number, QString name);
 
 private:
-	Ui::IncomingCallDialog *ui;
-
-	QString _cid_name;
-	QString _cid_number;
+	QPushButton *_answer;
+	QPushButton *_reject;
+	QLabel *_status;
+	QString _callerName;
+	QString _callerNumber;
 };
 
 #endif // INCOMING_CALL_DIALOG_H

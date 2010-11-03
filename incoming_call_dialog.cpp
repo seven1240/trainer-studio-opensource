@@ -1,19 +1,32 @@
+#include <QGridLayout>
+#include <QLabel>
+#include <QPushButton>
+
 #include "application_controller.h"
 #include "incoming_call_dialog.h"
-#include "ui_incoming_call_dialog.h"
 #include "freeswitch.h"
 
 IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::IncomingCallDialog)
+	QDialog(parent)
 {
-	ui->setupUi(this);
-	connect(ApplicationController::fs(), SIGNAL(incomingCall(QSharedPointer<switch_event_t>)), this, SLOT(onIncomingCall(QSharedPointer<switch_event_t>)));
+	QGridLayout *layout = new QGridLayout();
+	_answer = new QPushButton("Answer");
+	_reject = new QPushButton("Hangup");
+	_status = new QLabel();
+	layout->addWidget(_status, 0, 0, 1, 2, Qt::AlignHCenter);
+	layout->addWidget(_reject, 1, 0, 1, 1, Qt::AlignLeft);
+	layout->addWidget(_answer, 1, 1, 1, 1, Qt::AlignRight);
+	setLayout(layout);
+
+	setFixedSize(320, 140);
+
+	connect(_answer, SIGNAL(clicked()), this, SLOT(onAnswerClicked()));
+	connect(_reject, SIGNAL(clicked()), this, SLOT(onRejectClicked()));
+	connect(ApplicationController::fs(), SIGNAL(callIncoming(QString,QString,QString)), this, SLOT(onIncomingCall(QString,QString,QString)));
 }
 
 IncomingCallDialog::~IncomingCallDialog()
 {
-	delete ui;
 }
 
 void IncomingCallDialog::changeEvent(QEvent *e)
@@ -21,36 +34,30 @@ void IncomingCallDialog::changeEvent(QEvent *e)
 	QDialog::changeEvent(e);
 	switch (e->type()) {
 	case QEvent::LanguageChange:
-		ui->retranslateUi(this);
+		// ui->retranslateUi(this);
 		break;
 	default:
 		break;
 	}
 }
 
-void IncomingCallDialog::onIncomingCall(QSharedPointer<switch_event_t>event)
+void IncomingCallDialog::onIncomingCall(QString uuid, QString number, QString name)
 {
-	qDebug() << "incoming call";
-	_cid_name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
-	_cid_number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
-	ui->lbCallerID->setText(QString("\"%1\" <%2>").arg(_cid_name).arg(_cid_number));
-	show();
-	raise();
-	activateWindow();
+	qDebug() << "Incoming" << number << name;
+	_callerName = name;
+	_callerNumber = number;
+	_status->setText(QString("\"%1\" <%2>").arg(_callerName).arg(_callerNumber));
+	_status->repaint();
 }
 
-void IncomingCallDialog::on_pbAnswer_clicked()
+void IncomingCallDialog::onAnswerClicked()
 {
 	ApplicationController::fs()->answer();
-
-	emit answered(_cid_name, _cid_number);
-	lower();
-	hide();
+	accept();
 }
 
-void IncomingCallDialog::on_pbReject_clicked()
+void IncomingCallDialog::onRejectClicked()
 {
 	ApplicationController::fs()->hangup(false);
-	lower();
-	hide();
+	reject();
 }
