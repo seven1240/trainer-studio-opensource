@@ -212,17 +212,29 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CHANNEL_DESTROY: break;
 	case SWITCH_EVENT_CHANNEL_STATE: break;
 	case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
+	/*
 	case SWITCH_EVENT_CHANNEL_ANSWER: break;
 	{
-		qDebug() << "Channel Answer" << uuid;
-		emit callAnswered(uuid);
+		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+		qDebug() << "Channel Answer" << uuid << number << name;
+		emit callAnswered(uuid, number, name);
 		break;
 	}
-	case SWITCH_EVENT_CHANNEL_HANGUP: break;
 	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
 	{
-		qDebug() << "Channel End" << uuid;
-		emit callEnded(uuid);
+		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+		qDebug() << "Channel End" << uuid << number << name;
+		emit callEnded(uuid, number, name);
+		break;
+	}
+	*/
+	case SWITCH_EVENT_CHANNEL_HANGUP:
+	{
+		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+		qDebug() << "Channel Hangup" << uuid << number << name;
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_EXECUTE: break;
@@ -296,26 +308,41 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CHANNEL_CREATE:
 	{
 		if (_active_calls > 0) {
+			qDebug() << "Channel Create" << uuid << "(we're busy)";
 			QString res;
 			sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
+		}
+		else {
+			qDebug() << "Channel Create" << uuid;
 		}
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_BRIDGE:/*27A*/
 	{
+		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+		qDebug() << "Channel Bridge" << uuid << number << name;
 		_active_calls++;
+		emit callAnswered(uuid, number, name);
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_UNBRIDGE:/*34A*/
 	{
+		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+		qDebug() << "Channel Unbridge" << uuid << number << name;
 		if (--_active_calls < 0)
 			_active_calls = 0;
+		emit callEnded(uuid, number, name);
 		break;
 	}
 	case SWITCH_EVENT_CUSTOM:/*5A*/
 	{
 		if (strcmp(event.data()->subclass_name, "portaudio::ringing") == 0) {
-			emit callIncoming(uuid);
+			QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
+			QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
+			qDebug() << "Incoming" << uuid << number << name;
+			emit callIncoming(uuid, number, name);
 		}
 		else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {
 			QString gw = switch_event_get_header_nil(event.data(), "Gateway");

@@ -43,7 +43,6 @@ void IncomingCallDialog::changeEvent(QEvent *e)
 
 void IncomingCallDialog::onIncomingCall(QString uuid, QString number, QString name)
 {
-	qDebug() << "Incoming" << number << name;
 	_callerName = name;
 	_callerNumber = number;
 	_status->setText(QString("\"%1\" <%2>").arg(_callerName).arg(_callerNumber));

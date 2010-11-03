@@ -94,10 +94,10 @@ signals:
 	void gatewayDeleted(QString name);
 	void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
 	void newEvent(QSharedPointer<switch_event_t>);    
-	void callIncoming(QString id);
+	void callIncoming(QString id, QString callerNumber, QString callerName);
 	void callOutgoing(QString id);
-	void callAnswered(QString id);
-	void callEnded(QString id);
+	void callAnswered(QString id, QString callerNumber, QString callerName);
+	void callEnded(QString id, QString callerNumber, QString callerName);
 
 private slots:
 	void minimalModuleLoaded(QString, QString, QString);
