@@ -1,7 +1,11 @@
 #ifndef APPLICATION_CONTROLLER_H
 #define APPLICATION_CONTROLLER_H
 
-#include <QObject>
+#include "controller.h"
+
+QT_BEGIN_NAMESPACE
+class QStateMachine;
+QT_END_NAMESPACE
 
 class MainWindow;
 class ServerConnection;
@@ -11,7 +15,7 @@ class ProgressController;
 class LoginDialog;
 class User;
 
-class ApplicationController : public QObject
+class ApplicationController : public Controller
 {
 	Q_OBJECT
 
@@ -33,10 +37,13 @@ private:
 	LoginDialog *loginDialog();
 	MainWindow *mainWindow();
 
+protected:
+	virtual QStateMachine *createStateMachine();
+
 private slots:
+	void starting();
+	void authenticating();
 	void authenticated(User *user);
-	void disconnected();
-	void sofiaReady();
 
 public:
 	static ServerConnection *server();

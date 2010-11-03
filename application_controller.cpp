@@ -1,3 +1,4 @@
+#include <QStateMachine>
 #include "application_controller.h"
 #include "main_window.h"
 #include "progress_dialog.h"
@@ -11,7 +12,7 @@ ServerConnection *ApplicationController::_server;
 FSHost *ApplicationController::_fs;
 User *ApplicationController::_user;
 
-ApplicationController::ApplicationController()
+ApplicationController::ApplicationController() : Controller(NULL)
 {
 	_main_window = NULL;
 	_server = NULL;
@@ -61,19 +62,52 @@ int ApplicationController::run()
 	_server= new ServerConnection();
 	_server->start();
 
-	connect(_server, SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
-	connect(_server, SIGNAL(disconnected()), this, SLOT(disconnected()));
-	connect(_fs, SIGNAL(sofiaReady()), this, SLOT(sofiaReady()));
-
 	_progress_controller = new ProgressController(this);
 
-	progressDialog()->show();
+	connect(server(), SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
 
-	// loginDialog()->raise();
-	// loginDialog()->show();
-	// loginDialog()->activateWindow();
+	startStateMachine();
 
 	return 0;
+}
+
+QStateMachine *ApplicationController::createStateMachine()
+{
+	QState *starting = new QState();
+	QState *authenticating = new QState();
+	QState *authenticated = new QState();
+	QState *stopped = new QState();
+
+	starting->setObjectName("starting");
+	authenticating->setObjectName("authenticating");
+	authenticated->setObjectName("authenticated");
+	stopped->setObjectName("stopped");
+
+	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
+	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
+
+	starting->addTransition(fs(), SIGNAL(sofiaReady()), authenticating);
+	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
+	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
+
+	QStateMachine *machine = new QStateMachine(this);
+	machine->addState(starting);
+	machine->addState(authenticating);
+	machine->addState(authenticated);
+	machine->addState(stopped);
+	machine->setInitialState(starting);
+	return machine;
+}
+
+void ApplicationController::starting()
+{
+	progressDialog()->show();
+}
+
+void ApplicationController::authenticating()
+{
+	progressDialog()->hide();
+	loginDialog()->show();
 }
 
 void ApplicationController::authenticated(User *user)
@@ -84,17 +118,6 @@ void ApplicationController::authenticated(User *user)
 	_user = user;
 	loginDialog()->hide();
 	mainWindow()->show();
-}
-
-void ApplicationController::disconnected()
-{
-	mainWindow()->hide();
-	loginDialog()->show();
-}
-
-void ApplicationController::sofiaReady()
-{
-	qDebug() << "Sofia is ready.";
 }
 
 MainWindow *ApplicationController::mainWindow()

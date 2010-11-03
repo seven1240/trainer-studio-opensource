@@ -39,7 +39,6 @@ static FSHost *_fs_instance;
 FSHost::FSHost(QObject *parent) :
 	QThread(parent)
 {
-	qDebug() << "Initializing globals..." << endl;
 	switch_core_setrlimits();
 	switch_core_set_globals();
 
