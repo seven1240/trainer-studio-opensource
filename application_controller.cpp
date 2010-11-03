@@ -99,6 +99,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
 	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
+	ready->addTransition(server(), SIGNAL(disconnected()), authenticating);
 
 	QStateMachine *machine = new QStateMachine(this);
 	machine->addState(starting);
@@ -125,7 +126,6 @@ void ApplicationController::authenticating()
 
 void ApplicationController::ready()
 {
-	qDebug() << "Ready...";
 	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->hide();

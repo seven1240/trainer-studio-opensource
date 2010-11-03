@@ -85,7 +85,7 @@ void ServerConnection::changed()
 	QSetIterator<QAbstractState*> i(_machine->configuration());
 	while (i.hasNext())
 	{
-		qDebug() << "ServerConnection:" << i.next()->objectName();
+		qDebug() << "SC:" << i.next()->objectName();
 	}
 }
 
@@ -95,7 +95,7 @@ void ServerConnection::run()
 	int32_t counter = 0;
 	while (_running) {
 		if (counter++ == 5) {
-			qDebug() << "ServerConnection:" << _socket->state() << _connected;
+			qDebug() << "SC:" << _socket->state() << _connected;
 			counter = 0;
 		}
 		msleep(2000);
@@ -174,6 +174,7 @@ void ServerConnection::logout()
 
 void ServerConnection::close()
 {
+	qDebug() << "SC: closing";
 	_socket->close();
 }
 
@@ -195,7 +196,7 @@ void ServerConnection::onReadyRead()
 	qjson->parse(ba.data(), &ok);
 
 	if (!ok) {
-		qDebug() << "Invalid JSON:" << ba;
+		qDebug() << "SC: Invalid JSON:" << ba;
 		delete qjson;
 		return;
 	}
@@ -246,7 +247,7 @@ void ServerConnection::onReadyRead()
 			emit interactionReconnected();
 		}
 		else {
-			qDebug() << "Unknown JSON";
+			qDebug() << "SC: Unknown JSON";
 		}
 	}
 	delete qjson;
@@ -307,7 +308,7 @@ bool ServerConnection::isConnected()
 
 void ServerConnection::pause(bool action)
 {
-	qDebug() << "Sending Pause: " << action;
+	qDebug() << "SC: pause: " << action;
 	if (action) {
 		sendAction("Pause");
 		emit pausing();
