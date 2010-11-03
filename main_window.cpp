@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
 	sysTray->setToolTip(QApplication::applicationName());
 	sysTray->show();
-	// sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
+	sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
 	connect(ApplicationController::server(), SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
@@ -107,9 +107,6 @@ void MainWindow::on_Logout_clicked()
 
 void MainWindow::on_State_clicked()
 {
-	if (!_sipStateReady) {
-		QMessageBox::warning(this, QApplication::applicationName(), "Cannot Pause, VoIP not ready!");
-	}
 	ApplicationController::server()->pause(_state->isChecked());
 }
 
@@ -175,7 +172,6 @@ void MainWindow::on_About_clicked()
 
 void MainWindow::on_Echo_clicked()
 {
-	ApplicationController::fs()->call("echo");
 	emit beginEcho();
 }
 

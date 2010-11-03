@@ -214,12 +214,14 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 	case SWITCH_EVENT_CHANNEL_CALLSTATE: break;
 	case SWITCH_EVENT_CHANNEL_ANSWER: break;
 	{
+		qDebug() << "Channel Answer" << uuid;
 		emit callAnswered(uuid);
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_HANGUP: break;
 	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
 	{
+		qDebug() << "Channel End" << uuid;
 		emit callEnded(uuid);
 		break;
 	}
@@ -420,6 +422,7 @@ QString FreeSwitch::call(QString callee)
 	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
 		emit callOutgoing(sl.at(2).trimmed());
 	}
+	return res;
 }
 
 void FreeSwitch::reload()

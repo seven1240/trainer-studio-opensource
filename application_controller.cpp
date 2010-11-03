@@ -4,6 +4,8 @@
 #include "progress_dialog.h"
 #include "progress_controller.h"
 #include "login_dialog.h"
+#include "echo_test_dialog.h"
+#include "incoming_call_dialog.h"
 #include "server_connection.h"
 #include "freeswitch.h"
 #include "user.h"
@@ -19,6 +21,8 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_fs = NULL;
 	_loginDialog = NULL;
 	_progressDialog = NULL;
+	_echoTestDialog = NULL;
+	_incomingCallDialog = NULL;
 	_user = NULL;
 }
 
@@ -122,12 +126,34 @@ void ApplicationController::authenticated(User *user)
 	mainWindow()->show();
 }
 
+void ApplicationController::beginEcho()
+{
+	echoTestDialog()->show();
+}
+
 MainWindow *ApplicationController::mainWindow()
 {
 	if (_mainWindow == NULL) {
 		_mainWindow = new MainWindow();
+		connect(_mainWindow, SIGNAL(beginEcho()), this, SLOT(beginEcho()));
 	}
 	return _mainWindow;
+}
+
+EchoTestDialog *ApplicationController::echoTestDialog()
+{
+	if (_echoTestDialog == NULL) {
+		_echoTestDialog = new EchoTestDialog();
+	}
+	return _echoTestDialog;
+}
+
+IncomingCallDialog *ApplicationController::incomingCallDialog()
+{
+	if (_incomingCallDialog == NULL) {
+		_incomingCallDialog = new IncomingCallDialog();
+	}
+	return _incomingCallDialog;
 }
 
 ProgressDialog *ApplicationController::progressDialog()

@@ -12,6 +12,8 @@ class ServerConnection;
 class FreeSwitch;
 class ProgressDialog;
 class ProgressController;
+class EchoTestDialog;
+class IncomingCallDialog;
 class LoginDialog;
 class User;
 
@@ -30,17 +32,22 @@ private:
 	ProgressController *_progressController;
 	ProgressDialog *_progressDialog;
 	LoginDialog *_loginDialog;
+	EchoTestDialog *_echoTestDialog;
+	IncomingCallDialog *_incomingCallDialog;
 	MainWindow *_mainWindow;
 
 private:
 	ProgressDialog *progressDialog();
 	LoginDialog *loginDialog();
+	EchoTestDialog *echoTestDialog();
+	IncomingCallDialog *incomingCallDialog();
 	MainWindow *mainWindow();
 
 protected:
 	virtual QStateMachine *createStateMachine();
 
 private slots:
+	void beginEcho();
 	void starting();
 	void authenticating();
 	void authenticated(User *user);
