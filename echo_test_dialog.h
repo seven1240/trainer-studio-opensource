@@ -21,13 +21,13 @@ protected:
 	void closeEvent(QCloseEvent *e);
 
 private:
-	QPushButton *_pbBegin;
-	QPushButton *_pbSkip;
-	QPushButton *_pbFinish;
-	QLabel *_lbProgress;
+	QPushButton *_begin;
+	QPushButton *_skip;
+	QPushButton *_finish;
+	QLabel *_progress;
 
 private:
-	void setProgress(QString string);
+	void progress(QString string);
 	bool didTheyHearThemselves();
 
 private slots:

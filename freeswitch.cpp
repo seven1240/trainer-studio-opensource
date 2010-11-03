@@ -298,7 +298,6 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 		if (_active_calls > 0) {
 			QString res;
 			sendCmd("uuid_kill", (uuid + " USER_BUSY").toAscii(), &res);
-			qDebug() << "hangup " << res;
 		}
 		break;
 	}

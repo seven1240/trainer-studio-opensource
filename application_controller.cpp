@@ -98,8 +98,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
-	// Not working, ETD's ctor uses User so this will crash because that's being constructed.
-	// authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
+	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
 
 	QStateMachine *machine = new QStateMachine(this);
 	machine->addState(starting);
@@ -126,6 +125,7 @@ void ApplicationController::authenticating()
 
 void ApplicationController::ready()
 {
+	qDebug() << "Ready...";
 	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->hide();
