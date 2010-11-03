@@ -5,7 +5,7 @@
 #include "application_controller.h"
 #include "settings_dialog.h"
 #include "ui_settings_dialog.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "isettings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :

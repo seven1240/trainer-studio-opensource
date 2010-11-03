@@ -10,7 +10,7 @@
 #include "incoming_call_dialog.h"
 #include "settings_dialog.h"
 #include "trainer_studio.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "user.h"
 
 class MainWindow : public QWidget {

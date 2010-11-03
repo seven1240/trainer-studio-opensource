@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "application_controller.h"
 #include "main_window.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "server_connection.h"
 
 FILE *_logFile = NULL;

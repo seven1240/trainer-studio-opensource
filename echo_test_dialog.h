@@ -2,7 +2,7 @@
 #define ECHO_TEST_DIALOG_H
 
 #include <QDialog>
-#include "fs_host.h"
+#include "freeswitch.h"
 
 QT_BEGIN_NAMESPACE
 class QPushButton;

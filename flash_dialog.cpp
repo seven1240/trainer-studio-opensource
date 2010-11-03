@@ -6,7 +6,7 @@
 #include "trainer_studio.h"
 #include "application_controller.h"
 #include "server_connection.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "flash_dialog.h"
 #include "ui_flash_dialog.h"
 #include "main_window.h"

@@ -30,7 +30,7 @@
 #include <QtGui>
 #include "application_controller.h"
 #include "call.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 
 Call::Call()
 {

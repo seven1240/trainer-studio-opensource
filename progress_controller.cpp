@@ -1,6 +1,6 @@
 #include "application_controller.h"
 #include "progress_controller.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 
 ProgressController::ProgressController(QObject *parent) : Controller(parent)
 {

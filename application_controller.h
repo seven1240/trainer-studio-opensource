@@ -9,7 +9,7 @@ QT_END_NAMESPACE
 
 class MainWindow;
 class ServerConnection;
-class FSHost;
+class FreeSwitch;
 class ProgressDialog;
 class ProgressController;
 class LoginDialog;
@@ -25,7 +25,7 @@ public:
 
 private:
 	static ServerConnection *_server;
-	static FSHost *_fs;
+	static FreeSwitch *_fs;
 	static User *_user;
 	ProgressController *_progressController;
 	ProgressDialog *_progressDialog;
@@ -47,7 +47,7 @@ private slots:
 
 public:
 	static ServerConnection *server();
-	static FSHost *fs();
+	static FreeSwitch *fs();
 	static User *user();
 	int run();
 

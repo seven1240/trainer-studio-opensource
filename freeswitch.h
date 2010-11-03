@@ -38,12 +38,12 @@
 #include "call.h"
 #include "channel.h"
 
-class FSHost : public QThread
+class FreeSwitch : public QThread
 {
 	Q_OBJECT
 
 public:
-	FSHost(QObject *parent = 0);
+	FreeSwitch(QObject *parent = 0);
 	bool isRunning() { return _running; }
 	bool isReady() { return _ready; }
 	bool isSofiaReady() { return _sofia_ready; }

@@ -10,7 +10,7 @@
 #include "application_controller.h"
 #include "login_dialog.h"
 #include "server_connection.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
 #include "progress_widget.h"

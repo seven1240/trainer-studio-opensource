@@ -5,11 +5,11 @@
 #include "progress_controller.h"
 #include "login_dialog.h"
 #include "server_connection.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 #include "user.h"
 
 ServerConnection *ApplicationController::_server;
-FSHost *ApplicationController::_fs;
+FreeSwitch *ApplicationController::_fs;
 User *ApplicationController::_user;
 
 ApplicationController::ApplicationController() : Controller(NULL)
@@ -56,7 +56,7 @@ ApplicationController::~ApplicationController()
 
 int ApplicationController::run()
 {
-	_fs = new FSHost();
+	_fs = new FreeSwitch();
 	_fs->start();
 
 	_server= new ServerConnection();
@@ -149,7 +149,7 @@ ServerConnection *ApplicationController::server()
 	return _server;
 }
 
-FSHost *ApplicationController::fs()
+FreeSwitch *ApplicationController::fs()
 {
 	return _fs;
 }

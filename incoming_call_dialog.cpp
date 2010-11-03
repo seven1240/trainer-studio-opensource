@@ -1,7 +1,7 @@
 #include "application_controller.h"
 #include "incoming_call_dialog.h"
 #include "ui_incoming_call_dialog.h"
-#include "fs_host.h"
+#include "freeswitch.h"
 
 IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
 	QDialog(parent),
