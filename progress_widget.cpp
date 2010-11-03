@@ -17,11 +17,13 @@ ProgressWidget::ProgressWidget(ProgressController *progressController, QWidget *
 	_label = new QLabel();
 	_history = new QListView();
 	_cancel = new QPushButton("Cancel");
-	_cancel->setEnabled(false);
 
 	_label->setObjectName("Label");
 	_history->setObjectName("History");
 	_cancel->setObjectName("Cancel");
+
+	_cancel->setVisible(false);
+	_label->setVisible(false);
 
 	layout->addWidget(_label);
 	layout->addWidget(_history);

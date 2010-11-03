@@ -43,12 +43,12 @@ private slots:
 	void on_About_clicked();
 	void on_Login_clicked();
 	void on_Logout_clicked();
+	void on_Close_clicked();
 	void onPaused(bool);
 	void onForcedPause(QString reason);
 	void onAnswered(QString cid_name, QString cid_number);
 	void onGatewayStateChange(QString name, QString state);
 	void onReservedForInteraction(QVariantMap);
-	void onDisconnected();
 	void onNewEvent(QSharedPointer<switch_event_t>);
 	void onTimerTimeout();
 };

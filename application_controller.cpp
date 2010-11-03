@@ -107,6 +107,7 @@ void ApplicationController::starting()
 void ApplicationController::authenticating()
 {
 	progressDialog()->hide();
+	mainWindow()->hide();
 	loginDialog()->show();
 }
 
@@ -116,6 +117,7 @@ void ApplicationController::authenticated(User *user)
 		delete _user;
 	}
 	_user = user;
+	progressDialog()->hide();
 	loginDialog()->hide();
 	mainWindow()->show();
 }

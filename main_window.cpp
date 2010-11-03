@@ -31,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));
 	connect(ApplicationController::server(), SIGNAL(reservedForInteraction(QVariantMap)), this, SLOT(onReservedForInteraction(QVariantMap)));
-	connect(ApplicationController::server(), SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)), this, SLOT(onGatewayStateChange(QString, QString)));
 	connect(_timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
 
@@ -100,6 +99,11 @@ void MainWindow::on_Flash_clicked()
 {
 }
 
+void MainWindow::on_Close_clicked()
+{
+	close();
+}
+
 void MainWindow::on_Login_clicked()
 {
 }
@@ -121,7 +125,7 @@ void MainWindow::on_State_clicked()
 
 void MainWindow::onPaused(bool state)
 {
-	if (state){
+	if (state) {
 		btnState->setText("> Start Working");
 		btnState->setChecked(false);
 		QApplication::alert(this, 0);
@@ -173,12 +177,6 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 	QString msg = QString("New learner comming with InteractionID %1").arg(data["interaction_id"].toString());
 	lbStatus->setText(msg);
 	sysTray->showMessage(QApplication::applicationName(),msg, QSystemTrayIcon::Information, 3000);
-}
-
-void MainWindow::onDisconnected()
-{
-	QMessageBox::critical(this,QApplication::applicationName(), "Socket Broken!!");
-	hide();
 }
 
 void MainWindow::on_About_clicked()
