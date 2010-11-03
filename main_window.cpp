@@ -106,6 +106,7 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_Flash_clicked()
 {
+	emit testFlash();
 }
 
 void MainWindow::on_Close_clicked()
@@ -177,7 +178,7 @@ void MainWindow::on_About_clicked()
 
 void MainWindow::on_Echo_clicked()
 {
-	emit beginEcho();
+	emit testEcho();
 }
 
 void MainWindow::on_Conference_clicked()

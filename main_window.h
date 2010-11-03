@@ -38,8 +38,8 @@ private:
 	void parseCallResult(QString res);
 
 signals:
-	void beginEcho();
-	void beginFlashDemo();
+	void testEcho();
+	void testFlash();
 
 private slots:
 	void on_Hangup_clicked();

@@ -23,6 +23,7 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_progressDialog = NULL;
 	_echoTestDialog = NULL;
 	_incomingCallDialog = NULL;
+	_flashDialog = NULL;
 	_user = NULL;
 }
 
@@ -81,17 +82,19 @@ QStateMachine *ApplicationController::createStateMachine()
 	QState *authenticating = new QState();
 	QState *authenticated = new QState();
 	QState *stopped = new QState();
-	QState *echo = new QState();
+	QState *testEcho = new QState();
 	QState *ready = new QState();
 	QState *incoming = new QState();
 	QState *training = new QState();
+	QState *testFlash = new QState();
 
 	starting->setObjectName("starting");
 	authenticating->setObjectName("authenticating");
 	authenticated->setObjectName("authenticated");
 	stopped->setObjectName("stopped");
-	echo->setObjectName("echo");
 	ready->setObjectName("ready");
+	testEcho->setObjectName("test-echo");
+	testFlash->setObjectName("test-flash");
 	incoming->setObjectName("incoming");
 	training->setObjectName("training");
 
@@ -99,6 +102,9 @@ QStateMachine *ApplicationController::createStateMachine()
 	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
 	connect(ready, SIGNAL(entered()), this, SLOT(ready()));
 	connect(incoming, SIGNAL(entered()), this, SLOT(incoming()));
+	connect(training, SIGNAL(entered()), this, SLOT(training()));
+	connect(testEcho, SIGNAL(entered()), this, SLOT(testEcho()));
+	connect(testFlash, SIGNAL(entered()), this, SLOT(testFlash()));
 
 	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
@@ -109,17 +115,20 @@ QStateMachine *ApplicationController::createStateMachine()
 	incoming->addTransition(fs(), SIGNAL(callAnswered(QString,QString,QString)), training);
 	incoming->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
 	training->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
+	ready->addTransition(mainWindow(), SIGNAL(testFlash()), testFlash);
+	testFlash->addTransition(flashDialog(), SIGNAL(closed()), ready);
 
 	QStateMachine *machine = new QStateMachine(this);
 	machine->setObjectName("AC");
 	machine->addState(starting);
 	machine->addState(authenticating);
 	machine->addState(authenticated);
-	machine->addState(echo);
 	machine->addState(ready);
 	machine->addState(stopped);
 	machine->addState(training);
 	machine->addState(incoming);
+	machine->addState(testEcho);
+	machine->addState(testFlash);
 	machine->setInitialState(starting);
 	return machine;
 }
@@ -165,16 +174,26 @@ void ApplicationController::authenticated(User *user)
 	echoTestDialog()->show();
 }
 
-void ApplicationController::beginEcho()
+void ApplicationController::testEcho()
 {
 	echoTestDialog()->show();
+}
+
+void ApplicationController::testFlash()
+{
+	flashDialog()->show();
+}
+
+void ApplicationController::training()
+{
+	flashDialog()->show();
 }
 
 MainWindow *ApplicationController::mainWindow()
 {
 	if (_mainWindow == NULL) {
 		_mainWindow = new MainWindow();
-		connect(_mainWindow, SIGNAL(beginEcho()), this, SLOT(beginEcho()));
+		connect(_mainWindow, SIGNAL(testEcho()), this, SLOT(testEcho()));
 	}
 	return _mainWindow;
 }
@@ -185,6 +204,14 @@ EchoTestDialog *ApplicationController::echoTestDialog()
 		_echoTestDialog = new EchoTestDialog();
 	}
 	return _echoTestDialog;
+}
+
+FlashDialog *ApplicationController::flashDialog()
+{
+	if (_flashDialog == NULL) {
+		_flashDialog = new FlashDialog();
+	}
+	return _flashDialog;
 }
 
 IncomingCallDialog *ApplicationController::incomingCallDialog()

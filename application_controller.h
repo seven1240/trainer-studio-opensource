@@ -15,6 +15,7 @@ class ProgressController;
 class EchoTestDialog;
 class IncomingCallDialog;
 class LoginDialog;
+class FlashDialog;
 class User;
 
 class ApplicationController : public Controller
@@ -33,6 +34,7 @@ private:
 	ProgressDialog *_progressDialog;
 	LoginDialog *_loginDialog;
 	EchoTestDialog *_echoTestDialog;
+	FlashDialog *_flashDialog;
 	IncomingCallDialog *_incomingCallDialog;
 	MainWindow *_mainWindow;
 
@@ -40,6 +42,7 @@ private:
 	ProgressDialog *progressDialog();
 	LoginDialog *loginDialog();
 	EchoTestDialog *echoTestDialog();
+	FlashDialog *flashDialog();
 	IncomingCallDialog *incomingCallDialog();
 	MainWindow *mainWindow();
 
@@ -47,11 +50,13 @@ protected:
 	virtual QStateMachine *createStateMachine();
 
 private slots:
-	void beginEcho();
+	void testEcho();
+	void testFlash();
 	void starting();
 	void authenticating();
 	void authenticated(User *user);
 	void ready();
+	void training();
 	void incoming();
 
 public:
