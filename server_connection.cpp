@@ -202,7 +202,7 @@ void ServerConnection::onReadyRead()
 	QVariantMap data = qjson->toMap();
 	QString status = data["status"].toString();
 
-	qDebug() << ba.data();
+	qDebug() << s;
 #if _EXTRA_VERBOSE
 	qDebug() << data;
 	qDebug() << status;
