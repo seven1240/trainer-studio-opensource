@@ -1,5 +1,5 @@
-#ifndef LOGINDIALOG_H
-#define LOGINDIALOG_H
+#ifndef LOGIN_DIALOG_H
+#define LOGIN_DIALOG_H
 
 #include <QDialog>
 #include <QKeyEvent>
@@ -64,4 +64,4 @@ private slots:
 	void onFSModuleLoaded(QString modType, QString modKey, QString modName);
 };
 
-#endif // LOGINDIALOG_H
+#endif // LOGIN_DIALOG_H

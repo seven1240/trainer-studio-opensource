@@ -1,5 +1,5 @@
-#ifndef ECHOTESTDIALOG_H
-#define ECHOTESTDIALOG_H
+#ifndef ECHO_TEST_DIALOG_H
+#define ECHO_TEST_DIALOG_H
 
 #include <QDialog>
 #include "fs_host.h"
@@ -37,4 +37,4 @@ private slots:
 	void onNewEvent(QSharedPointer<switch_event_t>);
 };
 
-#endif // ECHOTESTDIALOG_H
+#endif // ECHO_TEST_DIALOG_H

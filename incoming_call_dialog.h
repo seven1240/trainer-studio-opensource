@@ -1,5 +1,5 @@
-#ifndef INCOMINGCALLDIALOG_H
-#define INCOMINGCALLDIALOG_H
+#ifndef INCOMING_CALL_DIALOG_H
+#define INCOMING_CALL_DIALOG_H
 
 #include <QDialog>
 #include <switch.h>
@@ -33,4 +33,4 @@ private:
 	QString _cid_number;
 };
 
-#endif // INCOMINGCALLDIALOG_H
+#endif // INCOMING_CALL_DIALOG_H
