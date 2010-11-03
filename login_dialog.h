@@ -25,8 +25,8 @@ public:
 
 protected:
 	void changeEvent(QEvent *e);
-	void closeEvent(QCloseEvent *);
-	void KeyPressEvent(QKeyEvent *e);
+	void closeEvent(QCloseEvent *e);
+	void onKeyPressEvent(QKeyEvent *e);
 
 private:
 	QLineEdit *_leUsername;
@@ -62,7 +62,6 @@ private slots:
 	void onCancelClicked();
 	void onLoginClicked();
 	void onFSModuleLoaded(QString modType, QString modKey, QString modName);
-	void doRegisterToVoIP();
 };
 
 #endif // LOGINDIALOG_H

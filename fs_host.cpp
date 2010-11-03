@@ -65,7 +65,7 @@ void FSHost::createFolders()
 	if (!conf_dir.exists(DOTDIR "/sounds")) {
 		conf_dir.mkpath(DOTDIR "/sounds");
 	}
-	if(!QFile::exists(QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
+	if (!QFile::exists(QString("%1/" DOTDIR "/conf/freeswitch.xml").arg(conf_dir.absolutePath()))) {
 		conf_dir.mkdir(DOTDIR "/conf");
 		QFile rootXML(":/conf/freeswitch.xml");
 		qDebug() << rootXML.exists(":conf/freeswitch.xml");
@@ -348,6 +348,7 @@ void FSHost::generalEventHandler(switch_event_t *switchEvent)
 		QString modName = switch_event_get_header_nil(event.data(), "name");
 		if (modKey == "mod_sofia") {
 			_sofia_ready = true;
+			emit sofiaReady();
 		}
 		emit moduleLoaded(modType, modKey, modName);
 		break;
@@ -410,6 +411,23 @@ void FSHost::reload()
 {
 	QString res;
 	sendCmd("sofia", "profile softphone rescan reloadxml", &res);
+}
+
+void FSHost::setupGateway(QString username, QString password, QString realm, bool tcp)
+{
+	ISettings *settings = new ISettings(this);
+	qDebug() << "FS: setting gateway: " << username << password << realm;
+	QVariantMap gw;
+	gw.insert("username", username);
+	gw.insert("password", password);
+	gw.insert("realm", realm);
+	if (tcp) {
+		gw.insert("register-transport", "tcp");
+	}
+	settings->writeGateway(gw);
+	settings->saveToFile();
+	delete settings;
+	reload();
 }
 
 switch_status_t FSHost::mute()

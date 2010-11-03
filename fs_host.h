@@ -54,6 +54,7 @@ protected:
 
 public:
 	QString call(QString callee);
+	void setupGateway(QString username, QString password, QString realm, bool tcp);
 	void reload();
 	switch_status_t mute();
 	switch_status_t unmute();
@@ -84,7 +85,8 @@ signals:
 	void coreLoadingError(QString);
 	void loadingModules(QString, int, QColor);
 	void moduleLoaded(QString, QString, QString);
-	void ready(void);
+	void ready();
+	void sofiaReady();
 	void gatewayStateChange(QString name, QString state);
 	void gatewayAdded(QString name);
 	void gatewayDeleted(QString name);

@@ -94,7 +94,7 @@ void LoginDialog::onServerConnectionAuthenticated(User *user)
 {
 	_user = user;
 	_authenticated = true;
-	QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
+	ApplicationController::fs()->setupGateway(user->getVoipUsername(), user->getVoipPassword(), user->getVoipServer(), false);
 }
 
 void LoginDialog::onServerConnectionDisconnected()
@@ -118,7 +118,7 @@ void LoginDialog::closeEvent(QCloseEvent * /*e*/)
 {
 }
 
-void LoginDialog::KeyPressEvent(QKeyEvent *e)
+void LoginDialog::onKeyPressEvent(QKeyEvent *e)
 {
 	if (e->key() == Qt::Key_Escape) return;
 }
@@ -188,58 +188,6 @@ void LoginDialog::onLoginClicked()
 	_abort = false;
 	showProgress();
 	ApplicationController::server()->open(host, port);
-}
-
-void LoginDialog::doRegisterToVoIP()
-{
-	if (_abort) return;
-
-	static int count = 0;
-	if (count++ == 20) {
-		abortLogin("Error loading VoIP module, Please close and reopen!!");
-		count = 0;
-		return;
-	}
-
-	if (!ApplicationController::fs()->isSofiaReady()) {
-		setProgress("Loading VoIP modules...");
-		QTimer::singleShot(1000, this, SLOT(doRegisterToVoIP()));
-		return;
-	}
-
-	setProgress("Registering to VoIP sever...");
-
-	ISettings *isettings = new ISettings(this);
-
-	QVariantMap gw = isettings->getGateway(QString("default"));
-
-	if (gw["username"] == _user->getVoipUsername() && gw["password"] == _user->getVoipPassword()) {
-		qDebug() << "No gateway info changed";
-	}
-	else {
-		qDebug() << "Need to set gateway";
-
-		QVariantMap newgw;
-		newgw.insert("username", _user->getVoipUsername());
-		newgw.insert("password", _user->getVoipPassword());
-		newgw.insert("realm", _user->getVoipServer());
-		QSettings settings;
-		if (settings.value("sip_transport").toString() == "tcp") {
-			newgw.insert("register-transport", "tcp");
-		}
-		isettings->writeGateway(newgw);
-		isettings->saveToFile();
-		switch_sleep(1000000);
-	}
-
-	ApplicationController::fs()->reload();
-
-	delete isettings;
-	hide();
-
-	EchoTestDialog *echo_dialog = new EchoTestDialog((QWidget *)this->parent());
-	echo_dialog->setAttribute(Qt::WA_DeleteOnClose);
-	echo_dialog->show();
 }
 
 void LoginDialog::onSettingsClicked()
