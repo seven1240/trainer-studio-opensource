@@ -67,7 +67,11 @@ LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent
 
 	QSettings settings;
 	_authenticated = false;
-	_username->setText(settings.value("StoredData/Username", "").toString());
+
+	QString username = settings.value("StoredData/Username", "").toString();
+	_username->setText(username);
+	if (username.length() > 0)
+		_password->setFocus();
 
 	connect(ApplicationController::server(), SIGNAL(connected()), this, SLOT(onServerConnectionConnected()));
 	connect(ApplicationController::server(), SIGNAL(authenticated(User*)), this, SLOT(onServerConnectionAuthenticated(User*)));
