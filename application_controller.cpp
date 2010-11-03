@@ -56,6 +56,7 @@ int ApplicationController::run()
 
 	connect(_server, SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
 	connect(_server, SIGNAL(disconnected()), this, SLOT(disconnected()));
+	connect(_fs, SIGNAL(sofiaReady()), this, SLOT(sofiaReady()));
 
 	loginDialog()->raise();
 	loginDialog()->show();
@@ -78,6 +79,11 @@ void ApplicationController::disconnected()
 {
 	mainWindow()->hide();
 	loginDialog()->show();
+}
+
+void ApplicationController::sofiaReady()
+{
+	qDebug() << "Sofia is ready.";
 }
 
 MainWindow *ApplicationController::mainWindow()

@@ -31,6 +31,7 @@ private:
 private slots:
 	void authenticated(User *user);
 	void disconnected();
+	void sofiaReady();
 
 public:
 	static ServerConnection *server();
