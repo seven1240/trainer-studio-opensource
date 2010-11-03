@@ -79,6 +79,9 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 {
 	switch_event_t *event = spEvent.data();
 
+	if (!isVisible())
+		return;
+
 	switch (event->event_id) {
 	case SWITCH_EVENT_CHANNEL_CREATE:
 		{
