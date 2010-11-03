@@ -15,14 +15,13 @@ class QFrame;
 QT_END_NAMESPACE
 
 class User;
-class ProgressController;
 class ProgressWidget;
 
 class LoginDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	LoginDialog(ProgressController *progressController, QWidget *parent = 0);
+	LoginDialog(ProgressWidget *progress, QWidget *parent = 0);
 	~LoginDialog();
 
 protected:

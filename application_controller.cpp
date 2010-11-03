@@ -2,6 +2,7 @@
 #include "application_controller.h"
 #include "main_window.h"
 #include "progress_dialog.h"
+#include "progress_widget.h"
 #include "progress_controller.h"
 #include "flash_dialog.h"
 #include "flash_controller.h"
@@ -57,9 +58,7 @@ ApplicationController::~ApplicationController()
 		_server->wait();
 		delete _server;
 	}
-	if (_user != NULL) {
-		delete _user;
-	}
+	if (_user != NULL) delete _user;
 	qDebug() << "Stopped";
 }
 
@@ -71,7 +70,8 @@ int ApplicationController::run()
 	_server= new ServerConnection();
 	_server->start();
 
-	_progressController = new ProgressController(this);
+	_progressWidget = new ProgressWidget();
+	_progressController = new ProgressController(_progressWidget, this);
 	_flashController = new FlashController(flashDialog(), this);
 
 	connect(server(), SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
@@ -230,7 +230,7 @@ IncomingCallDialog *ApplicationController::incomingCallDialog()
 ProgressDialog *ApplicationController::progressDialog()
 {
 	if (_progressDialog == NULL) {
-		_progressDialog = new ProgressDialog(_progressController);
+		_progressDialog = new ProgressDialog(_progressWidget);
 	}
 	return _progressDialog;
 }
@@ -238,7 +238,7 @@ ProgressDialog *ApplicationController::progressDialog()
 LoginDialog *ApplicationController::loginDialog()
 {
 	if (_loginDialog == NULL) {
-		_loginDialog = new LoginDialog(_progressController);
+		_loginDialog = new LoginDialog(_progressWidget);
 	}
 	return _loginDialog;
 }

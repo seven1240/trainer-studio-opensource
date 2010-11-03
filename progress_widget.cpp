@@ -10,7 +10,7 @@
 #include "progress_controller.h"
 #include "progress_widget.h"
 
-ProgressWidget::ProgressWidget(ProgressController *progressController, QWidget *parent) :
+ProgressWidget::ProgressWidget(QWidget *parent) :
 	QWidget(parent)
 {
 	QVBoxLayout *layout = new QVBoxLayout();
@@ -30,9 +30,6 @@ ProgressWidget::ProgressWidget(ProgressController *progressController, QWidget *
 	layout->addWidget(_cancel);
 	setLayout(layout);
 
-	_history->setModel(&progressController->messageModel());
-
-	connect(progressController, SIGNAL(changed()), this, SLOT(onHistoryChanged()));
 	connect(_cancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
 	setWindowTitle("Progress");
@@ -42,6 +39,11 @@ ProgressWidget::ProgressWidget(ProgressController *progressController, QWidget *
 
 ProgressWidget::~ProgressWidget()
 {
+}
+
+void ProgressWidget::setModel(QStringListModel *model)
+{
+	_history->setModel(model);
 }
 
 void ProgressWidget::onHistoryChanged()

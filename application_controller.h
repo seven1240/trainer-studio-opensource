@@ -12,6 +12,7 @@ class ServerConnection;
 class FreeSwitch;
 class ProgressDialog;
 class ProgressController;
+class ProgressWidget;
 class FlashController;
 class FlashDialog;
 class EchoTestDialog;
@@ -31,6 +32,7 @@ private:
 	static ServerConnection *_server;
 	static FreeSwitch *_fs;
 	static User *_user;
+	ProgressWidget *_progressWidget;
 	ProgressController *_progressController;
 	FlashController *_flashController;
 	ProgressDialog *_progressDialog;

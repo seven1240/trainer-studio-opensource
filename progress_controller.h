@@ -5,11 +5,13 @@
 
 #include "controller.h"
 
+class ProgressWidget;
+
 class ProgressController : public Controller
 {
 	Q_OBJECT
 public:
-	ProgressController(QObject *parent = 0);
+	ProgressController(ProgressWidget *view, QObject *parent = 0);
 	~ProgressController();
 
 public:
