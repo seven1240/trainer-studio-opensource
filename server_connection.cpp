@@ -157,7 +157,7 @@ void ServerConnection::login(QString username, QString password)
 	json = cJSON_Print(cj);
 	cJSON_Delete(cj);
 
-	qDebug() << json;
+	qDebug() << "SC:" << json;
 
 	startTimer(5000);
 	emit authenticating();
@@ -203,10 +203,10 @@ void ServerConnection::onReadyRead()
 	QVariantMap data = qjson->toMap();
 	QString status = data["status"].toString();
 
-	qDebug() << s;
+	qDebug() << "SC:" << s;
 #if _EXTRA_VERBOSE
-	qDebug() << data;
-	qDebug() << status;
+	qDebug() << "SC:" << data;
+	qDebug() << "SC:" << status;
 #endif
 
 	if (status == "Pong") {
