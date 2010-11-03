@@ -15,7 +15,7 @@ ProgressDialog::ProgressDialog(ProgressController *progressController, QWidget *
 	setLayout(layout);
 
 	setWindowTitle("Progress");
-	setFixedSize(480, 280);
+	setFixedSize(500, 280);
 
 	QMetaObject::connectSlotsByName(this);
 }
