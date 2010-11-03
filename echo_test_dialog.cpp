@@ -5,6 +5,7 @@
 #include "settings_dialog.h"
 #include "main_window.h"
 #include "server_connection.h"
+#include "utils.h"
 
 EchoTestDialog::EchoTestDialog(QWidget *parent) :
 	QDialog(parent)
@@ -21,7 +22,10 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
 	layout->addWidget(_pbBegin);
 	layout->addWidget(_pbSkip);
 	layout->addWidget(_pbFinish);
+	layout->addWidget(new QFrame());
 	setLayout(layout);
+
+	_lbProgress->setWordWrap(true);
 
 	User *user = ApplicationController::user();
 	if (user->skipEchoTesting()) {
@@ -31,8 +35,12 @@ EchoTestDialog::EchoTestDialog(QWidget *parent) :
 		_pbSkip->setVisible(false);
 	}
 
+	_pbFinish->setVisible(false);
+
+	setModal(true);
 	setWindowTitle("Echo Testing");
-	setFixedSize(320, 140);
+	setFixedSize(400, 240);
+	Utils::centerWindowOnDesktop(this);
 
 	connect(_pbBegin, SIGNAL(clicked()), this, SLOT(onBeginClicked()));
 	connect(_pbSkip, SIGNAL(clicked()), this, SLOT(onSkipClicked()));
@@ -56,6 +64,11 @@ void EchoTestDialog::changeEvent(QEvent *e)
 	}
 }
 
+void EchoTestDialog::showEvent(QShowEvent * /*e*/)
+{
+	_lbProgress->setText("We will now test your microphone. Press Begin and after the beep, say 'Testing 1, 2, 3' out loud.");
+}
+
 void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
 {
 	ApplicationController::fs()->hangup(true);
@@ -65,23 +78,6 @@ void EchoTestDialog::setProgress(QString string)
 {
 	_lbProgress->setText(string);
 	_lbProgress->repaint();
-}
-
-void EchoTestDialog::onFinishClicked()
-{
-	ApplicationController::fs()->hangup(true);
-}
-
-void EchoTestDialog::onBeginClicked()
-{
-	if (!ApplicationController::fs()->isSofiaReady()) {
-		setProgress("Please wait a while and try again!");
-		return;
-	}
-
-	setProgress("Running...");
-
-	ApplicationController::fs()->call("echo");
 }
 
 void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
@@ -114,11 +110,13 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 			if (didTheyHearThemselves()) {
 				ApplicationController::server()->pause(TRUE);
 				close();
-				return;
 			}
 			else {
-				setProgress("Please Try again, or trouble shoot by click the Advanced button");
+				setProgress("Please try again. If the problems continues, please contact your supervisor.");
+				_pbBegin->setVisible(true);
+				_pbFinish->setVisible(false);
 			}
+			break;
 		}
 	default:
 		;
@@ -130,16 +128,22 @@ bool EchoTestDialog::didTheyHearThemselves()
 	return QMessageBox::question(NULL, "Testing", "Your test call is finished, did you hear yourself?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes;
 }
 
+void EchoTestDialog::onFinishClicked()
+{
+	ApplicationController::fs()->hangup(true);
+}
+
+void EchoTestDialog::onBeginClicked()
+{
+	_pbFinish->setVisible(true);
+	_pbSkip->setVisible(false);
+	_pbBegin->setVisible(false);
+	setProgress("Calling...");
+	ApplicationController::fs()->call("echo");
+}
+
 void EchoTestDialog::onSkipClicked()
 {
 	ApplicationController::server()->pause(TRUE);
 	close();
-}
-
-void EchoTestDialog::onSettingsClicked()
-{
-	SettingsDialog *dialog = new SettingsDialog(this);
-	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	dialog->setActiveTabs(TAB_AUDIO);
-	dialog->show();
 }

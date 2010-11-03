@@ -51,6 +51,7 @@ private slots:
 	void starting();
 	void authenticating();
 	void authenticated(User *user);
+	void ready();
 
 public:
 	static ServerConnection *server();

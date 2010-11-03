@@ -17,6 +17,7 @@ public:
 
 protected:
 	void changeEvent(QEvent *e);
+	void showEvent(QShowEvent *e);
 	void closeEvent(QCloseEvent *e);
 
 private:
@@ -30,7 +31,6 @@ private:
 	bool didTheyHearThemselves();
 
 private slots:
-	void onSettingsClicked();
 	void onSkipClicked();
 	void onBeginClicked();
 	void onFinishClicked();

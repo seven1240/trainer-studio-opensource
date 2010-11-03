@@ -81,23 +81,32 @@ QStateMachine *ApplicationController::createStateMachine()
 	QState *authenticating = new QState();
 	QState *authenticated = new QState();
 	QState *stopped = new QState();
+	QState *echo = new QState();
+	QState *ready = new QState();
 
 	starting->setObjectName("starting");
 	authenticating->setObjectName("authenticating");
 	authenticated->setObjectName("authenticated");
 	stopped->setObjectName("stopped");
+	echo->setObjectName("echo");
+	ready->setObjectName("ready");
 
 	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
 	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
+	connect(ready, SIGNAL(entered()), this, SLOT(ready()));
 
 	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
+	// Not working, ETD's ctor uses User so this will crash because that's being constructed.
+	// authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
 
 	QStateMachine *machine = new QStateMachine(this);
 	machine->addState(starting);
 	machine->addState(authenticating);
 	machine->addState(authenticated);
+	machine->addState(echo);
+	machine->addState(ready);
 	machine->addState(stopped);
 	machine->setInitialState(starting);
 	return machine;
@@ -115,6 +124,15 @@ void ApplicationController::authenticating()
 	loginDialog()->show();
 }
 
+void ApplicationController::ready()
+{
+	progressDialog()->hide();
+	mainWindow()->hide();
+	loginDialog()->hide();
+	echoTestDialog()->hide();
+	mainWindow()->show();
+}
+
 void ApplicationController::authenticated(User *user)
 {
 	if (_user != NULL) {
@@ -123,8 +141,15 @@ void ApplicationController::authenticated(User *user)
 	_user = user;
 	progressDialog()->hide();
 	loginDialog()->hide();
-	mainWindow()->show();
+	mainWindow()->hide();
+	echoTestDialog()->show();
 }
+
+/*
+void ApplicationController::readyToTrain()
+{
+}
+*/
 
 void ApplicationController::beginEcho()
 {
