@@ -115,7 +115,7 @@ void FreeSwitch::createFolders()
 	}
 }
 
-void FreeSwitch::generalLoggerHandler(QSharedPointer<switch_log_node_t>node, switch_log_level_t level)
+void FreeSwitch::generalLoggerHandler(QSharedPointer<switch_log_node_t> node, switch_log_level_t level)
 {
 	emit eventLog(node, level);
 }
