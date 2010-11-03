@@ -15,6 +15,7 @@ class QFrame;
 QT_END_NAMESPACE
 
 class User;
+class ProgressWidget;
 
 class LoginDialog : public QDialog {
 	Q_OBJECT
@@ -34,6 +35,7 @@ private:
 	QPushButton *_pbSettings;
 	QPushButton *_pbLogin;
 	QPushButton *_pbCancel;
+	ProgressWidget *_progress;
 	QLabel *_lbProgress;
 	QTextEdit *_teProgress;
 	QFrame *_loginFrame;

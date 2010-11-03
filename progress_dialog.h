@@ -21,15 +21,6 @@ public:
 	ProgressDialog(QWidget *parent = 0);
 	~ProgressDialog();
 
-private:
-	QLabel *_label;
-	QTextEdit *_history;
-
-protected:
-
-private:
-	void setProgress(QString string);
-
 };
 
 #endif // PROGRESS_DIALOG_H

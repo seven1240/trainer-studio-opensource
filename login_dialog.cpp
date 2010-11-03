@@ -11,10 +11,9 @@
 #include "login_dialog.h"
 #include "server_connection.h"
 #include "fs_host.h"
-#include "isettings.h"
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
-#include "utils.h"
+#include "progress_widget.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
 	QDialog(parent)
@@ -46,6 +45,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	loginLayout->addWidget(new QFrame());
 	_loginFrame->setLayout(loginLayout);
 
+	_progress = new ProgressWidget();
 	_progressFrame = new QFrame();
 	QVBoxLayout *progressLayout = new QVBoxLayout();
 	progressLayout->addWidget(_lbProgress);

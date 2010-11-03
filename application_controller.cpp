@@ -1,5 +1,7 @@
 #include "application_controller.h"
 #include "main_window.h"
+#include "progress_dialog.h"
+#include "progress_controller.h"
 #include "login_dialog.h"
 #include "server_connection.h"
 #include "fs_host.h"
@@ -15,6 +17,7 @@ ApplicationController::ApplicationController()
 	_server = NULL;
 	_fs = NULL;
 	_login_dialog = NULL;
+	_progress_dialog = NULL;
 	_user = NULL;
 }
 
@@ -23,6 +26,10 @@ ApplicationController::~ApplicationController()
 	if (_main_window != NULL) {
 		qDebug() << "Freeing MainWindow";
 		delete _main_window;
+	}
+	if (_progress_dialog != NULL) {
+		qDebug() << "Freeing ProgressDialog";
+		delete _progress_dialog;
 	}
 	if (_login_dialog != NULL) {
 		qDebug() << "Freeing LoginDialog";
@@ -58,9 +65,13 @@ int ApplicationController::run()
 	connect(_server, SIGNAL(disconnected()), this, SLOT(disconnected()));
 	connect(_fs, SIGNAL(sofiaReady()), this, SLOT(sofiaReady()));
 
-	loginDialog()->raise();
-	loginDialog()->show();
-	loginDialog()->activateWindow();
+	_progress_controller = new ProgressController(this);
+
+	progressDialog()->show();
+
+	// loginDialog()->raise();
+	// loginDialog()->show();
+	// loginDialog()->activateWindow();
 
 	return 0;
 }
@@ -92,6 +103,14 @@ MainWindow *ApplicationController::mainWindow()
 		_main_window = new MainWindow();
 	}
 	return _main_window;
+}
+
+ProgressDialog *ApplicationController::progressDialog()
+{
+	if (_progress_dialog == NULL) {
+		_progress_dialog = new ProgressDialog();
+	}
+	return _progress_dialog;
 }
 
 LoginDialog *ApplicationController::loginDialog()

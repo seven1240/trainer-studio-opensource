@@ -6,6 +6,8 @@
 class MainWindow;
 class ServerConnection;
 class FSHost;
+class ProgressDialog;
+class ProgressController;
 class LoginDialog;
 class User;
 
@@ -21,12 +23,15 @@ private:
 	static ServerConnection *_server;
 	static FSHost *_fs;
 	static User *_user;
+	ProgressController *_progress_controller;
+	ProgressDialog *_progress_dialog;
 	LoginDialog *_login_dialog;
 	MainWindow *_main_window;
 
 private:
-	MainWindow *mainWindow();
+	ProgressDialog *progressDialog();
 	LoginDialog *loginDialog();
+	MainWindow *mainWindow();
 
 private slots:
 	void authenticated(User *user);

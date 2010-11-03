@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	sysTray = new QSystemTrayIcon(QIcon(":/images/taskbar_icon"), this);
 	sysTray->setToolTip(QApplication::applicationName());
 	sysTray->show();
-	sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
+	// sysTray->showMessage(QApplication::applicationName(), "Initialized", QSystemTrayIcon::Information, 2000);
 
 	connect(ApplicationController::server(), SIGNAL(pauseChanged(bool)), this, SLOT(onPaused(bool)));
 	connect(ApplicationController::server(), SIGNAL(forcedPause(QString)), this, SLOT(onForcedPause(QString)));

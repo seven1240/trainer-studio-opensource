@@ -5,32 +5,21 @@
 #include <QtGui/QTextEdit>
 #include <QtGui/QPushButton>
 #include <QtGui/QVBoxLayout>
-#include "application_controller.h"
 #include "progress_dialog.h"
+#include "progress_widget.h"
 
-ProgressDialog::ProgressDialog(QWidget *parent) :
-	QDialog(parent)
+ProgressDialog::ProgressDialog(QWidget *parent) : QDialog(parent)
 {
-	_label = new QLabel();
-	_history = new QTextEdit();
-
 	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(_label);
-	layout->addWidget(_history);
+	layout->addWidget(new ProgressWidget());
 	setLayout(layout);
 
-	setFixedSize(480, 280);
 	setWindowTitle("Progress");
+	setFixedSize(480, 280);
 
 	QMetaObject::connectSlotsByName(this);
 }
 
 ProgressDialog::~ProgressDialog()
 {
-}
-
-void ProgressDialog::setProgress(QString string)
-{
-	_label->setText(string);
-	_label->repaint();
 }
