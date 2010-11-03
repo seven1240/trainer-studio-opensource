@@ -31,14 +31,14 @@ protected:
 	void onKeyPressEvent(QKeyEvent *e);
 
 private:
-	QLineEdit *_leUsername;
-	QLineEdit *_lePassword;
-	QPushButton *_pbSettings;
-	QPushButton *_pbLogin;
-	QPushButton *_pbCancel;
+	QLineEdit *_username;
+	QLineEdit *_password;
+	QPushButton *_settings;
+	QPushButton *_login;
+	QPushButton *_cancel;
 	ProgressWidget *_progress;
-	QLabel *_lbProgress;
-	QTextEdit *_teProgress;
+	QLabel *_status;
+	QTextEdit *_history;
 	QFrame *_loginFrame;
 	QFrame *_progressFrame;
 	bool _authenticated;

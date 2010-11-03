@@ -19,39 +19,39 @@
 LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent) :
 	QDialog(parent)
 {
-	_lbProgress = new QLabel();
-	_pbSettings = new QPushButton("Settings");
-	_pbSettings->setObjectName("Settings");
-	_pbCancel = new QPushButton("Cancel");
-	_pbCancel->setObjectName("Cancel");
-	_pbLogin = new QPushButton("Login");
-	_pbLogin->setObjectName("Login");
-	_leUsername = new QLineEdit();
-	_lePassword = new QLineEdit();
-	_lePassword->setEchoMode(QLineEdit::Password);
-	_teProgress = new QTextEdit();
+	_status = new QLabel();
+	_settings = new QPushButton("Settings");
+	_settings->setObjectName("Settings");
+	_cancel = new QPushButton("Cancel");
+	_cancel->setObjectName("Cancel");
+	_login = new QPushButton("Login");
+	_login->setObjectName("Login");
+	_username = new QLineEdit();
+	_password = new QLineEdit();
+	_password->setEchoMode(QLineEdit::Password);
+	_history = new QTextEdit();
 
 	QGroupBox *loginFormGroupBox = new QGroupBox(tr("Login"));
 	QFormLayout *formLayout = new QFormLayout;
-	formLayout->addRow(new QLabel(tr("Username:")), _leUsername);
-	formLayout->addRow(new QLabel(tr("Password:")), _lePassword);
+	formLayout->addRow(new QLabel(tr("Username:")), _username);
+	formLayout->addRow(new QLabel(tr("Password:")), _password);
 	loginFormGroupBox->setLayout(formLayout);
 
 	_loginFrame = new QFrame();
 	QVBoxLayout *loginLayout = new QVBoxLayout();
-	loginLayout->addWidget(_lbProgress);
+	loginLayout->addWidget(_status);
 	loginLayout->addWidget(loginFormGroupBox);
-	loginLayout->addWidget(_pbLogin);
-	loginLayout->addWidget(_pbSettings);
+	loginLayout->addWidget(_login);
+	loginLayout->addWidget(_settings);
 	loginLayout->addWidget(new QFrame());
 	_loginFrame->setLayout(loginLayout);
 
 	_progress = new ProgressWidget(progressController);
 	_progressFrame = new QFrame();
 	QVBoxLayout *progressLayout = new QVBoxLayout();
-	progressLayout->addWidget(_lbProgress);
-	progressLayout->addWidget(_teProgress);
-	progressLayout->addWidget(_pbCancel);
+	progressLayout->addWidget(_status);
+	progressLayout->addWidget(_history);
+	progressLayout->addWidget(_cancel);
 	_progressFrame->setLayout(progressLayout);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -67,7 +67,7 @@ LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent
 
 	QSettings settings;
 	_authenticated = false;
-	_leUsername->setText(settings.value("StoredData/Username", "").toString());
+	_username->setText(settings.value("StoredData/Username", "").toString());
 
 	connect(ApplicationController::server(), SIGNAL(connected()), this, SLOT(onServerConnectionConnected()));
 	connect(ApplicationController::server(), SIGNAL(authenticated(User*)), this, SLOT(onServerConnectionAuthenticated(User*)));
@@ -75,9 +75,9 @@ LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent
 	connect(ApplicationController::server(), SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
 	connect(ApplicationController::server(), SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
 	connect(ApplicationController::fs(), SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
-	connect(_pbLogin, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
-	connect(_pbSettings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
-	connect(_pbCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+	connect(_login, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
+	connect(_settings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
+	connect(_cancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -89,7 +89,7 @@ LoginDialog::~LoginDialog()
 void LoginDialog::onServerConnectionConnected()
 {
 	setProgress("Connected, authenticating...");
-	ApplicationController::server()->login(_leUsername->text(), _lePassword->text());
+	ApplicationController::server()->login(_username->text(), _password->text());
 }
 
 void LoginDialog::onServerConnectionAuthenticated(User *user)
@@ -172,14 +172,14 @@ void LoginDialog::showLogin()
 
 void LoginDialog::setProgress(QString string)
 {
-	_lbProgress->setText(string);
-	_lbProgress->repaint();
+	_status->setText(string);
+	_status->repaint();
 }
 
 void LoginDialog::onLoginClicked()
 {
 	QSettings settings;
-	settings.setValue("StoredData/Username", _leUsername->text());
+	settings.setValue("StoredData/Username", _username->text());
 	QString host = settings.value("General/trainer_server").toString();
 	int port = settings.value("trainer_server_port").toInt();
 	host = host.isEmpty() ? "voip.idapted.com" : host;
@@ -201,7 +201,7 @@ void LoginDialog::onSettingsClicked()
 
 void LoginDialog::onFSModuleLoaded(QString modType, QString modKey, QString modName)
 {
-	_teProgress->insertPlainText(QString("Loaded: [%1] %2 %3\n").arg(modType).arg(modKey).arg(modName));
-	_teProgress->textCursor().movePosition(QTextCursor::End);
-	_teProgress->ensureCursorVisible();
+	_history->insertPlainText(QString("Loaded: [%1] %2 %3\n").arg(modType).arg(modKey).arg(modName));
+	_history->textCursor().movePosition(QTextCursor::End);
+	_history->ensureCursorVisible();
 }
