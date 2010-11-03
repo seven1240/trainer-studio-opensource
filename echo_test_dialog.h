@@ -20,6 +20,9 @@ protected:
 	void showEvent(QShowEvent *e);
 	void closeEvent(QCloseEvent *e);
 
+signals:
+	void closed();
+
 private:
 	QPushButton *_begin;
 	QPushButton *_skip;

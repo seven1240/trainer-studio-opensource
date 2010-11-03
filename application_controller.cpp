@@ -122,7 +122,9 @@ QStateMachine *ApplicationController::createStateMachine()
 	incoming->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
 	training->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
 	ready->addTransition(mainWindow(), SIGNAL(testFlash()), testFlash);
+	ready->addTransition(mainWindow(), SIGNAL(testEcho()), testEcho);
 	testFlash->addTransition(flashDialog(), SIGNAL(closed()), ready);
+	testEcho->addTransition(echoTestDialog(), SIGNAL(closed()), ready);
 
 	QStateMachine *machine = new QStateMachine(this);
 	machine->setObjectName("AC");

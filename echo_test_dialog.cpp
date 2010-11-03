@@ -67,6 +67,7 @@ void EchoTestDialog::showEvent(QShowEvent * /*e*/)
 void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
 {
 	ApplicationController::fs()->hangup(true);
+	emit closed();
 }
 
 void EchoTestDialog::progress(QString string)
