@@ -18,7 +18,7 @@ void StateMachineDebugger::changed()
 	QSetIterator<QAbstractState*> i(_machine->configuration());
 	while (i.hasNext())
 	{
-		qDebug() << QString("%1 -> %2").arg(_machine->objectName()).arg(i.next()->objectName());
+		qDebug() << QString("%1 -> %2").arg(_machine->objectName()).arg(i.next()->objectName()).toAscii().data();
 	}
 }
 

@@ -40,33 +40,37 @@ MainWindow::MainWindow(QWidget *parent) :
 QLayout *MainWindow::createBody()
 {
 	QPushButton *settingsButton = new QPushButton("Settings");
-	settingsButton->setObjectName("Settings");
 	QPushButton *logoutButton = new QPushButton("Logout");
-	logoutButton->setObjectName("Logout");
 	QPushButton *echoButton = new QPushButton("Echo");
-	echoButton->setObjectName("Echo");
-	QPushButton *pauseButton = new QPushButton("|| Pause");
-	pauseButton->setObjectName("State");
+	QPushButton *stateButton = new QPushButton("|| Pause");
+	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *closeButton = new QPushButton("Close");
-	closeButton->setObjectName("Close");
 	QPushButton *aboutButton = new QPushButton("About");
+
+	settingsButton->setObjectName("Settings");
+	logoutButton->setObjectName("Logout");
+	echoButton->setObjectName("Echo");
+	stateButton->setObjectName("State");
+	hangupButton->setObjectName("Hangup");
+	closeButton->setObjectName("Close");
 	aboutButton->setObjectName("About");
 
-	pauseButton->setCheckable(true);
+	stateButton->setCheckable(true);
 	settingsButton->setVisible(false);
 
 	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(settingsButton);
-	layout->addWidget(logoutButton);
 	layout->addWidget(echoButton);
-	layout->addWidget(pauseButton);
+	layout->addWidget(hangupButton);
+	layout->addWidget(stateButton);
+	layout->addWidget(logoutButton);
+	layout->addWidget(settingsButton);
 	layout->addWidget(closeButton);
 	layout->addWidget(aboutButton);
 
 	QLabel *sipLabel = new QLabel("SIP: None");
 	layout->addWidget(sipLabel);
 
-	_state = pauseButton;
+	_state = stateButton;
 	_sipStatusLabel = sipLabel;
 
 	setLayout(layout);

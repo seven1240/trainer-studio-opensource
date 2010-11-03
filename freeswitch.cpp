@@ -235,6 +235,7 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
 		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
 		qDebug() << "Channel Hangup" << uuid << number << name;
+		emit callEnded(uuid, number, name);
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_EXECUTE: break;

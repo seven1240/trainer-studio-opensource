@@ -83,6 +83,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	QState *stopped = new QState();
 	QState *echo = new QState();
 	QState *ready = new QState();
+	QState *incoming = new QState();
+	QState *training = new QState();
 
 	starting->setObjectName("starting");
 	authenticating->setObjectName("authenticating");
@@ -90,30 +92,41 @@ QStateMachine *ApplicationController::createStateMachine()
 	stopped->setObjectName("stopped");
 	echo->setObjectName("echo");
 	ready->setObjectName("ready");
+	incoming->setObjectName("incoming");
+	training->setObjectName("training");
 
 	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
 	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
 	connect(ready, SIGNAL(entered()), this, SLOT(ready()));
+	connect(incoming, SIGNAL(entered()), this, SLOT(incoming()));
 
 	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
 	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
 	ready->addTransition(server(), SIGNAL(disconnected()), authenticating);
+	ready->addTransition(fs(), SIGNAL(callIncoming(QString,QString,QString)), incoming);
+	incoming->addTransition(fs(), SIGNAL(callAnswered(QString,QString,QString)), training);
+	incoming->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
+	training->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
 
 	QStateMachine *machine = new QStateMachine(this);
+	machine->setObjectName("AC");
 	machine->addState(starting);
 	machine->addState(authenticating);
 	machine->addState(authenticated);
 	machine->addState(echo);
 	machine->addState(ready);
 	machine->addState(stopped);
+	machine->addState(training);
+	machine->addState(incoming);
 	machine->setInitialState(starting);
 	return machine;
 }
 
 void ApplicationController::starting()
 {
+	incomingCallDialog()->hide();
 	progressDialog()->show();
 }
 
@@ -133,6 +146,13 @@ void ApplicationController::ready()
 	mainWindow()->show();
 }
 
+void ApplicationController::incoming()
+{
+	incomingCallDialog()->show();
+	incomingCallDialog()->raise();
+	incomingCallDialog()->activateWindow();
+}
+
 void ApplicationController::authenticated(User *user)
 {
 	if (_user != NULL) {
@@ -144,12 +164,6 @@ void ApplicationController::authenticated(User *user)
 	mainWindow()->hide();
 	echoTestDialog()->show();
 }
-
-/*
-void ApplicationController::readyToTrain()
-{
-}
-*/
 
 void ApplicationController::beginEcho()
 {
