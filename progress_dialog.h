@@ -14,11 +14,13 @@ class QTextEdit;
 class QFrame;
 QT_END_NAMESPACE
 
+class ProgressController;
+
 class ProgressDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	ProgressDialog(QWidget *parent = 0);
+	ProgressDialog(ProgressController *progressController, QWidget *parent = 0);
 	~ProgressDialog();
 
 };

@@ -15,7 +15,7 @@
 #include "echo_test_dialog.h"
 #include "progress_widget.h"
 
-LoginDialog::LoginDialog(QWidget *parent) :
+LoginDialog::LoginDialog(ProgressController *progressController, QWidget *parent) :
 	QDialog(parent)
 {
 	_lbProgress = new QLabel();
@@ -45,7 +45,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	loginLayout->addWidget(new QFrame());
 	_loginFrame->setLayout(loginLayout);
 
-	_progress = new ProgressWidget();
+	_progress = new ProgressWidget(progressController);
 	_progressFrame = new QFrame();
 	QVBoxLayout *progressLayout = new QVBoxLayout();
 	progressLayout->addWidget(_lbProgress);

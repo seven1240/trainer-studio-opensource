@@ -85,6 +85,7 @@ signals:
 	void coreLoadingError(QString);
 	void loadingModules(QString, int, QColor);
 	void moduleLoaded(QString, QString, QString);
+	void allModulesLoaded();
 	void ready();
 	void sofiaReady();
 	void gatewayStateChange(QString name, QString state);

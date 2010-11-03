@@ -27,10 +27,10 @@ private:
 	static ServerConnection *_server;
 	static FSHost *_fs;
 	static User *_user;
-	ProgressController *_progress_controller;
-	ProgressDialog *_progress_dialog;
-	LoginDialog *_login_dialog;
-	MainWindow *_main_window;
+	ProgressController *_progressController;
+	ProgressDialog *_progressDialog;
+	LoginDialog *_loginDialog;
+	MainWindow *_mainWindow;
 
 private:
 	ProgressDialog *progressDialog();

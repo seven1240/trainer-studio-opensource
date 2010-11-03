@@ -14,27 +14,27 @@ User *ApplicationController::_user;
 
 ApplicationController::ApplicationController() : Controller(NULL)
 {
-	_main_window = NULL;
+	_mainWindow = NULL;
 	_server = NULL;
 	_fs = NULL;
-	_login_dialog = NULL;
-	_progress_dialog = NULL;
+	_loginDialog = NULL;
+	_progressDialog = NULL;
 	_user = NULL;
 }
 
 ApplicationController::~ApplicationController()
 {
-	if (_main_window != NULL) {
+	if (_mainWindow != NULL) {
 		qDebug() << "Freeing MainWindow";
-		delete _main_window;
+		delete _mainWindow;
 	}
-	if (_progress_dialog != NULL) {
+	if (_progressDialog != NULL) {
 		qDebug() << "Freeing ProgressDialog";
-		delete _progress_dialog;
+		delete _progressDialog;
 	}
-	if (_login_dialog != NULL) {
+	if (_loginDialog != NULL) {
 		qDebug() << "Freeing LoginDialog";
-		delete _login_dialog;
+		delete _loginDialog;
 	}
 	if (_fs != NULL) {
 		qDebug() << "Freeing FS";
@@ -62,7 +62,7 @@ int ApplicationController::run()
 	_server= new ServerConnection();
 	_server->start();
 
-	_progress_controller = new ProgressController(this);
+	_progressController = new ProgressController(this);
 
 	connect(server(), SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
 
@@ -86,7 +86,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
 	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
 
-	starting->addTransition(fs(), SIGNAL(sofiaReady()), authenticating);
+	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
 
@@ -122,26 +122,26 @@ void ApplicationController::authenticated(User *user)
 
 MainWindow *ApplicationController::mainWindow()
 {
-	if (_main_window == NULL) {
-		_main_window = new MainWindow();
+	if (_mainWindow == NULL) {
+		_mainWindow = new MainWindow();
 	}
-	return _main_window;
+	return _mainWindow;
 }
 
 ProgressDialog *ApplicationController::progressDialog()
 {
-	if (_progress_dialog == NULL) {
-		_progress_dialog = new ProgressDialog();
+	if (_progressDialog == NULL) {
+		_progressDialog = new ProgressDialog(_progressController);
 	}
-	return _progress_dialog;
+	return _progressDialog;
 }
 
 LoginDialog *ApplicationController::loginDialog()
 {
-	if (_login_dialog == NULL) {
-		_login_dialog = new LoginDialog();
+	if (_loginDialog == NULL) {
+		_loginDialog = new LoginDialog(_progressController);
 	}
-	return _login_dialog;
+	return _loginDialog;
 }
 
 ServerConnection *ApplicationController::server()

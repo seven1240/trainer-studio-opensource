@@ -11,26 +11,30 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 class QTextEdit;
+class QListView;
 class QFrame;
 QT_END_NAMESPACE
+
+class ProgressController;
 
 class ProgressWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	ProgressWidget(QWidget *parent = 0);
+	ProgressWidget(ProgressController *progressController, QWidget *parent = 0);
 	~ProgressWidget();
 
 private:
 	QLabel *_label;
-	QTextEdit *_history;
+	QListView *_history;
 	QPushButton *_cancel;
 
 signals:
 	void cancelled();
 
 private slots:
-	void on_Cancel_clicked();
+	void onCancelClicked();
+	void onHistoryChanged();
 
 private:
 	void setProgress(QString string);

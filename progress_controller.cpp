@@ -13,5 +13,7 @@ ProgressController::~ProgressController()
 
 void ProgressController::onModuleLoaded(QString modType, QString modKey, QString modName)
 {
-	_messages.append(QString("Loaded: [%1] %2 %3\n").arg(modType).arg(modKey).arg(modName));
+	_messages.append(QString("Loaded: [%1] %2 %3").arg(modType).arg(modKey).arg(modName));
+	_messagesModel.setStringList(_messages);
+	emit changed();
 }

@@ -166,6 +166,8 @@ void FSHost::run(void)
 		emit coreLoadingError(err);
 	}
 
+	emit allModulesLoaded();
+
 	qDebug() << "FS: binding logger...";
 
 	switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);

@@ -8,10 +8,10 @@
 #include "progress_dialog.h"
 #include "progress_widget.h"
 
-ProgressDialog::ProgressDialog(QWidget *parent) : QDialog(parent)
+ProgressDialog::ProgressDialog(ProgressController *progressController, QWidget *parent) : QDialog(parent)
 {
 	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(new ProgressWidget());
+	layout->addWidget(new ProgressWidget(progressController));
 	setLayout(layout);
 
 	setWindowTitle("Progress");
