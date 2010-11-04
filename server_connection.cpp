@@ -12,15 +12,18 @@ ServerConnection::ServerConnection()
 	_connected = false;
 	_socket = new QTcpSocket(this);
 	_timer = new QTimer(this);
+	_pingTimer = new QTimer(this);
+	_pingTimer->setInterval(10000);
 	_machine = createStateMachine();
 
 	setObjectName("ServerConnection");
 
 	connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 	connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+	connect(_pingTimer, SIGNAL(timeout()), this, SLOT(onPing()));
 }
 
-static QState *createState(ServerConnection *connection, QString name)
+static QState *createState(QString name)
 {
 	QState *state = new QState();
 	state->setObjectName(name);
@@ -29,18 +32,18 @@ static QState *createState(ServerConnection *connection, QString name)
 
 QStateMachine *ServerConnection::createStateMachine()
 {
-	QState *disconnected = createState(this, "disconnected");
+	QState *disconnected = createState("disconnected");
 	connect(disconnected, SIGNAL(entered()), this, SLOT(onDisconnected()));
-	QState *connecting = createState(this, "connecting");
-	QState *connected = createState(this, "connected");
+	QState *connecting = createState("connecting");
+	QState *connected = createState("connected");
 	connect(connected, SIGNAL(entered()), this, SLOT(onConnected()));
-	QState *authenticating = createState(this, "authenticating");
-	QState *authenticated = createState(this, "authenticated");
-	QState *pausing = createState(this, "pausing");
-	QState *unpausing = createState(this, "unpausing");
-	QState *working = createState(this, "working");
-	QState *paused = createState(this, "paused");
-	QState *timeout = createState(this, "timeout");
+	QState *authenticating = createState("authenticating");
+	QState *authenticated = createState("authenticated");
+	QState *pausing = createState("pausing");
+	QState *unpausing = createState("unpausing");
+	QState *working = createState("working");
+	QState *paused = createState("paused");
+	QState *timeout = createState("timeout");
 
 	disconnected->addTransition(this, SIGNAL(connecting()), connecting);
 	connecting->addTransition(_socket, SIGNAL(connected()), connected);
@@ -201,6 +204,7 @@ void ServerConnection::onReadyRead()
 	}
 	else if (status == "Authenticated") {
 		emit authenticated(new User(data));
+		_pingTimer->start();
 	}
 	else if (status == "AuthenticateError") {
 		emit authenticateError(data["reason"].toString());
@@ -257,10 +261,17 @@ void ServerConnection::onDisconnected()
 {
 	_connected = false;
 	emit disconnected();
+	_pingTimer->stop();
 }
 
 void ServerConnection::onTimer()
 {
+}
+
+void ServerConnection::onPing()
+{
+	if (_connected)
+		sendAction("Ping");
 }
 
 void ServerConnection::review()

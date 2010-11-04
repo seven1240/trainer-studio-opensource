@@ -58,6 +58,7 @@ private slots:
 	void onConnected();
 	void onDisconnected();
 	void onTimer();
+	void onPing();
 
 private:
 	QStateMachine *createStateMachine();
@@ -73,6 +74,7 @@ private:
 	QTcpSocket *_socket;
 	QStateMachine *_machine;
 	QTimer *_timer;
+	QTimer *_pingTimer;
 	QString _host;
 	int _port;
 };
