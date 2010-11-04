@@ -254,3 +254,12 @@ User *ApplicationController::user()
 {
 	return _user;
 }
+
+bool ApplicationController::isDebugging()
+{
+	QSettings settings;
+	if (!settings.value("General/debugging").isNull()) {
+		return settings.value("Generatel/debugging").toBool();
+	}
+	return false;
+}

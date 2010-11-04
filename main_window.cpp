@@ -58,6 +58,7 @@ QLayout *MainWindow::createBody()
 
 	stateButton->setCheckable(true);
 	settingsButton->setVisible(false);
+	testFlashButton->setVisible(ApplicationController::isDebugging());
 
 	QGroupBox *commonBox = new QGroupBox("Trainer");
 	QVBoxLayout *commonLayout = new QVBoxLayout();
@@ -94,8 +95,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::showEvent(QShowEvent * /*e*/)
 {
-	// testEchoButton->setVisible(ApplicationController::user()->isAdmin());
-	// testFlashButton->setVisible(ApplicationController::user()->isAdmin());
 }
 
 void MainWindow::changeEvent(QEvent *e)

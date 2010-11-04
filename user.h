@@ -21,7 +21,6 @@ public:
 	QString getVoipPassword() { return _details["voip_password"].toString(); }
 	QString getVoipServer();
 	bool skipEchoTesting() { return _details["skip_echo_test"].toString() == "true"; }
-	bool isAdmin();
 };
 
 #endif // USER_H

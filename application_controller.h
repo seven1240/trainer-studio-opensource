@@ -67,6 +67,7 @@ public:
 	static ServerConnection *server();
 	static FreeSwitch *fs();
 	static User *user();
+	static bool isDebugging();
 	int run();
 
 };
