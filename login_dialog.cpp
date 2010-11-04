@@ -186,11 +186,9 @@ void LoginDialog::onLoginClicked()
 	settings.setValue("StoredData/Username", _username->text());
 	QString host = settings.value("General/trainer_server").toString();
 	int port = settings.value("trainer_server_port").toInt();
-	host = host.isEmpty() ? "voip.idapted.com" : host;
-	port = port == 0 ? 7000 : port;
-	// host = "192.168.0.127";
+	if (host == NULL || host.isEmpty()) host = "voip.idapted.com";
+	if (port == 0) port = 7000;
 
-	qDebug() << host << ":" << port;
 	_abort = false;
 	showProgress();
 	ApplicationController::server()->open(host, port);
