@@ -92,6 +92,12 @@ MainWindow::~MainWindow()
 	delete _timer;
 }
 
+void MainWindow::showEvent(QShowEvent * /*e*/)
+{
+	// testEchoButton->setVisible(ApplicationController::user()->isAdmin());
+	// testFlashButton->setVisible(ApplicationController::user()->isAdmin());
+}
+
 void MainWindow::changeEvent(QEvent *e)
 {
 	QWidget::changeEvent(e);

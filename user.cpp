@@ -15,3 +15,8 @@ QString User::getVoipServer()
 User::~User()
 {
 }
+
+bool User::isAdmin()
+{
+	return getLogin().startsWith("trainer");
+}

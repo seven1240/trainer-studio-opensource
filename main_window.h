@@ -21,6 +21,7 @@ public:
 	~MainWindow();
 
 protected:
+	void showEvent(QShowEvent *e);
 	void changeEvent(QEvent *e);
 	QLayout *createBody();
 

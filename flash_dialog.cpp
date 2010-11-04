@@ -100,6 +100,7 @@ void FlashDialog::changeEvent(QEvent *e)
 
 void FlashDialog::showEvent(QShowEvent * /*e*/)
 {
+	_test->setVisible(ApplicationController::user()->isAdmin());
 	_seconds = 0;
 	onTimer();
 	_timer->start();
