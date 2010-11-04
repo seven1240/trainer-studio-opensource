@@ -17,6 +17,7 @@ public:
 	~IncomingCallDialog();
 
 protected:
+	void showEvent(QShowEvent *e);
 	void changeEvent(QEvent *e);
 
 private slots:
