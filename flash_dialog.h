@@ -39,6 +39,7 @@ private slots:
 	void onInteractionReconnected();
 	void onInvokeMessage(QString);
 	void onTimer();
+	void copyInteractionId();
 
 signals:
 	void closed();

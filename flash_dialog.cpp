@@ -6,6 +6,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QUrl.h>
+#include <QApplication>
+#include <QClipboard>
 #include "trainer_studio.h"
 #include "application_controller.h"
 #include "flash_controller.h"
@@ -26,11 +28,14 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	_test = new QPushButton("Test");
 	_time = new QLabel();
 
+	QPushButton *copyInteractionId = new QPushButton("Copy IID");
+
 	QHBoxLayout *topLayout = new QHBoxLayout();
 	QFrame *topFrame = new QFrame();
 	topLayout->addWidget(_time);
 	topLayout->addWidget(_mute);
 	topLayout->addWidget(_test);
+	topLayout->addWidget(copyInteractionId);
 	topLayout->addWidget(_hangup);
 	topLayout->addWidget(_reconnection);
 	topFrame->setLayout(topLayout);
@@ -58,6 +63,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	connect(_reconnection, SIGNAL(clicked()), this, SLOT(onReconnectionClicked()));
 	connect(_mute, SIGNAL(clicked()), this, SLOT(onMuteClicked()));
 	connect(_test, SIGNAL(clicked()), this, SLOT(onTestClicked()));
+	connect(copyInteractionId, SIGNAL(clicked()), this, SLOT(copyInteractionId()));
 
 	QWebSettings *websetting= QWebSettings::globalSettings();
 	websetting->setAttribute(QWebSettings::JavascriptEnabled, true);
@@ -353,4 +359,10 @@ void FlashDialog::onMuteClicked()
 		_mute->setText("Unmute");
 		_mute->setChecked(true);
 	}
+}
+
+void FlashDialog::copyInteractionId()
+{
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(_interactionId, QClipboard::Clipboard);
 }
