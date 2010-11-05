@@ -10,7 +10,6 @@
 #include "application_controller.h"
 #include "login_dialog.h"
 #include "server_connection.h"
-#include "freeswitch.h"
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
 #include "progress_widget.h"
@@ -19,18 +18,14 @@
 LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	QDialog(parent)
 {
-	_status = new QLabel();
 	_settings = new QPushButton("Settings");
 	_settings->setObjectName("Settings");
-	_cancel = new QPushButton("Cancel");
-	_cancel->setObjectName("Cancel");
 	_login = new QPushButton("Login");
 	_login->setObjectName("Login");
 	_username = new QLineEdit();
 	_password = new QLineEdit();
 	_password->setEchoMode(QLineEdit::Password);
-	_history = new QTextEdit();
-	_history->setEnabled(false);
+	_progress = progress;
 
 	QGroupBox *loginFormGroupBox = new QGroupBox(tr("Login"));
 	QFormLayout *formLayout = new QFormLayout;
@@ -40,24 +35,14 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 
 	_loginFrame = new QFrame();
 	QVBoxLayout *loginLayout = new QVBoxLayout();
-	loginLayout->addWidget(_status);
 	loginLayout->addWidget(loginFormGroupBox);
 	loginLayout->addWidget(_login);
 	loginLayout->addWidget(_settings);
-	loginLayout->addWidget(new QFrame());
 	_loginFrame->setLayout(loginLayout);
-
-	_progress = progress;
-	_progressFrame = new QFrame();
-	QVBoxLayout *progressLayout = new QVBoxLayout();
-	progressLayout->addWidget(_status);
-	progressLayout->addWidget(_history);
-	progressLayout->addWidget(_cancel);
-	_progressFrame->setLayout(progressLayout);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(_loginFrame);
-	mainLayout->addWidget(_progressFrame);
+	mainLayout->addWidget(_progress);
 	setLayout(mainLayout);
 
 	setFixedSize(320, 240);
@@ -79,10 +64,9 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(disconnected()), this, SLOT(onServerConnectionDisconnected()));
 	connect(ApplicationController::server(), SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
 	connect(ApplicationController::server(), SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
-	connect(ApplicationController::fs(), SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onFSModuleLoaded(QString, QString, QString)));
 	connect(_login, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
 	connect(_settings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
-	connect(_cancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+	connect(_progress, SIGNAL(canceled()), this, SLOT(onCancelClicked()));
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -93,7 +77,6 @@ LoginDialog::~LoginDialog()
 
 void LoginDialog::onServerConnectionConnected()
 {
-	setProgress("Connected, authenticating...");
 	ApplicationController::server()->login(_username->text(), _password->text());
 }
 
@@ -166,19 +149,13 @@ void LoginDialog::onSocketError(QString error)
 void LoginDialog::showProgress()
 {
 	_loginFrame->hide();
-	_progressFrame->show();
+	_progress->show();
 }
 
 void LoginDialog::showLogin()
 {
-	_progressFrame->hide();
+	_progress->hide();
 	_loginFrame->show();
-}
-
-void LoginDialog::setProgress(QString string)
-{
-	_status->setText(string);
-	_status->repaint();
 }
 
 void LoginDialog::onLoginClicked()
@@ -200,11 +177,4 @@ void LoginDialog::onSettingsClicked()
 	SettingsDialog *settings_dialog = new SettingsDialog(this);
 	settings_dialog->setAttribute(Qt::WA_DeleteOnClose);
 	settings_dialog->show();
-}
-
-void LoginDialog::onFSModuleLoaded(QString modType, QString modKey, QString modName)
-{
-	_history->insertPlainText(QString("Loaded: [%1] %2 %3\n").arg(modType).arg(modKey).arg(modName));
-	_history->textCursor().movePosition(QTextCursor::End);
-	_history->ensureCursorVisible();
 }

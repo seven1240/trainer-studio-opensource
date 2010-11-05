@@ -22,6 +22,8 @@ ProgressWidget::ProgressWidget(QWidget *parent) :
 	_history->setObjectName("History");
 	_cancel->setObjectName("Cancel");
 
+	_history->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	_history->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	_history->setEnabled(false);
 	_cancel->setVisible(false);
 	_label->setVisible(false);
@@ -42,6 +44,11 @@ ProgressWidget::~ProgressWidget()
 {
 }
 
+void ProgressWidget::showEvent(QShowEvent *e)
+{
+	_history->scrollToBottom();
+}
+
 void ProgressWidget::setModel(QStringListModel *model)
 {
 	_history->setModel(model);
@@ -55,10 +62,11 @@ void ProgressWidget::onHistoryChanged()
 void ProgressWidget::setProgress(QString string)
 {
 	_label->setText(string);
+	_label->setVisible(true);
 	_label->repaint();
 }
 
 void ProgressWidget::onCancelClicked()
 {
-	emit cancelled();
+	emit canceled();
 }

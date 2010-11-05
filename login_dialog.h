@@ -30,14 +30,11 @@ protected:
 	void onKeyPressEvent(QKeyEvent *e);
 
 private:
+	ProgressWidget *_progress;
 	QLineEdit *_username;
 	QLineEdit *_password;
 	QPushButton *_settings;
 	QPushButton *_login;
-	QPushButton *_cancel;
-	ProgressWidget *_progress;
-	QLabel *_status;
-	QTextEdit *_history;
 	QFrame *_loginFrame;
 	QFrame *_progressFrame;
 	bool _authenticated;
@@ -50,7 +47,6 @@ private:
 private:
 	void showProgress();
 	void showLogin();
-	void setProgress(QString string);
 
 public slots:
 
@@ -63,7 +59,6 @@ private slots:
 	void onSocketError(QString);
 	void onCancelClicked();
 	void onLoginClicked();
-	void onFSModuleLoaded(QString modType, QString modKey, QString modName);
 };
 
 #endif // LOGIN_DIALOG_H

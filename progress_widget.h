@@ -28,13 +28,16 @@ public:
 public:
 	void setModel(QStringListModel *model);
 
+protected:
+	void showEvent(QShowEvent *e);
+
 private:
 	QLabel *_label;
 	QListView *_history;
 	QPushButton *_cancel;
 
 signals:
-	void cancelled();
+	void canceled();
 
 public slots:
 	void onHistoryChanged();
