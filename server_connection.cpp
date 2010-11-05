@@ -64,6 +64,10 @@ QStateMachine *ServerConnection::createStateMachine()
 	pausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 	paused->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 	unpausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+	working->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+	timeout->addTransition(_socket, SIGNAL(disconnected()), disconnected);
+
+	connect(timeout, SIGNAL(entered()), this, SLOT(onTimeout()));
 
 	QStateMachine *machine = new QStateMachine();
 	machine->setObjectName("SC");
@@ -243,6 +247,11 @@ void ServerConnection::onReadyRead()
 		}
 	}
 	delete qjson;
+}
+
+void ServerConnection::onTimeout()
+{
+	close();
 }
 
 void ServerConnection::onSocketError(QAbstractSocket::SocketError)

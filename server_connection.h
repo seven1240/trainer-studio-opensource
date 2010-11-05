@@ -59,6 +59,7 @@ private slots:
 	void onDisconnected();
 	void onTimer();
 	void onPing();
+	void onTimeout();
 
 private:
 	QStateMachine *createStateMachine();
