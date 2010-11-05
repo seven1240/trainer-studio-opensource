@@ -27,94 +27,73 @@
  *
  */
 
-#include "call.h"
 #include <QtGui>
-#include <fshost.h>
+#include "application_controller.h"
+#include "call.h"
+#include "freeswitch.h"
 
 Call::Call()
 {
-    _answeredEpoch = 0;
+	_answeredEpoch = 0;
 }
 
-switch_status_t Call::toggleHold(bool holdPressed)
+switch_status_t Call::toggleHold(bool hold)
 {
-    if (_state != FSCOMM_CALL_STATE_ANSWERED) return SWITCH_STATUS_FALSE;
-    switch_stream_handle_t stream = { 0 };
-    SWITCH_STANDARD_STREAM(stream);
-    QString holdStr;
-    if (holdPressed)
-    {
-        holdStr = _channel.data()->getUuid();
-    }
-    else
-    {
-        holdStr = "off " + _channel.data()->getUuid();
-    }
+	if (_state != FSCOMM_CALL_STATE_ANSWERED)
+		return SWITCH_STATUS_FALSE;
 
-    switch_status_t st = switch_api_execute("uuid_hold", holdStr.toAscii().data(), NULL, &stream);
-    switch_safe_free(stream.data);
-    return st;
-
+	if (hold)
+	{
+		return ApplicationController::fs()->hold(_channel.data()->getUuid());
+	}
+	else
+	{
+		return ApplicationController::fs()->unhold(_channel.data()->getUuid());
+	}
 }
 
 switch_status_t Call::toggleRecord(bool startRecord)
 {
-    QDir conf_dir = QDir::home();
-    QString result;
-    switch_status_t status;
+	QDir conf_dir = QDir::home();
 
-    if (startRecord)
-    {
-        _recording_filename = QString("%1/.fscomm/recordings/%2_%3.wav").arg(
-                                         conf_dir.absolutePath(),
-                                         QDateTime::currentDateTime().toString("yyyyMMddhhmmss"),
-                                         getCidNumber());
-        status = fshost->sendCmd("uuid_record", QString("%1 start %2").arg(getUuid(), _recording_filename).toAscii().data(),&result);
-    }
-    else
-    {
-        switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "Stopping call recording on call [%s]\n",
-                          getUuid().toAscii().data());
-        status = fshost->sendCmd("uuid_record", QString("%1 stop %2").arg(getUuid(), _recording_filename).toAscii().data(),&result);
-    }
-
-    return status;
+	if (startRecord)
+	{
+		_recording_filename = QString("%1/.fscomm/recordings/%2_%3.wav").arg(conf_dir.absolutePath(), QDateTime::currentDateTime().toString("yyyyMMddhhmmss"), getCidNumber());
+		return ApplicationController::fs()->recordStart(getUuid(), _recording_filename);
+	}
+	else
+	{
+		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "Stopping call recording on call [%s]\n", getUuid().toAscii().data());
+		return ApplicationController::fs()->recordStop(getUuid(), _recording_filename);
+	}
 }
 
 void Call::sendDTMF(QString digit)
 {
-    QString result;
-    QString dtmf_string = QString("dtmf %1").arg(digit);
-    if (fshost->sendCmd("pa", dtmf_string.toAscii(), &result) == SWITCH_STATUS_FALSE) {
-        switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Could not send DTMF digit %s on call[%s]", digit.toAscii().data(), getUuid().toAscii().data());
-        QMessageBox::critical(0, QWidget::tr("DTMF Error"), QWidget::tr("There was an error sending DTMF, please report this bug."), QMessageBox::Ok);
-    }
+	if (ApplicationController::fs()->portAudioDtmf(digit.toAscii()[0]) == SWITCH_STATUS_FALSE) {
+		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Could not send DTMF digit %s on call[%s]", digit.toAscii().data(), getUuid().toAscii().data());
+		QMessageBox::critical(0, QWidget::tr("DTMF Error"), QWidget::tr("There was an error sending DTMF, please report this bug."), QMessageBox::Ok);
+	}
 }
 
 QTime Call::getCurrentStateTime()
 {
-    qulonglong time = 0;
+	qulonglong time = 0;
 
-    if (_state == FSCOMM_CALL_STATE_ANSWERED)
-    {
-        time = _answeredEpoch;
-    }
-    else if(_state == FSCOMM_CALL_STATE_RINGING)
-    {
-        if (_direction == FSCOMM_CALL_DIRECTION_INBOUND)
-        {
-            time = _channel.data()->getCreatedEpoch();
-        }
-        else
-            _otherLegChannel.data()->getProgressEpoch() == 0 ? time = _otherLegChannel.data()->getProgressMediaEpoch() : time = _otherLegChannel.data()->getProgressEpoch();
-    }
+	if (_state == FSCOMM_CALL_STATE_ANSWERED)
+	{
+		time = _answeredEpoch;
+	}
+	else if(_state == FSCOMM_CALL_STATE_RINGING)
+	{
+		if (_direction == FSCOMM_CALL_DIRECTION_INBOUND)
+		{
+			time = _channel.data()->getCreatedEpoch();
+		}
+		else
+			_otherLegChannel.data()->getProgressEpoch() == 0 ? time = _otherLegChannel.data()->getProgressMediaEpoch() : time = _otherLegChannel.data()->getProgressEpoch();
+	}
 
-    int now = QDateTime::fromTime_t(time).secsTo(QDateTime::currentDateTime());
-    return QTime::fromString(QString::number(now), "s");
+	int now = QDateTime::fromTime_t(time).secsTo(QDateTime::currentDateTime());
+	return QTime::fromString(QString::number(now), "s");
 }
-
-/*bool Call::transfer()
-{
-
-    g_FSHost.sendCmd("uuid_bridge", "")
-}*/

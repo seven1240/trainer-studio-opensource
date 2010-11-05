@@ -13,15 +13,15 @@
 class qJSON
 {
 public:
-    qJSON();
-    ~qJSON();
-    void parse(char *s, bool *ok);
-    QVariantMap toMap();
+	qJSON();
+	~qJSON();
+	void parse(char *s, bool *ok);
+	QVariantMap toMap();
 
 private:
-    cJSON *_json;
+	cJSON *_json;
 
-    QVariantMap toMap(cJSON *json_object, int max_depth);
+	QVariantMap toMap(cJSON *json_object, int max_depth);
 };
 
 #endif // QJSON_H
