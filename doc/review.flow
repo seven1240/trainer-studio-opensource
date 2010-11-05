@@ -1,0 +1,10 @@
+//Review
+
+disconnected1 -> review1;
+review1 -> disconnected [label = Review];
+disconnected -> review;
+review1 -> review [label = UnPause]; /*finish review*/
+review -> completed; /*wait a wrap up time, say 5 seconds*/
+review1 -> completed1;
+completed -> unpaused;
+unpaused -> review [label = UnPaused];

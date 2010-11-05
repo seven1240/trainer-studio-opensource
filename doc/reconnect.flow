@@ -1,0 +1,11 @@
+// Reconnect
+
+connected1 -> reconnecting1;
+reconnecting1 -> connected [label = "Reconnect"];
+connected -> reconnecting;
+reconnecting -> reconnecting1 [label = "LostConnection"];
+
+reconnecting -> connected;
+connected -> reconnecting1 [label = "Reconnected"];
+reconnecting1 -> connected1;
+

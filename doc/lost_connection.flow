@@ -1,0 +1,9 @@
+// Try to reconnect student when student side broken/hangup
+
+connected -> reconnecting;
+reconnecting -> reconnecting1 [label = "LostConnection"];
+
+reconnecting -> connected;
+connected -> reconnecting1 [label = "Reconnected"];
+reconnecting1 -> connected1;
+

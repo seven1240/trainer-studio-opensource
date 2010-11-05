@@ -1,0 +1,7 @@
+// Auth
+
+login -> authenticate [label = "json:Authenticate"];
+authenticate -> paused [label = "Authenticated"];
+authenticate -> login [label = "json:Authenticated"];
+login -> paused1 [label = "Authenticated"];
+

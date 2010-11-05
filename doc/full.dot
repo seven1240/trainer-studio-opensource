@@ -1,0 +1,125 @@
+digraph G {
+	// rankdir=LR;
+	
+	// full statemachine, possible routes
+	edge [style="dotted"];
+	
+	subgraph cluster0 {
+		style = "filled";
+		label = "Server";
+		color = lightgrey;
+		
+		init -> authenticate -> paused -> unpaused -> connected -> disconnected -> review -> completed;
+		
+		unpaused -> paused;
+		connected -> disconnected;
+		connected -> reconnecting -> connected;
+		reconnecting -> review;
+		reconnecting -> disconnected;
+		disconnected -> completed;
+		completed -> unpaused;
+		completed -> paused;
+	}
+	
+	subgraph cluster1 {
+		label = "Client";
+		
+		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected -> review1 -> completed1;
+
+		login -> login;
+
+		unpaused1 -> paused1;
+		connected1 -> reconnecting1 -> connected1;
+		reconnecting1 -> review1;
+		reconnecting1 -> disconnected1;
+		disconnected1 -> completed1;
+		completed1 -> unpaused1;
+		completed1 -> paused1;
+	}
+
+	//specific routes with messaging flow(protocol)
+	edge [style="solid", color="red"];
+// Auth
+
+login -> authenticate [label = "json:Authenticate"];
+authenticate -> paused [label = "Authenticated"];
+authenticate -> login [label = "json:Authenticated"];
+login -> paused1 [label = "Authenticated"];
+
+// Auth
+
+login -> authenticate [label = "json:Authenticate"];
+authenticate -> login [label = "json:AuthenticateError"];
+login -> login [label = "Timeout"];
+
+login [color = "red"];
+// Connect
+// both goto connected state without json messages
+
+unpaused -> connected [label = "onSIPConnect"];
+unpaused1 -> connected1 [label = "onSIPConnect"];
+// Try to reconnect student when student side broken/hangup
+
+connected -> reconnecting;
+reconnecting -> reconnecting1 [label = "LostConnection"];
+
+reconnecting -> connected;
+connected -> reconnecting1 [label = "Reconnected"];
+reconnecting1 -> connected1;
+
+// Pause
+
+unpaused1 -> unpaused [label = "json:Pause"];
+unpaused -> paused;
+paused -> unpaused1 [label = Unpaused];
+unpaused1 -> paused1;
+
+
+// Pause during wrap up time
+
+completed1 -> completed [label = Pause];
+completed -> completed1 [label = Paused];
+completed1 -> paused1;// Reconnect
+
+connected1 -> reconnecting1;
+reconnecting1 -> connected [label = "Reconnect"];
+connected -> reconnecting;
+reconnecting -> reconnecting1 [label = "LostConnection"];
+
+reconnecting -> connected;
+connected -> reconnecting1 [label = "Reconnected"];
+reconnecting1 -> connected1;
+
+reconnecting -> disconnected [label = onNoMoreRoute];
+reconnecting1 -> disconnected1 [label = onSIPDisconnect];
+
+//Reserved
+
+unpaused -> unpaused1 [label = "ReservedForInteraction"];
+unpaused1 -> unpaused1;
+
+//Review
+
+disconnected1 -> review1;
+review1 -> disconnected [label = Review];
+disconnected -> review;
+review1 -> review [label = UnPause]; /*finish review*/
+review -> completed; /*wait a wrap up time, say 5 seconds*/
+review1 -> completed1;
+completed -> unpaused;
+unpaused -> review [label = UnPaused];
+//Skip Review
+disconnected1 -> completed1;
+completed1 -> disconnected [label = Unpause];
+disconnected -> completed; /* may last up to 5 seconds due to wrap up */
+completed -> completed1 [label = Unpaused];
+completed1 -> Unpaused;
+//Unpause
+
+paused1 -> paused [label = "json:Unpause"];
+paused -> unpaused;
+unpaused -> paused1 [label = "Unpaused"];
+paused1 -> unpaused1;
+
+
+}

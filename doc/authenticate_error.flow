@@ -1,0 +1,7 @@
+// Auth
+
+login -> authenticate [label = "json:Authenticate"];
+authenticate -> login [label = "json:AuthenticateError"];
+login -> login [label = "Timeout"];
+
+login [color = "red"];

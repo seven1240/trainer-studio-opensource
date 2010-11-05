@@ -1,0 +1,42 @@
+digraph G {
+	// rankdir=LR;
+	
+	// full statemachine, possible routes
+	edge [style="dotted"];
+	
+	subgraph cluster0 {
+		style = "filled";
+		label = "Server";
+		color = lightgrey;
+		
+		init -> authenticate -> paused -> unpaused -> connected -> disconnected -> review -> completed;
+		
+		unpaused -> paused;
+		connected -> disconnected;
+		connected -> reconnecting -> connected;
+		reconnecting -> review;
+		reconnecting -> disconnected;
+		disconnected -> completed;
+		completed -> unpaused;
+		completed -> paused;
+	}
+	
+	subgraph cluster1 {
+		label = "Client";
+		
+		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected -> review1 -> completed1;
+
+		login -> login;
+
+		unpaused1 -> paused1;
+		connected1 -> reconnecting1 -> connected1;
+		reconnecting1 -> review1;
+		reconnecting1 -> disconnected1;
+		disconnected1 -> completed1;
+		completed1 -> unpaused1;
+		completed1 -> paused1;
+	}
+
+	//specific routes with messaging flow(protocol)
+	edge [style="solid", color="red"];
+}

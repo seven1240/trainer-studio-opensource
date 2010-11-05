@@ -1,0 +1,5 @@
+// Connect
+// both goto connected state without json messages
+
+unpaused -> connected [label = "onSIPConnect"];
+unpaused1 -> connected1 [label = "onSIPConnect"];

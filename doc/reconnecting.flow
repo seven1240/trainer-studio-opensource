@@ -1,0 +1,3 @@
+reconnecting -> disconnected [label = onNoMoreRoute];
+reconnecting1 -> disconnected1 [label = onSIPDisconnect];
+

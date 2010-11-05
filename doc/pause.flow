@@ -1,0 +1,13 @@
+// Pause
+
+unpaused1 -> unpaused [label = "json:Pause"];
+unpaused -> paused;
+paused -> unpaused1 [label = Unpaused];
+unpaused1 -> paused1;
+
+
+// Pause during wrap up time
+
+completed1 -> completed [label = Pause];
+completed -> completed1 [label = Paused];
+completed1 -> paused1;
