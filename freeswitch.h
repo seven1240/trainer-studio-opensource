@@ -53,7 +53,7 @@ protected:
 	void run(void);
 
 public:
-	QString call(QString callee);
+	QString call(QString dialString);
 	void setupGateway(QString username, QString password, QString realm, bool tcp);
 	void reload();
 	switch_status_t mute();
@@ -83,28 +83,39 @@ public:
 
 signals:
 	void coreLoadingError(QString);
-	void loadingModules(QString, int, QColor);
-	void moduleLoaded(QString, QString, QString);
-	void allModulesLoaded();
-	void ready();
+	void initialized();
+	void loaded(QString, QString, QString);
 	void sofiaReady();
+	void ready();
+	void stopping();
+	void stopped();
+	void calling(QString id, QString dialString);
+
+	void callIncoming(QString id, QString callerNumber, QString callerName);
+	void callAnswered(QString id, QString callerNumber, QString callerName);
+	void callEnded(QString id, QString callerNumber, QString callerName);
+
 	void gatewayStateChange(QString name, QString state);
 	void gatewayReady(QString name, bool registered);
 	void gatewayAdded(QString name);
 	void gatewayDeleted(QString name);
+
 	void eventLog(QSharedPointer<switch_log_node_t>, switch_log_level_t);
 	void newEvent(QSharedPointer<switch_event_t>);    
-	void callIncoming(QString id, QString callerNumber, QString callerName);
-	void callOutgoing(QString id);
-	void callAnswered(QString id, QString callerNumber, QString callerName);
-	void callEnded(QString id, QString callerNumber, QString callerName);
+
+	void muted();
+	void unmuted();
+	void held();
+	void unheld();
 
 private slots:
 	void minimalModuleLoaded(QString, QString, QString);
 
 private:
+	QStateMachine *createStateMachine();
 	switch_status_t command(const char *cmd, const char *args, QString *res);
 	QSharedPointer<Call> getCurrentActiveCall();
+	QStateMachine *_machine;
 	QList<QString> _loadedModules;
 	QHash<QString, QSharedPointer<Call> > _activeCalls;
 	QHash<QString, QSharedPointer<Channel> > _activeChannels;
