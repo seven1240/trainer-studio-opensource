@@ -30,6 +30,7 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	_password = new QLineEdit();
 	_password->setEchoMode(QLineEdit::Password);
 	_history = new QTextEdit();
+	_history->setEnabled(false);
 
 	QGroupBox *loginFormGroupBox = new QGroupBox(tr("Login"));
 	QFormLayout *formLayout = new QFormLayout;

@@ -22,6 +22,7 @@ ProgressWidget::ProgressWidget(QWidget *parent) :
 	_history->setObjectName("History");
 	_cancel->setObjectName("Cancel");
 
+	_history->setEnabled(false);
 	_cancel->setVisible(false);
 	_label->setVisible(false);
 
