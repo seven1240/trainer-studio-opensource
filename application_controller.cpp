@@ -9,6 +9,7 @@
 #include "login_dialog.h"
 #include "echo_test_dialog.h"
 #include "incoming_call_dialog.h"
+#include "call_dialog.h"
 #include "server_connection.h"
 #include "freeswitch.h"
 #include "user.h"
@@ -29,6 +30,7 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_incomingCallDialog = NULL;
 	_flashDialog = NULL;
 	_flashController = NULL;
+	_callDialog = NULL;
 	_user = NULL;
 }
 
@@ -37,6 +39,14 @@ ApplicationController::~ApplicationController()
 	if (_mainWindow != NULL) {
 		qDebug() << "Freeing MainWindow";
 		delete _mainWindow;
+	}
+	if (_incomingCallDialog != NULL) {
+		qDebug() << "Freeing IncomingCallDialog";
+		delete _incomingCallDialog;
+	}
+	if (_callDialog != NULL) {
+		qDebug() << "Freeing CallDialog";
+		delete _callDialog;
 	}
 	if (_progressDialog != NULL) {
 		qDebug() << "Freeing ProgressDialog";
@@ -93,6 +103,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	QState *incoming = new QState();
 	QState *training = new QState();
 	QState *testFlash = new QState();
+	QState *calling = new QState();
 
 	starting->setObjectName("starting");
 	authenticating->setObjectName("authenticating");
@@ -103,6 +114,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	testFlash->setObjectName("test-flash");
 	incoming->setObjectName("incoming");
 	training->setObjectName("training");
+	calling->setObjectName("calling");
 
 	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
 	connect(authenticating, SIGNAL(entered()), this, SLOT(authenticating()));
@@ -111,6 +123,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	connect(training, SIGNAL(entered()), this, SLOT(training()));
 	connect(testEcho, SIGNAL(entered()), this, SLOT(testEcho()));
 	connect(testFlash, SIGNAL(entered()), this, SLOT(testFlash()));
+	connect(calling, SIGNAL(entered()), this, SLOT(calling()));
 
 	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
@@ -118,11 +131,13 @@ QStateMachine *ApplicationController::createStateMachine()
 	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
 	ready->addTransition(server(), SIGNAL(disconnected()), authenticating);
 	ready->addTransition(fs(), SIGNAL(callIncoming(QString,QString,QString)), incoming);
+	ready->addTransition(mainWindow(), SIGNAL(testFlash()), testFlash);
+	ready->addTransition(mainWindow(), SIGNAL(testEcho()), testEcho);
+	ready->addTransition(mainWindow(), SIGNAL(call()), calling);
 	incoming->addTransition(fs(), SIGNAL(callAnswered(QString,QString,QString)), training);
 	incoming->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
 	training->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
-	ready->addTransition(mainWindow(), SIGNAL(testFlash()), testFlash);
-	ready->addTransition(mainWindow(), SIGNAL(testEcho()), testEcho);
+	calling->addTransition(callDialog(), SIGNAL(closed()), ready);
 	testFlash->addTransition(flashDialog(), SIGNAL(closed()), ready);
 	testEcho->addTransition(echoTestDialog(), SIGNAL(closed()), ready);
 
@@ -132,6 +147,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	machine->addState(authenticating);
 	machine->addState(authenticated);
 	machine->addState(ready);
+	machine->addState(calling);
 	machine->addState(stopped);
 	machine->addState(training);
 	machine->addState(incoming);
@@ -191,6 +207,11 @@ void ApplicationController::testFlash()
 	flashDialog()->show();
 }
 
+void ApplicationController::calling()
+{
+	callDialog()->show();
+}
+
 void ApplicationController::training()
 {
 	flashDialog()->show();
@@ -224,6 +245,13 @@ IncomingCallDialog *ApplicationController::incomingCallDialog()
 	if (_incomingCallDialog == NULL)
 		_incomingCallDialog = new IncomingCallDialog();
 	return _incomingCallDialog;
+}
+
+CallDialog *ApplicationController::callDialog()
+{
+	if (_callDialog == NULL)
+		_callDialog = new CallDialog();
+	return _callDialog;
 }
 
 ProgressDialog *ApplicationController::progressDialog()

@@ -32,16 +32,16 @@ private:
 	QString _activeUUID;
 	QSystemTrayIcon *_systemTray;
 	QTimer *_timer;
-	void keyPressEvent(QKeyEvent *event);
 	void parseCallResult(QString res);
 
 signals:
+	void call();
 	void testEcho();
 	void testFlash();
 
 private slots:
 	void on_Hangup_clicked();
-	void on_Conference_clicked();
+	void on_Call_clicked();
 	void on_Echo_clicked();
 	void on_State_clicked();
 	void on_Flash_clicked();

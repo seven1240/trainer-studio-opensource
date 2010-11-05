@@ -41,6 +41,7 @@ QLayout *MainWindow::createBody()
 	QPushButton *logoutButton = new QPushButton("Logout");
 	QPushButton *testEchoButton = new QPushButton("Echo");
 	QPushButton *testFlashButton = new QPushButton("Flash");
+	QPushButton *callButton = new QPushButton("Call");
 	QPushButton *stateButton = new QPushButton("|| Pause");
 	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *closeButton = new QPushButton("Close");
@@ -48,6 +49,7 @@ QLayout *MainWindow::createBody()
 	QLabel *sipLabel = new QLabel("SIP: None");
 
 	settingsButton->setObjectName("Settings");
+	callButton->setObjectName("Call");
 	logoutButton->setObjectName("Logout");
 	testEchoButton->setObjectName("Echo");
 	testFlashButton->setObjectName("Flash");
@@ -62,6 +64,7 @@ QLayout *MainWindow::createBody()
 
 	QGroupBox *commonBox = new QGroupBox("Trainer");
 	QVBoxLayout *commonLayout = new QVBoxLayout();
+	commonLayout->addWidget(callButton);
 	commonLayout->addWidget(hangupButton);
 	commonLayout->addWidget(stateButton);
 	commonLayout->addWidget(logoutButton);
@@ -186,20 +189,9 @@ void MainWindow::on_Echo_clicked()
 	emit testEcho();
 }
 
-void MainWindow::on_Conference_clicked()
+void MainWindow::on_Call_clicked()
 {
-	ApplicationController::fs()->call("conf");
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-	if (false) return; // TODO if in call?
-
-	if (event->key() == 35 || event->key() == Qt::Key_Asterisk ||  // # *
-		event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9 ||  // 0 - 9
-		event->key() >= Qt::Key_A && event->key() <= Qt::Key_D ) { // A-D
-		ApplicationController::fs()->portAudioDtmf((char)event->key());
-	}
+	emit call();
 }
 
 void MainWindow::on_Hangup_clicked()

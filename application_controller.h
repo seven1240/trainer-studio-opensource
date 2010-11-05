@@ -18,6 +18,7 @@ class FlashDialog;
 class EchoTestDialog;
 class IncomingCallDialog;
 class LoginDialog;
+class CallDialog;
 class User;
 
 class ApplicationController : public Controller
@@ -40,6 +41,7 @@ private:
 	EchoTestDialog *_echoTestDialog;
 	FlashDialog *_flashDialog;
 	IncomingCallDialog *_incomingCallDialog;
+	CallDialog *_callDialog;
 	MainWindow *_mainWindow;
 
 private:
@@ -49,6 +51,7 @@ private:
 	FlashDialog *flashDialog();
 	IncomingCallDialog *incomingCallDialog();
 	MainWindow *mainWindow();
+	CallDialog *callDialog();
 
 protected:
 	virtual QStateMachine *createStateMachine();
@@ -57,6 +60,7 @@ private slots:
 	void testEcho();
 	void testFlash();
 	void starting();
+	void calling();
 	void authenticating();
 	void authenticated(User *user);
 	void ready();
