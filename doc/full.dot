@@ -24,7 +24,7 @@ digraph G {
 	subgraph cluster1 {
 		label = "Client";
 		
-		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected -> review1 -> completed1;
+		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected1 -> review1 -> completed1;
 
 		login -> login;
 
@@ -79,7 +79,8 @@ unpaused1 -> paused1;
 
 completed1 -> completed [label = Pause];
 completed -> completed1 [label = Paused];
-completed1 -> paused1;// Reconnect
+completed1 -> paused1;
+// Reconnect
 
 connected1 -> reconnecting1;
 reconnecting1 -> connected [label = "Reconnect"];
@@ -113,7 +114,7 @@ disconnected1 -> completed1;
 completed1 -> disconnected [label = Unpause];
 disconnected -> completed; /* may last up to 5 seconds due to wrap up */
 completed -> completed1 [label = Unpaused];
-completed1 -> Unpaused;
+completed1 -> unpaused1;
 //Unpause
 
 paused1 -> paused [label = "json:Unpause"];

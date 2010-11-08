@@ -24,7 +24,7 @@ digraph G {
 	subgraph cluster1 {
 		label = "Client";
 		
-		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected -> review1 -> completed1;
+		init1 -> login -> paused1 -> unpaused1 -> connected1 ->  disconnected1 -> review1 -> completed1;
 
 		login -> login;
 
