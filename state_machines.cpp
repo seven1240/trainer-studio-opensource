@@ -16,10 +16,14 @@ StateMachineDebugger::StateMachineDebugger(QStateMachine *machine)
 void StateMachineDebugger::changed()
 {
 	QSetIterator<QAbstractState*> i(_machine->configuration());
+	QString message;
 	while (i.hasNext())
 	{
-		qDebug() << QString("%1 -> %2").arg(_machine->objectName()).arg(i.next()->objectName()).toAscii().data();
+		if (message.length())
+			message += ", ";
+		message += i.next()->objectName();
 	}
+	qDebug() << QString("%1 -> %2").arg(_machine->objectName()).arg(message).toAscii().data();
 }
 
 QStateMachine *jDebugStateMachine(QStateMachine *machine)

@@ -30,6 +30,7 @@
 #include <QtGui>
 #include "freeswitch.h"
 #include "isettings.h"
+#include "state_machines.h"
 
 static void eventHandlerCallback(switch_event_t *event);
 static switch_status_t loggerHandler(const switch_log_node_t *, switch_log_level_t);
@@ -57,6 +58,54 @@ FreeSwitch::FreeSwitch(QObject *parent) :
 	_sofia_ready = false;
 	_active_calls = 0;
 	_fs_instance = this;
+	_machine = createStateMachine();
+}
+
+QStateMachine *FreeSwitch::createStateMachine()
+{
+	QState *initializing = new QState();
+	QState *modules = new QState();
+	QState *stopping = new QState();
+	QState *stopped = new QState();
+	QState *ready = new QState(QState::ParallelStates);
+
+	QState *unmuted = new QState(ready);
+	QState *muted = new QState();
+	QState *unheld = new QState(ready);
+	QState *held = new QState();
+
+	muted->setObjectName("muted");
+	unmuted->setObjectName("unmuted");
+	held->setObjectName("held");
+	unheld->setObjectName("unheld");
+
+	initializing->setObjectName("initializing");
+	modules->setObjectName("modules");
+	ready->setObjectName("ready");
+	stopping->setObjectName("stopping");
+	stopped->setObjectName("stopped");
+
+	initializing->addTransition(this, SIGNAL(initialized()), modules);
+	modules->addTransition(this, SIGNAL(ready()), ready);
+	ready->addTransition(this, SIGNAL(stopping()), stopping);
+	stopping->addTransition(this, SIGNAL(stopped()), stopped);
+
+	unmuted->addTransition(this, SIGNAL(muted()), muted);
+	muted->addTransition(this, SIGNAL(unmuted()), unmuted);
+
+	unheld->addTransition(this, SIGNAL(held()), held);
+	held->addTransition(this, SIGNAL(unheld()), unheld);
+
+	QStateMachine *machine = new QStateMachine();
+	machine->setObjectName("FS");
+	machine->addState(initializing);
+	machine->addState(modules);
+	machine->addState(ready);
+	machine->addState(stopping);
+	machine->addState(stopped);
+	machine->setInitialState(initializing);
+	machine->start();
+	return jDebugStateMachine(machine);
 }
 
 void FreeSwitch::createFolders()
@@ -130,6 +179,7 @@ void FreeSwitch::shutdown()
 {
 	QString res;
 	_running = false;
+	emit stopping();
 	command("fsctl", "shutdown", &res);
 }
 
@@ -164,20 +214,20 @@ void FreeSwitch::run(void)
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Couldn't bind!\n");
 	}
 
+	qDebug() << "FS: binding logger...";
+
+	switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
+	_ready = true;
+
+	emit initialized();
+
 	qDebug() << "FS: loading modules...";
 
-	emit loadingModules("Loading modules...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
 	if (switch_core_init_and_modload(flags, console, &err) != SWITCH_STATUS_SUCCESS) {
 		fprintf(stderr, "Failed to initialize FreeSWITCH's core: %s\n", err);
 		emit coreLoadingError(err);
 	}
 
-	emit allModulesLoaded();
-
-	qDebug() << "FS: binding logger...";
-
-	switch_log_bind_logger(loggerHandler, SWITCH_LOG_DEBUG, SWITCH_FALSE);
-	_ready = true;
 	emit ready();
 
 	/* Go into the runtime loop. If the argument is true, this basically sets runtime.running = 1 and loops while that is set
@@ -187,6 +237,7 @@ void FreeSwitch::run(void)
 		switch_core_runtime_loop(!console);
 	}
 	else {
+		emit stopping();
 		qDebug() << "FS: shutdown before startup...";
 	}
 
@@ -201,6 +252,8 @@ void FreeSwitch::run(void)
 		qDebug() << "FS: errors during FS shutdown.";
 	}
 	_running = false;
+
+	emit stopped();
 }
 
 void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
@@ -396,7 +449,7 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 			_sofia_ready = true;
 			emit sofiaReady();
 		}
-		emit moduleLoaded(modType, modKey, modName);
+		emit loaded(modType, modKey, modName);
 		break;
 	}
 	default:
@@ -448,14 +501,14 @@ void FreeSwitch::printEventHeaders(QSharedPointer<switch_event_t>event)
 	qDebug() << "\n\n";
 }
 
-QString FreeSwitch::call(QString callee)
+QString FreeSwitch::call(QString dialString)
 {
 	QString res;
-	command("pa", ("call " + callee).toAscii(), &res);
+	command("pa", ("call " + dialString).toAscii(), &res);
 	qDebug() << "Call: " << res.trimmed();
 	QStringList sl = res.split(":");
 	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
-		emit callOutgoing(sl.at(2).trimmed());
+		emit calling(sl.at(2).trimmed(), dialString);
 	}
 	return res;
 }
@@ -486,24 +539,28 @@ void FreeSwitch::setupGateway(QString username, QString password, QString realm,
 switch_status_t FreeSwitch::mute()
 {
 	QString res;
+	emit muted();
 	return command("pa", "flags off mouth", &res);
 }
 
 switch_status_t FreeSwitch::unmute()
 {
 	QString res;
+	emit unmuted();
 	return command("pa", "flags on mouth", &res);
 }
 
 switch_status_t FreeSwitch::hold(QString uuid)
 {
 	QString res;
+	emit held();
 	return command("uuid_hold", uuid.toAscii(), &res);
 }
 
 switch_status_t FreeSwitch::unhold(QString uuid)
 {
 	QString res;
+	emit unheld();
 	return command("uuid_hold", ("off " + uuid).toAscii(), &res);
 }
 

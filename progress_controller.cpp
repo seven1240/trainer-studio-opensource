@@ -6,7 +6,7 @@
 ProgressController::ProgressController(ProgressWidget *view, QObject *parent) : Controller(parent)
 {
 	view->setModel(&_messagesModel);
-	connect(ApplicationController::fs(), SIGNAL(moduleLoaded(QString, QString, QString)), this, SLOT(onModuleLoaded(QString, QString, QString)));
+	connect(ApplicationController::fs(), SIGNAL(loaded(QString, QString, QString)), this, SLOT(onModuleLoaded(QString, QString, QString)));
 	connect(this, SIGNAL(changed()), view, SLOT(onHistoryChanged()));
 }
 

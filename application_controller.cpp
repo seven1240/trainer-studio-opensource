@@ -125,7 +125,7 @@ QStateMachine *ApplicationController::createStateMachine()
 	connect(testFlash, SIGNAL(entered()), this, SLOT(testFlash()));
 	connect(calling, SIGNAL(entered()), this, SLOT(calling()));
 
-	starting->addTransition(fs(), SIGNAL(allModulesLoaded()), authenticating);
+	starting->addTransition(fs(), SIGNAL(ready()), authenticating);
 	authenticating->addTransition(server(), SIGNAL(authenticated(User*)), authenticated);
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
 	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
