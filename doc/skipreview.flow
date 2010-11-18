@@ -1,6 +1,6 @@
 //Skip Review
 disconnected1 -> completed1;
 completed1 -> disconnected [label = Unpause];
-disconnected -> completed; /* may last up to 5 seconds due to wrap up */
-completed -> completed1 [label = Unpaused];
+disconnected -> completed1 [label = Unpaused];
+disconnected -> unpaused;
 completed1 -> unpaused1;

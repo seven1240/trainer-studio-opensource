@@ -57,8 +57,13 @@ login [color = "red"];
 // both goto connected state without json messages
 
 unpaused -> connected [label = "onSIPConnect"];
+connected -> unpaused1 [label = "json:Connected"];
 unpaused1 -> connected1 [label = "onSIPConnect"];
-// Try to reconnect student when student side broken/hangup
+// ForcedPause
+
+unpaused -> unpaused1 [label = "json:ForcedPause"];
+unpaused -> paused;
+unpaused1 -> paused1;// Try to reconnect student when student side broken/hangup
 
 connected -> reconnecting;
 reconnecting -> reconnecting1 [label = "LostConnection"];
@@ -104,16 +109,16 @@ unpaused1 -> unpaused1;
 disconnected1 -> review1;
 review1 -> disconnected [label = Review];
 disconnected -> review;
-review1 -> review [label = UnPause]; /*finish review*/
-review -> completed; /*wait a wrap up time, say 5 seconds*/
 review1 -> completed1;
-completed -> unpaused;
-unpaused -> review [label = UnPaused];
+completed1 -> review [label = UnPause]; /*finish review, wrap up time should be implemented on client side*/
+review -> completed1 [label = "json:Unpaused"];
+review -> unpaused;
+completed1 -> unpaused1;
 //Skip Review
 disconnected1 -> completed1;
 completed1 -> disconnected [label = Unpause];
-disconnected -> completed; /* may last up to 5 seconds due to wrap up */
-completed -> completed1 [label = Unpaused];
+disconnected -> completed1 [label = Unpaused];
+disconnected -> unpaused;
 completed1 -> unpaused1;
 //Unpause
 

@@ -28,3 +28,7 @@ clean:
 	rm t.dot
 	rm *.png
 
+html:
+	echo "<html><body>" > index.html
+	for f in *.png; do echo "<br>$$f<br><img src=$$f />" >> index.html; done
+	echo "</body></html>" >> index.html 

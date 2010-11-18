@@ -1,0 +1,5 @@
+// ForcedPause
+
+unpaused -> unpaused1 [label = "json:ForcedPause"];
+unpaused -> paused;
+unpaused1 -> paused1;
