@@ -209,7 +209,7 @@ void FlashDialog::onHangupClicked()
 
 	//  FlashVars does't work for this swf, so need to set params in url. Hmmm...
 	QString vars = QString("product_type=eqenglish"
-						   "&background_color=#F3F3F3"
+						   "&background_color=%23F3F3F3"
 						   "&font_family=Arial"
 						   "&default_ui_language=en_US"
 						   "&ui_language=en_US"
