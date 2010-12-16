@@ -152,6 +152,7 @@ void ServerConnection::login(QString username, QString password)
 	cJSON_AddItemToObject(cj, "system_info", info);
 
 	json = cJSON_Print(cj);
+	Utils::trim_json(json);
 	cJSON_Delete(cj);
 
 	startTimer(5000);

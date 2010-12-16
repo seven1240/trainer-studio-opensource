@@ -64,4 +64,20 @@ namespace Utils {
 		map.insert("flash_player_version", flash_player_version);
 		return map;
 	}
+
+	/* trim \n \t off from json, will change the original string */
+	void trim_json(char *s) {
+		char *p = s;
+
+		while(*s) {
+			if (*s == '\n' || *s == '\t') {
+				s++;
+			} else {
+				*p++ = *s++;
+			}
+		}
+		if (p != s) {
+			*p = '\0';
+		}
+	}
 }
