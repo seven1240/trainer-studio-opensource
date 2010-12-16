@@ -163,7 +163,7 @@ void LoginDialog::onLoginClicked()
 	QSettings settings;
 	settings.setValue("StoredData/Username", _username->text());
 	QString host = settings.value("General/trainer_server").toString();
-	int port = settings.value("trainer_server_port").toInt();
+        int port = settings.value("General/trainer_server_port").toInt();
 	if (host == NULL || host.isEmpty()) host = "voip.idapted.com";
 	if (port == 0) port = 7000;
 
