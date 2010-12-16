@@ -62,11 +62,15 @@ QLayout *MainWindow::createBody()
 	settingsButton->setVisible(false);
 	testFlashButton->setVisible(ApplicationController::isDebugging());
 
-	QGroupBox *commonBox = new QGroupBox("Trainer");
+	QGroupBox *trainingBox = new QGroupBox("Training");
+	QVBoxLayout *trainingLayout = new QVBoxLayout();
+	trainingLayout->addWidget(stateButton);
+	trainingBox->setLayout(trainingLayout);
+
+	QGroupBox *commonBox = new QGroupBox("Telephony");
 	QVBoxLayout *commonLayout = new QVBoxLayout();
 	commonLayout->addWidget(callButton);
 	commonLayout->addWidget(hangupButton);
-	commonLayout->addWidget(stateButton);
 	commonLayout->addWidget(logoutButton);
 	commonLayout->addWidget(settingsButton);
 	commonLayout->addWidget(closeButton);
@@ -80,6 +84,7 @@ QLayout *MainWindow::createBody()
 	testsBox->setLayout(testsLayout);
 
 	QVBoxLayout *layout = new QVBoxLayout();
+	layout->addWidget(trainingBox);
 	layout->addWidget(commonBox);
 	layout->addWidget(testsBox);
 	layout->addWidget(sipLabel);
