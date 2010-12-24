@@ -32,6 +32,7 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_flashController = NULL;
 	_callDialog = NULL;
 	_user = NULL;
+	_wrapupTimer = NULL;
 }
 
 ApplicationController::~ApplicationController()
@@ -70,6 +71,7 @@ ApplicationController::~ApplicationController()
 	}
 	if (_user != NULL)
 		delete _user;
+
 	qDebug() << "Stopped";
 }
 
@@ -78,8 +80,12 @@ int ApplicationController::run()
 	_fs = new FreeSwitch();
 	_fs->start();
 
-	_server= new ServerConnection();
+	_server = new ServerConnection();
 	_server->start();
+
+	_wrapupTimer = new QTimer(this);
+	_wrapupTimer->setInterval(5000);
+	_wrapupTimer->setSingleShot(true);
 
 	_progressWidget = new ProgressWidget();
 	_progressController = new ProgressController(_progressWidget, this);
@@ -102,6 +108,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	QState *ready = new QState();
 	QState *incoming = new QState();
 	QState *training = new QState();
+	QState *wrapup = new QState();
+	QState *wrapupTimeout = new QState();
 	QState *testFlash = new QState();
 	QState *calling = new QState();
 
@@ -114,6 +122,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	testFlash->setObjectName("test-flash");
 	incoming->setObjectName("incoming");
 	training->setObjectName("training");
+	wrapup->setObjectName("wrapup");
+	wrapupTimeout->setObjectName("wrapupTimeout");
 	calling->setObjectName("calling");
 
 	connect(starting, SIGNAL(entered()), this, SLOT(starting()));
@@ -121,6 +131,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	connect(ready, SIGNAL(entered()), this, SLOT(ready()));
 	connect(incoming, SIGNAL(entered()), this, SLOT(incoming()));
 	connect(training, SIGNAL(entered()), this, SLOT(training()));
+	connect(wrapup, SIGNAL(entered()), this, SLOT(wrapup()));
+	connect(wrapupTimeout, SIGNAL(entered()), this, SLOT(wrapupTimeout()));
 	connect(testEcho, SIGNAL(entered()), this, SLOT(testEcho()));
 	connect(testFlash, SIGNAL(entered()), this, SLOT(testFlash()));
 	connect(calling, SIGNAL(entered()), this, SLOT(calling()));
@@ -136,7 +148,11 @@ QStateMachine *ApplicationController::createStateMachine()
 	ready->addTransition(mainWindow(), SIGNAL(call()), calling);
 	incoming->addTransition(fs(), SIGNAL(callAnswered(QString,QString,QString)), training);
 	incoming->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
-	training->addTransition(fs(), SIGNAL(callEnded(QString,QString,QString)), ready);
+	training->addTransition(flashDialog(), SIGNAL(closed()), wrapup);
+	wrapup->addTransition(server(), SIGNAL(pausing()), ready);
+	wrapup->addTransition(_wrapupTimer, SIGNAL(timeout()), wrapupTimeout);
+	wrapupTimeout->addTransition(server(), SIGNAL(unpaused()), ready);
+	wrapupTimeout->addTransition(server(), SIGNAL(paused()), ready);
 	calling->addTransition(callDialog(), SIGNAL(closed()), ready);
 	testFlash->addTransition(flashDialog(), SIGNAL(closed()), ready);
 	testEcho->addTransition(echoTestDialog(), SIGNAL(closed()), ready);
@@ -150,6 +166,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	machine->addState(calling);
 	machine->addState(stopped);
 	machine->addState(training);
+	machine->addState(wrapup);
+	machine->addState(wrapupTimeout);
 	machine->addState(incoming);
 	machine->addState(testEcho);
 	machine->addState(testFlash);
@@ -215,6 +233,16 @@ void ApplicationController::calling()
 void ApplicationController::training()
 {
 	flashDialog()->show();
+}
+
+void ApplicationController::wrapup()
+{
+	_wrapupTimer->start();
+}
+
+void ApplicationController::wrapupTimeout()
+{
+	server()->pause(false);
 }
 
 MainWindow *ApplicationController::mainWindow()

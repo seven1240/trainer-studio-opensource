@@ -1,6 +1,7 @@
 #ifndef APPLICATION_CONTROLLER_H
 #define APPLICATION_CONTROLLER_H
 
+#include <QTimer>
 #include "controller.h"
 
 QT_BEGIN_NAMESPACE
@@ -52,6 +53,7 @@ private:
 	IncomingCallDialog *incomingCallDialog();
 	MainWindow *mainWindow();
 	CallDialog *callDialog();
+	QTimer *_wrapupTimer;
 
 protected:
 	virtual QStateMachine *createStateMachine();
@@ -65,6 +67,8 @@ private slots:
 	void authenticated(User *user);
 	void ready();
 	void training();
+	void wrapup();
+	void wrapupTimeout();
 	void incoming();
 
 public:
