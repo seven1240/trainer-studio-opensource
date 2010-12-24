@@ -118,6 +118,7 @@ void FlashDialog::closeEvent(QCloseEvent * /*e*/)
 	ApplicationController::fs()->hangup(true);
 	_webView->reload();
 	lower();
+	qDebug() << "flashDialog Closing";
 	emit closed();
 }
 
@@ -201,8 +202,7 @@ void FlashDialog::onHangupClicked()
 									   QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 		if (ret == QMessageBox::Yes) {
 			_webView->reload();
-			lower();
-			hide();
+			close();
 			return;
 		}
 	}
@@ -278,8 +278,7 @@ void FlashDialog::onFSCommand(QString cmd, QString args)
 	if (cmd == "saved" || cmd == "committedProblems"){
 		_timer->stop();
 		_webView->reload();
-		lower();
-		hide();
+		close();
 	}
 	else if (cmd == "log") {
 		qDebug() << "Flash Log: " << args;
