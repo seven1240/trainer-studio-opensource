@@ -122,7 +122,7 @@ void LoginDialog::abortLogin()
 void LoginDialog::abortLogin(QString msg)
 {
 	abortLogin();
-	if (_abort || _authenticated)
+	if (_authenticated)
 		return;
 	QMessageBox::critical(this, QApplication::applicationName(), msg);
 }
