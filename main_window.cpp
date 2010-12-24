@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	createBody();
 
-	setWindowTitle("Trainer Studio - Idapted Ltd.");
+	setWindowTitle("Trainer Studio - Eleutian Inc.");
 	setFixedSize(228, 350);
 	Utils::centerWindowOnDesktop(this);
 
@@ -186,7 +186,7 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 void MainWindow::on_About_clicked()
 {
 	QMessageBox::about(this, QApplication::applicationName(),
-					   QString("Version: %1\n\nCopyright (C): Idapted Ltd.").arg(QApplication::applicationVersion()));
+		QString("Version: %1\n\nCopyright (C): Eleutian Inc.").arg(QApplication::applicationVersion()));
 }
 
 void MainWindow::on_Echo_clicked()

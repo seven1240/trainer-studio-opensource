@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	QApplication::setApplicationName("Trainer Studio");
 	QApplication::setApplicationVersion("3.0.1");
-	QApplication::setOrganizationName("Idapted Ltd.");
-	QApplication::setOrganizationDomain("idapted.com");
+	QApplication::setOrganizationName("Eleutian Inc.");
+	QApplication::setOrganizationDomain("eleutian.com");
 
 	configureLogging();
 
