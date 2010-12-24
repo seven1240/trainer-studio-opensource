@@ -58,7 +58,7 @@ QStateMachine *ServerConnection::createStateMachine()
 	authenticated->addTransition(this, SIGNAL(pausing()), pausing);
 	pausing->addTransition(this, SIGNAL(paused()), paused);
 	paused->addTransition(this, SIGNAL(unpausing()), unpausing);
-	unpausing->addTransition(this, SIGNAL(working()), unpausing);
+	unpausing->addTransition(this, SIGNAL(unpaused()), working);
 
 	working->addTransition(_socket, SIGNAL(disconnected()), disconnected);
 	pausing->addTransition(_socket, SIGNAL(disconnected()), disconnected);
