@@ -34,6 +34,9 @@ private:
 	QPushButton *_hold;
 	QPushButton *_answer;
 	QPushButton *_hangup;
+	QPushButton *_conf;
+	QPushButton *_n800;
+	QPushButton *_echo;
 	QLabel *_sipStatusLabel;
 
 private slots:
@@ -42,6 +45,9 @@ private slots:
 	void onHold();
 	void onAnswer();
 	void onHangup();
+	void onCallConf();
+	void onCall800();
+	void onCallEcho();
 
 	void onGatewayStateChange(QString, QString);
 	void onCallIncoming(QString, QString, QString);
