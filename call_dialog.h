@@ -5,6 +5,7 @@
 
 QT_BEGIN_NAMESPACE
 class QTextEdit;
+class QLineEdit;
 class QPushButton;
 class QLabel;
 QT_END_NAMESPACE
@@ -28,6 +29,7 @@ signals:
 private:
 	DialPadWidget *_dialPadWidget;
 	QTextEdit *_display;
+	QLineEdit *_number;
 	QPushButton *_call;
 	QPushButton *_hold;
 	QPushButton *_answer;
