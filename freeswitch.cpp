@@ -289,12 +289,14 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 		break;
 	}
 	*/
-	case SWITCH_EVENT_CHANNEL_HANGUP:
+	case SWITCH_EVENT_CHANNEL_HANGUP_COMPLETE:
 	{
 		QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
 		QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
 		qDebug() << "Channel Hangup" << uuid << number << name;
-		emit callEnded(uuid, number, name);
+		if(QString(switch_event_get_header_nil(event.data(), "Channel-Name")).startsWith("portaudio/")) {
+			emit callEnded(uuid, number, name);
+		}
 		break;
 	}
 	case SWITCH_EVENT_CHANNEL_EXECUTE: break;
@@ -393,7 +395,7 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 		qDebug() << "Channel Unbridge" << uuid << number << name;
 		if (--_active_calls < 0)
 			_active_calls = 0;
-		emit callEnded(uuid, number, name);
+		// emit callEnded(uuid, number, name);
 		break;
 	}
 	case SWITCH_EVENT_CUSTOM:/*5A*/

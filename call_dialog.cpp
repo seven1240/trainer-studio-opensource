@@ -114,21 +114,21 @@ void CallDialog::onGatewayStateChange(QString /*name*/, QString state)
 
 void CallDialog::onCallIncoming(QString uuid, QString cidNumber, QString cidName)
 {
-	_display->setText(QString("%1\nI: %2").arg(
+	_display->setText(QString("%1\nRing From: %2").arg(
 		_display->toPlainText()).arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
 void CallDialog::onCallAnswered(QString uuid, QString cidNumber, QString cidName)
 {
-	_display->setText(QString("%1\nA: %2").arg(
+	_display->setText(QString("%1\nCall Answered: %2").arg(
 		_display->toPlainText()).arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
 void CallDialog::onCallEnded(QString uuid, QString cidNumber, QString cidName)
 {
-	_display->setText(QString("%1\nE: %2").arg(
+	_display->setText(QString("%1\nCall Ended: %2").arg(
 		_display->toPlainText()).arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
