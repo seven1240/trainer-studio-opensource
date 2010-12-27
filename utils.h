@@ -10,6 +10,15 @@ namespace Utils
 	QVariantMap getSystemInfos();
 	void trim_json(char *);
 	QString formatCallerID(QString cidName, QString CidNumber);
+	/* compare version in <major.minor.rev>, returns
+		3 - major2 > major1
+		2 - minor2 > minor1
+		1 - rev2 > rev1
+		0 - equel
+		-1 - rev2 < rev1
+		-2 - error
+	*/
+	int compareVersion(QString ver1, QString ver2);
 }
 
 #endif // UTILS_H

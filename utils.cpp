@@ -85,4 +85,43 @@ namespace Utils {
 	{
 		return QString("\"%1\" <%2>").arg(cidName).arg(cidNumber);
 	}
+
+	int compareVersion(QString ver1, QString ver2)
+	{
+		QStringList list1 = ver1.split(".");
+		QStringList list2 = ver2.split(".");
+
+		int major1, minor1, rev1;
+		int major2, minor2, rev2;
+
+		if (list1.count() < 3) return -2;
+		if (list2.count() < 3) return -2;
+
+		major1 = list1[0].toInt();
+		minor1 = list1[1].toInt();
+		rev1 = list1[2].toInt();
+		major2 = list2[0].toInt();
+		minor2 = list2[1].toInt();
+		rev2 = list2[2].toInt();
+
+		if (major2 > major1) {
+			return 3;
+		} else if (major2 < major1) {
+			return -1;
+		} else {
+			if (minor2 > minor1) {
+				return 2;
+			} else if (minor2 < minor1) {
+				return -1;
+			} else {
+				if (rev2 > rev1) {
+					return 1;
+				} else if (rev2 < rev1) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		}
+	}
 }

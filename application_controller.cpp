@@ -1,4 +1,6 @@
 #include <QStateMachine>
+#include <QtGui/QApplication>
+#include <QMessageBox>
 #include "application_controller.h"
 #include "main_window.h"
 #include "progress_dialog.h"
@@ -13,6 +15,7 @@
 #include "server_connection.h"
 #include "freeswitch.h"
 #include "user.h"
+#include "utils.h"
 
 ServerConnection *ApplicationController::_server;
 FreeSwitch *ApplicationController::_fs;
@@ -207,9 +210,43 @@ void ApplicationController::incoming()
 
 void ApplicationController::authenticated(User *user)
 {
-	if (_user != NULL)
-		delete _user;
+	int x;
+	QString serverVersion;
+	QString clientVersion;
+
+	if (_user != NULL)	delete _user;
 	_user = user;
+
+	serverVersion = _user->getServerVersion();
+	clientVersion = QApplication::applicationVersion();
+
+	qDebug() << "ServerVersion: " << serverVersion;
+	qDebug() << "ClientVersion: " << clientVersion;
+
+	x = Utils::compareVersion(clientVersion, serverVersion);
+
+	qDebug() << "compareVersion: " << x;
+
+	if (x > 1) {
+		QString title = QString("New Version Available");
+		QString msg = QString("A new version of TS [%1] available, "
+			"please download the new version from the website.\n"
+			" TS will be closed when you click [OK]").arg(serverVersion);
+		QMessageBox::critical(NULL, title, msg);
+		exit(0);
+	} else if (x == 1) {
+		QString title = QString("New Version Available");
+		QString msg = QString("A new version of TS [%1] available, "
+			"it is highly recommended to upgrade to the new version.\n"
+			"Click [Yes] ignore this message, or [No] to close TS"
+			" and download the new version from the website.").arg(serverVersion);
+		int ret = QMessageBox::warning(NULL, title, msg,
+			QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+		if (ret == QMessageBox::No) {
+			exit(0);
+		}
+	}
+
 	progressDialog()->hide();
 	loginDialog()->hide();
 	mainWindow()->hide();
