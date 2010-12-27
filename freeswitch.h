@@ -92,6 +92,8 @@ signals:
 	void calling(QString id, QString dialString);
 
 	void callIncoming(QString id, QString callerNumber, QString callerName);
+	void newInteractionCall(QString id, QString cidNumber, QString cidName);
+	void newIncomingCall(QString id, QString cidNumber, QString cidName);
 	void callAnswered(QString id, QString callerNumber, QString callerName);
 	void callEnded(QString id, QString callerNumber, QString callerName);
 

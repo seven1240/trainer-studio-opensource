@@ -142,7 +142,8 @@ QStateMachine *ApplicationController::createStateMachine()
 	authenticated->addTransition(server(), SIGNAL(disconnected()), authenticating);
 	authenticated->addTransition(echoTestDialog(), SIGNAL(finished(int)), ready);
 	ready->addTransition(server(), SIGNAL(disconnected()), authenticating);
-	ready->addTransition(fs(), SIGNAL(callIncoming(QString,QString,QString)), incoming);
+	ready->addTransition(fs(), SIGNAL(newInteractionCall(QString,QString,QString)), incoming);
+	ready->addTransition(fs(), SIGNAL(newIncomingCall(QString,QString,QString)), calling);
 	ready->addTransition(mainWindow(), SIGNAL(testFlash()), testFlash);
 	ready->addTransition(mainWindow(), SIGNAL(testEcho()), testEcho);
 	ready->addTransition(mainWindow(), SIGNAL(call()), calling);
@@ -227,6 +228,7 @@ void ApplicationController::testFlash()
 
 void ApplicationController::calling()
 {
+	server()->pause(true);
 	callDialog()->show();
 }
 

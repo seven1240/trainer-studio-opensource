@@ -402,6 +402,11 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 			QString name = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Name"));
 			QString number = QString(switch_event_get_header_nil(event.data(), "Caller-Caller-ID-Number"));
 			qDebug() << "Incoming" << uuid << number << name;
+			if(name.startsWith("IT", Qt::CaseSensitive)) {
+				emit newInteractionCall(uuid, number, name);
+			} else {
+				emit newIncomingCall(uuid, number, name);
+			}
 			emit callIncoming(uuid, number, name);
 		}
 		else if (strcmp(event.data()->subclass_name, "sofia::gateway_state") == 0) {

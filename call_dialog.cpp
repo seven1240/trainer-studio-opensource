@@ -22,7 +22,7 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	_hangup = new QPushButton("Hangup");
 	_sipStatusLabel = new QLabel("SIP: None");
 
-	// _display->setEnabled(false);
+	_display->setReadOnly(true);
 
 	_dialPadWidget = new DialPadWidget();
 
@@ -49,7 +49,7 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 
 	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)),
 		this, SLOT(onGatewayStateChange(QString, QString)));
-	connect(ApplicationController::fs(), SIGNAL(callIncoming(QString, QString, QString)),
+	connect(ApplicationController::fs(), SIGNAL(newIncomingCall(QString, QString, QString)),
 		this, SLOT(onCallIncoming(QString, QString, QString)));
 	connect(ApplicationController::fs(), SIGNAL(callAnswered(QString, QString, QString)),
 		this, SLOT(onCallAnswered(QString, QString, QString)));
