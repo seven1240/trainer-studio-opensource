@@ -6,6 +6,7 @@
 QT_BEGIN_NAMESPACE
 class QTextEdit;
 class QPushButton;
+class QLabel;
 QT_END_NAMESPACE
 
 class DialPadWidget;
@@ -31,6 +32,7 @@ private:
 	QPushButton *_hold;
 	QPushButton *_answer;
 	QPushButton *_hangup;
+	QLabel *_sipStatusLabel;
 
 private slots:
 	void dialed(QString dtmf);
@@ -38,6 +40,11 @@ private slots:
 	void onHold();
 	void onAnswer();
 	void onHangup();
+
+	void onGatewayStateChange(QString, QString);
+	void onCallIncoming(QString, QString, QString);
+	void onCallAnswered(QString, QString, QString);
+	void onCallEnded(QString, QString, QString);
 
 };
 

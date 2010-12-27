@@ -11,6 +11,7 @@
 #include "freeswitch.h"
 #include "call_dialog.h"
 #include "dial_pad_widget.h"
+#include "utils.h"
 
 CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 {
@@ -19,8 +20,9 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	_hold = new QPushButton("Hold");
 	_answer = new QPushButton("Answer");
 	_hangup = new QPushButton("Hangup");
+	_sipStatusLabel = new QLabel("SIP: None");
 
-	_display->setEnabled(false);
+	// _display->setEnabled(false);
 
 	_dialPadWidget = new DialPadWidget();
 
@@ -33,6 +35,7 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	layout->addWidget(_answer, 2, 0, 1, 1);
 	layout->addWidget(_hangup, 2, 1, 1, 1);
 	layout->addWidget(_dialPadWidget, 3, 0, 1, 2);
+	layout->addWidget(_sipStatusLabel, 4, 0, 1, 1);
 	setLayout(layout);
 
 	setWindowTitle("Call");
@@ -43,6 +46,15 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	connect(_hold, SIGNAL(clicked()), this, SLOT(onHold()));
 	connect(_answer, SIGNAL(clicked()), this, SLOT(onAnswer()));
 	connect(_hangup, SIGNAL(clicked()), this, SLOT(onHangup()));
+
+	connect(ApplicationController::fs(), SIGNAL(gatewayStateChange(QString, QString)),
+		this, SLOT(onGatewayStateChange(QString, QString)));
+	connect(ApplicationController::fs(), SIGNAL(callIncoming(QString, QString, QString)),
+		this, SLOT(onCallIncoming(QString, QString, QString)));
+	connect(ApplicationController::fs(), SIGNAL(callAnswered(QString, QString, QString)),
+		this, SLOT(onCallAnswered(QString, QString, QString)));
+	connect(ApplicationController::fs(), SIGNAL(callEnded(QString, QString, QString)),
+		this, SLOT(onCallEnded(QString, QString, QString)));
 }
 
 CallDialog::~CallDialog()
@@ -89,3 +101,35 @@ void CallDialog::dialed(QString dtmf)
 		_display->setText(_display->toPlainText() + dtmf);
 	}
 }
+
+void CallDialog::onGatewayStateChange(QString /*name*/, QString state)
+{
+	if (state == "TRYING" || state == "REGISTER") {
+		// do nothing
+	}
+	else { //REGED UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
+	}
+	_sipStatusLabel->setText(QString("SIP State: %1").arg(state));
+}
+
+void CallDialog::onCallIncoming(QString uuid, QString cidNumber, QString cidName)
+{
+	_display->setText(QString("%1\nI: %2").arg(
+		_display->toPlainText()).arg(
+		Utils::formatCallerID(cidName, cidNumber)));
+}
+
+void CallDialog::onCallAnswered(QString uuid, QString cidNumber, QString cidName)
+{
+	_display->setText(QString("%1\nA: %2").arg(
+		_display->toPlainText()).arg(
+		Utils::formatCallerID(cidName, cidNumber)));
+}
+
+void CallDialog::onCallEnded(QString uuid, QString cidNumber, QString cidName)
+{
+	_display->setText(QString("%1\nE: %2").arg(
+		_display->toPlainText()).arg(
+		Utils::formatCallerID(cidName, cidNumber)));
+}
+

@@ -9,6 +9,7 @@ namespace Utils
 	void msgbox(QString msg);
 	QVariantMap getSystemInfos();
 	void trim_json(char *);
+	QString formatCallerID(QString cidName, QString CidNumber);
 }
 
 #endif // UTILS_H

@@ -80,4 +80,9 @@ namespace Utils {
 			*p = '\0';
 		}
 	}
+
+	QString formatCallerID(QString cidName, QString cidNumber)
+	{
+		return QString("\"%1\" <%2>").arg(cidName).arg(cidNumber);
+	}
 }
