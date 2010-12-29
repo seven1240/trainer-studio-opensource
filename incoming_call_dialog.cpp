@@ -70,6 +70,6 @@ void IncomingCallDialog::onAnswerClicked()
 
 void IncomingCallDialog::onRejectClicked()
 {
-	ApplicationController::fs()->hangup(false);
+	ApplicationController::fs()->hangup();
 	reject();
 }

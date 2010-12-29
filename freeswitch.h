@@ -60,7 +60,7 @@ public:
 	switch_status_t unmute();
 	switch_status_t hold(QString uuid);
 	switch_status_t unhold(QString uuid);
-	void hangup(bool all);
+	void hangup(bool all = false); /* true = hupall, false = pa hangup */
 	switch_status_t recordStart(QString uuid, QString filename);
 	switch_status_t recordStop(QString uuid, QString filename);
 	void answer();

@@ -191,7 +191,7 @@ void FlashDialog::onLoadFinished(bool)
 void FlashDialog::onHangupClicked()
 {
 	_timer->stop();
-	ApplicationController::fs()->hangup(false);
+	ApplicationController::fs()->hangup();
 }
 
 void FlashDialog::onCallHangup(QString uuid, QString cidName, QString cidNumber)
