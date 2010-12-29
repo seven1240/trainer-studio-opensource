@@ -341,17 +341,30 @@ p, li { white-space: pre-wrap; }
       <string>Enable Debug (For advanced users)</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="pbOpenLogDir">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>110</y>
+       <x>220</x>
+       <y>120</y>
        <width>181</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
       <string>Reveal log file in folder</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbFSConsole">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>120</y>
+       <width>114</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>FS Console</string>
      </property>
     </widget>
    </widget>

@@ -81,6 +81,7 @@ public:
 	void generalLoggerHandler(QSharedPointer<switch_log_node_t> node, switch_log_level_t level);
 	void printEventHeaders(QSharedPointer<switch_event_t> event);
 	void createFolders();
+	switch_status_t command(const char *cmd, const char *args, QString *res);
 
 signals:
 	void coreLoadingError(QString);
@@ -116,7 +117,6 @@ private slots:
 
 private:
 	QStateMachine *createStateMachine();
-	switch_status_t command(const char *cmd, const char *args, QString *res);
 	QSharedPointer<Call> getCurrentActiveCall();
 	QStateMachine *_machine;
 	QList<QString> _loadedModules;

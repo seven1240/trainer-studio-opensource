@@ -8,6 +8,7 @@
 #include "freeswitch.h"
 #include "isettings.h"
 #include "utils.h"
+#include "fsconsole_dialog.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -251,8 +252,15 @@ void SettingsDialog::on_cbDebug_clicked(bool checked)
 	settings.endGroup();
 }
 
-void SettingsDialog::on_pushButton_2_clicked()
+void SettingsDialog::on_pbOpenLogDir_clicked()
 {
 	QDir home = QDir::home();
 	Utils::openFolder(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
+}
+
+void SettingsDialog::on_pbFSConsole_clicked()
+{
+	FSConsoleDialog *d = new FSConsoleDialog(this);
+	d->setAttribute(Qt::WA_DeleteOnClose);
+	d->show();
 }
