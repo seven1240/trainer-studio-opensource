@@ -324,6 +324,24 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </widget>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>Diagnostic</string>
+    </attribute>
+    <widget class="QCheckBox" name="cbDebug">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>40</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable Debug</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources/>

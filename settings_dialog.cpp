@@ -26,6 +26,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 	if (settings.value("sip_transport").toString() == "tcp") {
 		ui->cbSIPTransport->setChecked(true);
 	}
+	if (settings.value("debugging").isValid() && settings.value("debugging").toBool()) {
+		ui->cbDebug->setChecked(true);
+	}
 	settings.endGroup();
 
 	ignore_change_event = true;
@@ -237,4 +240,12 @@ void SettingsDialog::setActiveTabs(unsigned int tabs)
 			ui->tabWidget->setTabEnabled(i, false);
 		}
 	}
+}
+
+void SettingsDialog::on_cbDebug_clicked(bool checked)
+{
+	QSettings settings;
+	settings.beginGroup("General");
+	settings.setValue("debugging", checked);
+	settings.endGroup();
 }
