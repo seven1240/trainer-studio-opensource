@@ -47,7 +47,8 @@ QLayout *MainWindow::createBody()
 	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *aboutButton = new QPushButton("About");
 	QLabel *sipLabel = new QLabel("SIP: None");
-	QToolButton *sipReg = new QToolButton("Register");
+	QToolButton *sipReg = new QToolButton();
+	sipReg->setText("Register");
 
 	settingsButton->setObjectName("Settings");
 	callButton->setObjectName("Call");
@@ -135,6 +136,13 @@ void MainWindow::on_Logout_clicked()
 
 void MainWindow::on_State_clicked()
 {
+	if (!_sipStateReady) switch_sleep(2000000);
+
+	if (!_sipStateReady){
+		QMessageBox::warning(this, QApplication::applicationName(),
+			"SIP not Ready! \nPlease wait SIP:REGED or click the [Register] button to register immediately");
+		return;
+	}
 	ApplicationController::server()->pause(_state->isChecked());
 }
 
@@ -163,8 +171,8 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	if (state == "REGED") {
 		if (!_sipStateReady) {
 			_sipStateReady = true;
+			_sipReg->setVisible(false);
 		}
-		_sipReg->setVisible(false);
 	}
 	else if (state == "TRYING" || state == "REGISTER") {
 		// do nothing
@@ -172,10 +180,10 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
-			_sipReg->setVisible(true);
 			if (_state->isChecked())
 				ApplicationController::server()->pause(true); //force pause
 		}
+		_sipReg->setVisible(true);
 	}
 	_sipStatusLabel->setText(QString("SIP: %1").arg(state));
 }
