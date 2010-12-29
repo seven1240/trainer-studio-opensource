@@ -6,6 +6,8 @@
 #include "freeswitch.h"
 #include "server_connection.h"
 
+#define LOG_MAX_SIZE 600 * 1024
+
 FILE *_logFile = NULL;
 QtMsgHandler oldMsgHandler = NULL;
 
@@ -34,13 +36,22 @@ void customMessageHandler(QtMsgType type, const char *msg)
 void configureLogging()
 {
 	QDir home = QDir::home();
+	QDateTime now = QDateTime::currentDateTime();
 
 	if (!home.exists(DOTDIR "/log")) {
 		if (!home.mkpath(DOTDIR "/log")) {
 			fprintf(stderr, "Error opening log dir %s%s\n", home.absolutePath().toAscii().data(), DOTDIR "/log");
 		}
 	}
+
 	QFile log(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
+
+	if (QFileInfo(log).size() > LOG_MAX_SIZE) {
+		QString fileName = log.fileName();
+		log.rename(home.absoluteFilePath(DOTDIR "/log/trainer_studio_" +
+			now.toString("yyyy-MM-dd-hh-mm-ss") + ".log"));
+		log.setFileName(fileName);
+	}
 
 	if (!(_logFile = fopen(log.fileName().toAscii(), "a+"))) {
 		fprintf(stderr, "Error opening log file %s\n", log.fileName().toAscii().data());
@@ -49,7 +60,6 @@ void configureLogging()
 		oldMsgHandler = qInstallMsgHandler(customMessageHandler);
 	}
 
-	QDateTime now = QDateTime::currentDateTime();
 	qDebug() << "\n\n";
 	qDebug() << "============================================";
 	qDebug() << "TS starting at: " << now.toString("yyyy-MM-dd hh:mm:ss");
