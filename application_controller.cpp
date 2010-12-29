@@ -354,7 +354,7 @@ bool ApplicationController::isDebugging()
 {
 	QSettings settings;
 	if (!settings.value("General/debugging").isNull()) {
-		return settings.value("Generatel/debugging").toBool();
+		return settings.value("General/debugging").toBool();
 	}
 	return false;
 }
