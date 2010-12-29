@@ -57,6 +57,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(lostConnection()), this, SLOT(onLostConnection()));
 	connect(ApplicationController::server(), SIGNAL(interactionReconnected()), this, SLOT(onInteractionReconnected()));
 	connect(ApplicationController::server(), SIGNAL(invokeMessage(QString)), this, SLOT(onInvokeMessage(QString)));
+	connect(ApplicationController::fs(), SIGNAL(callEnded(QString,QString,QString)), this, SLOT(onCallHangup(QString,QString,QString)));
 	connect(_webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
 	connect(_hangup, SIGNAL(clicked()), this, SLOT(onHangupClicked()));
@@ -190,11 +191,17 @@ void FlashDialog::onLoadFinished(bool)
 void FlashDialog::onHangupClicked()
 {
 	_timer->stop();
-
-	QSettings settings;
-	QString url = settings.value("General/url").toString();
-
 	ApplicationController::fs()->hangup(false);
+}
+
+void FlashDialog::onCallHangup(QString uuid, QString cidName, QString cidNumber)
+{
+	QSettings settings;
+	QString url;
+
+	if (!this->isVisible()) return;
+
+	url = settings.value("General/url").toString();
 
 	if (_seconds < 450) {
 		int ret = QMessageBox::warning(this, "Premature Ending",

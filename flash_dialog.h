@@ -33,6 +33,7 @@ private slots:
 	void onReconnectionClicked();
 	void onTestClicked();
 	void onHangupClicked();
+	void onCallHangup(QString uuid, QString cidNumber, QString cidName);
 	void onReservedForInteraction(QVariantMap);
 	void onLoadFinished(bool);
 	void onLostConnection();
