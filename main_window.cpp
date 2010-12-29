@@ -84,6 +84,7 @@ QLayout *MainWindow::createBody()
 	testsBox->setLayout(testsLayout);
 
 	QStatusBar *statusBar = new QStatusBar();
+	statusBar->setSizeGripEnabled(false);
 	
 	statusBar->addWidget(sipLabel);
 	statusBar->addWidget(sipReg);
