@@ -128,14 +128,14 @@ void CallDialog::dialed(QString dtmf)
 	}
 }
 
-void CallDialog::onGatewayStateChange(QString /*name*/, QString state)
+void CallDialog::onGatewayStateChange(QString /*gwName*/, QString gwState)
 {
-	if (state == "TRYING" || state == "REGISTER") {
+	if (gwState == "TRYING" || gwState == "REGISTER") {
 		// do nothing
 	}
 	else { //REGED UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 	}
-	_sipStatusLabel->setText(QString("SIP State: %1").arg(state));
+	_sipStatusLabel->setText(QString("SIP State: %1").arg(gwState));
 }
 
 void CallDialog::onCallIncoming(QString uuid, QString cidNumber, QString cidName)

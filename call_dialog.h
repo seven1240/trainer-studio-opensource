@@ -49,10 +49,10 @@ private slots:
 	void onCall800();
 	void onCallEcho();
 
-	void onGatewayStateChange(QString, QString);
-	void onCallIncoming(QString, QString, QString);
-	void onCallAnswered(QString, QString, QString);
-	void onCallEnded(QString, QString, QString);
+	void onGatewayStateChange(QString gwName, QString gwState);
+	void onCallIncoming(QString uuid, QString cidNumber, QString cidName);
+	void onCallAnswered(QString uuid, QString cidNumber, QString cidName);
+	void onCallEnded(QString uuid, QString cidNumber, QString cidName);
 
 };
 

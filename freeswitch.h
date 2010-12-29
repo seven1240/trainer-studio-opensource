@@ -89,13 +89,13 @@ signals:
 	void ready();
 	void stopping();
 	void stopped();
-	void calling(QString id, QString dialString);
+	void calling(QString uuid, QString dialString);
 
-	void callIncoming(QString id, QString callerNumber, QString callerName);
-	void newInteractionCall(QString id, QString cidNumber, QString cidName);
-	void newIncomingCall(QString id, QString cidNumber, QString cidName);
-	void callAnswered(QString id, QString callerNumber, QString callerName);
-	void callEnded(QString id, QString callerNumber, QString callerName);
+	void callIncoming(QString uuid, QString cidNumber, QString cidName);
+	void newInteractionCall(QString uuid, QString cidNumber, QString cidName);
+	void newIncomingCall(QString uuid, QString cidNumber, QString cidName);
+	void callAnswered(QString uuid, QString cidNumber, QString cidName);
+	void callEnded(QString uuid, QString cidNumber, QString cidName);
 
 	void gatewayStateChange(QString name, QString state);
 	void gatewayReady(QString name, bool registered);
