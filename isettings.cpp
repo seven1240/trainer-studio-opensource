@@ -149,6 +149,7 @@ void ISettings::writeGateway(QVariantMap newgw)
 	setParam(nGw, "realm", newgw["realm"].toString());
 	setParam(nGw, "expire-seconds", "600");
 	setParam(nGw, "retry-seconds", "60");
+	setParam(nGw, "ping", "20");
 
 	setConfigNode(cfg, "sofia.conf");
 }
