@@ -47,6 +47,7 @@ QLayout *MainWindow::createBody()
 	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *aboutButton = new QPushButton("About");
 	QLabel *sipLabel = new QLabel("SIP: None");
+	QToolButton *sipReg = new QToolButton("Register");
 
 	settingsButton->setObjectName("Settings");
 	callButton->setObjectName("Call");
@@ -56,6 +57,7 @@ QLayout *MainWindow::createBody()
 	stateButton->setObjectName("State");
 	hangupButton->setObjectName("Hangup");
 	aboutButton->setObjectName("About");
+	sipReg->setObjectName("SipReg");
 
 	stateButton->setCheckable(true);
 	settingsButton->setVisible(true);
@@ -81,15 +83,21 @@ QLayout *MainWindow::createBody()
 	testsLayout->addWidget(aboutButton);
 	testsBox->setLayout(testsLayout);
 
+	QStatusBar *statusBar = new QStatusBar();
+	
+	statusBar->addWidget(sipLabel);
+	statusBar->addWidget(sipReg);
+
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(trainingBox);
 	layout->addWidget(commonBox);
 	layout->addWidget(testsBox);
-	layout->addWidget(sipLabel);
+	layout->addWidget(statusBar);
 	setLayout(layout);
 
 	_state = stateButton;
 	_sipStatusLabel = sipLabel;
+	_sipReg = sipReg;
 
 	return layout;
 }
@@ -156,6 +164,7 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 		if (!_sipStateReady) {
 			_sipStateReady = true;
 		}
+		_sipReg->setVisible(false);
 	}
 	else if (state == "TRYING" || state == "REGISTER") {
 		// do nothing
@@ -163,11 +172,12 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
+			_sipReg->setVisible(true);
 			if (_state->isChecked())
 				ApplicationController::server()->pause(true); //force pause
 		}
 	}
-	_sipStatusLabel->setText(QString("SIP State: %1").arg(state));
+	_sipStatusLabel->setText(QString("SIP: %1").arg(state));
 }
 
 void MainWindow::onReservedForInteraction(QVariantMap data)
@@ -205,6 +215,11 @@ void MainWindow::on_Settings_clicked()
 	SettingsDialog *settings_dialog = new SettingsDialog(this);
 	settings_dialog->setAttribute(Qt::WA_DeleteOnClose);
 	settings_dialog->show();
+}
+
+void MainWindow::on_SipReg_clicked()
+{
+	ApplicationController::fs()->registerSIP();
 }
 
 void MainWindow::onTimer()

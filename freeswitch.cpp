@@ -526,6 +526,12 @@ void FreeSwitch::reload()
 	command("sofia", "profile softphone rescan reloadxml", &res);
 }
 
+void FreeSwitch::registerSIP()
+{
+	QString res;
+	command("sofia", "profile softphone register default", &res);
+}
+
 void FreeSwitch::setupGateway(QString username, QString password, QString realm, bool tcp)
 {
 	ISettings *settings = new ISettings(this);

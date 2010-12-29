@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
+#include <QtGui/QToolButton>
 #include <QKeyEvent>
 #include "settings_dialog.h"
 #include "trainer_studio.h"
@@ -28,6 +29,7 @@ protected:
 private:
 	QPushButton *_state;
 	QLabel *_sipStatusLabel;
+	QToolButton *_sipReg;
 	bool _sipStateReady;
 	QString _activeUUID;
 	QSystemTrayIcon *_systemTray;
@@ -48,6 +50,7 @@ private slots:
 	void on_About_clicked();
 	void on_Logout_clicked();
 	void on_Settings_clicked();
+	void on_SipReg_clicked();
 	void onPaused(bool);
 	void onForcedPause(QString reason);
 	void onGatewayStateChange(QString name, QString state);
