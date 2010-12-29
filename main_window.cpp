@@ -150,11 +150,13 @@ void MainWindow::onPaused(bool state)
 	_isPaused = state;
 	if (state) {
 		_state->setText("> Start Working");
+		_state->setStyleSheet("*{background-color:red; color:white}");
 		QApplication::alert(this, 0);
 		_timer->start();
 	}
 	else {
 		_state->setText("|| Pause");
+		_state->setStyleSheet("*{background-color:green; color:white}");
 		_timer->stop();
 	}
 }
