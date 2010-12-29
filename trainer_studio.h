@@ -12,6 +12,7 @@
 #define DOTDIR ".trainer_studio"
 #endif
 
+#define TS_DOWNLOAD_URL "http://www.eqenglish.com/trainer"
 extern QSystemTrayIcon *sysTray;
 
 #endif //TRAINER_STUIDIO_H

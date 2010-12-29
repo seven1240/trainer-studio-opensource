@@ -1,6 +1,7 @@
 #include <QStateMachine>
 #include <QtGui/QApplication>
 #include <QMessageBox>
+#include <QDesktopServices>
 #include "application_controller.h"
 #include "main_window.h"
 #include "progress_dialog.h"
@@ -233,6 +234,7 @@ void ApplicationController::authenticated(User *user)
 			"please download the new version from the website.\n"
 			" TS will be closed when you click [OK]").arg(serverVersion);
 		QMessageBox::critical(NULL, title, msg);
+		QDesktopServices::openUrl(QUrl(TS_DOWNLOAD_URL));
 		exit(0);
 	} else if (x == 1) {
 		QString title = QString("New Version Available");
@@ -243,6 +245,7 @@ void ApplicationController::authenticated(User *user)
 		int ret = QMessageBox::warning(NULL, title, msg,
 			QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 		if (ret == QMessageBox::No) {
+			QDesktopServices::openUrl(QUrl(TS_DOWNLOAD_URL));
 			exit(0);
 		}
 	}
