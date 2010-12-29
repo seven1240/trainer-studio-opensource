@@ -31,6 +31,7 @@ private:
 	QLabel *_sipStatusLabel;
 	QToolButton *_sipReg;
 	bool _sipStateReady;
+	bool _isPaused;
 	QString _activeUUID;
 	QSystemTrayIcon *_systemTray;
 	QTimer *_timer;

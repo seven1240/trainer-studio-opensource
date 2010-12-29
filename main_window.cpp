@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	setFixedSize(228, 350);
 	Utils::centerWindowOnDesktop(this);
 
+	_isPaused = true;
 	_sipStateReady = false;
-	_state->setChecked(false);
 	_timer = new QTimer(this);
 	_timer->setInterval(20000);
 
@@ -60,7 +60,6 @@ QLayout *MainWindow::createBody()
 	aboutButton->setObjectName("About");
 	sipReg->setObjectName("SipReg");
 
-	stateButton->setCheckable(true);
 	settingsButton->setVisible(true);
 	testFlashButton->setVisible(ApplicationController::isDebugging());
 
@@ -143,12 +142,12 @@ void MainWindow::on_State_clicked()
 			"SIP not Ready! \nPlease wait SIP:REGED or click the [Register] button to register immediately");
 		return;
 	}
-	ApplicationController::server()->pause(_state->isChecked());
+	ApplicationController::server()->pause(!_isPaused);
 }
 
 void MainWindow::onPaused(bool state)
 {
-	_state->setChecked(state);
+	_isPaused = state;
 	if (state) {
 		_state->setText("> Start Working");
 		QApplication::alert(this, 0);
@@ -180,7 +179,7 @@ void MainWindow::onGatewayStateChange(QString /*name*/, QString state)
 	else { //UNREGED UNREGISTER FAILED FAIL_WAIT EXPIRED NOREG NOAVAIL
 		if (_sipStateReady) {
 			_sipStateReady = false;
-			if (_state->isChecked())
+			if (!_isPaused)
 				ApplicationController::server()->pause(true); //force pause
 		}
 		_sipReg->setVisible(true);
