@@ -47,7 +47,7 @@ private slots:
 	void on_Flash_clicked();
 	void on_About_clicked();
 	void on_Logout_clicked();
-	void on_Close_clicked();
+	void on_Settings_clicked();
 	void onPaused(bool);
 	void onForcedPause(QString reason);
 	void onGatewayStateChange(QString name, QString state);

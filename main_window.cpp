@@ -6,6 +6,7 @@
 #include "main_window.h"
 #include "isettings.h"
 #include "utils.h"
+#include "settings_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QWidget(parent)
@@ -44,7 +45,6 @@ QLayout *MainWindow::createBody()
 	QPushButton *callButton = new QPushButton("Call");
 	QPushButton *stateButton = new QPushButton("|| Pause");
 	QPushButton *hangupButton = new QPushButton("Hangup");
-	QPushButton *closeButton = new QPushButton("Close");
 	QPushButton *aboutButton = new QPushButton("About");
 	QLabel *sipLabel = new QLabel("SIP: None");
 
@@ -55,11 +55,10 @@ QLayout *MainWindow::createBody()
 	testFlashButton->setObjectName("Flash");
 	stateButton->setObjectName("State");
 	hangupButton->setObjectName("Hangup");
-	closeButton->setObjectName("Close");
 	aboutButton->setObjectName("About");
 
 	stateButton->setCheckable(true);
-	settingsButton->setVisible(false);
+	settingsButton->setVisible(true);
 	testFlashButton->setVisible(ApplicationController::isDebugging());
 
 	QGroupBox *trainingBox = new QGroupBox("Training");
@@ -72,13 +71,12 @@ QLayout *MainWindow::createBody()
 	commonLayout->addWidget(callButton);
 	commonLayout->addWidget(hangupButton);
 	commonLayout->addWidget(logoutButton);
-	commonLayout->addWidget(settingsButton);
-	commonLayout->addWidget(closeButton);
 	commonBox->setLayout(commonLayout);
 
 	QGroupBox *testsBox = new QGroupBox("Diagnostics");
 	QVBoxLayout *testsLayout = new QVBoxLayout();
-	testsLayout->addWidget(testEchoButton);
+	testsLayout->addWidget(settingsButton);
+	// testsLayout->addWidget(testEchoButton);
 	testsLayout->addWidget(testFlashButton);
 	testsLayout->addWidget(aboutButton);
 	testsBox->setLayout(testsLayout);
@@ -120,11 +118,6 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_Flash_clicked()
 {
 	emit testFlash();
-}
-
-void MainWindow::on_Close_clicked()
-{
-	close();
 }
 
 void MainWindow::on_Logout_clicked()
@@ -186,7 +179,10 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 void MainWindow::on_About_clicked()
 {
 	QMessageBox::about(this, QApplication::applicationName(),
-		QString("Version: %1\n\nCopyright (C): Eleutian Inc.").arg(QApplication::applicationVersion()));
+		QString("%1 Version: %2\n\nCopyright (C) 2010 Eleutian Inc. \n"
+			"All rights reserved.").arg(
+			QApplication::applicationName()).arg(
+			QApplication::applicationVersion()));
 }
 
 void MainWindow::on_Echo_clicked()
@@ -202,6 +198,13 @@ void MainWindow::on_Call_clicked()
 void MainWindow::on_Hangup_clicked()
 {
 	ApplicationController::fs()->hangup(true);
+}
+
+void MainWindow::on_Settings_clicked()
+{
+	SettingsDialog *settings_dialog = new SettingsDialog(this);
+	settings_dialog->setAttribute(Qt::WA_DeleteOnClose);
+	settings_dialog->show();
 }
 
 void MainWindow::onTimer()
