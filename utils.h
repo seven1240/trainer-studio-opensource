@@ -19,6 +19,7 @@ namespace Utils
 		-2 - error
 	*/
 	int compareVersion(QString ver1, QString ver2);
+	void openFolder(QString path);
 }
 
 #endif // UTILS_H

@@ -28,7 +28,8 @@ private:
 	bool ignore_change_event; //don't trigger event when adds items to combox
 
 private slots:
-	void on_cbDebug_clicked(bool checked);
+	void on_pushButton_2_clicked();
+ void on_cbDebug_clicked(bool checked);
 	void on_cbRing_currentIndexChanged(int index);
 	void on_cbOutput_currentIndexChanged(int index);
 	void on_cbInput_currentIndexChanged(int index);

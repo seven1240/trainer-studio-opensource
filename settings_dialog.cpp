@@ -7,6 +7,7 @@
 #include "ui_settings_dialog.h"
 #include "freeswitch.h"
 #include "isettings.h"
+#include "utils.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -248,4 +249,10 @@ void SettingsDialog::on_cbDebug_clicked(bool checked)
 	settings.beginGroup("General");
 	settings.setValue("debugging", checked);
 	settings.endGroup();
+}
+
+void SettingsDialog::on_pushButton_2_clicked()
+{
+	QDir home = QDir::home();
+	Utils::openFolder(home.absoluteFilePath(DOTDIR "/log/trainer_studio.log"));
 }

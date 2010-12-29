@@ -124,4 +124,27 @@ namespace Utils {
 			}
 		}
 	}
+	
+	void openFolder(QString path)
+	{
+		#ifdef Q_WS_MAC
+		    QStringList args;
+		    args << "-e";
+		    args << "tell application \"Finder\"";
+		    args << "-e";
+		    args << "activate";
+		    args << "-e";
+		    args << "tell application \"Finder\" to reveal POSIX file \""+path+"\"";
+		    args << "-e";
+		    args << "end tell";
+		    QProcess::startDetached("osascript", args);
+		#endif
+
+		#ifdef Q_WS_WIN
+		    QStringList args;
+		    args << "/select," << QDir::toNativeSeparators(path);
+		    QProcess::startDetached("explorer", args);
+		#endif
+		
+	}
 }
