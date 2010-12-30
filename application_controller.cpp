@@ -184,6 +184,7 @@ void ApplicationController::starting()
 {
 	incomingCallDialog()->hide();
 	progressDialog()->show();
+	progressDialog()->raise();
 }
 
 void ApplicationController::authenticating()
@@ -201,6 +202,7 @@ void ApplicationController::ready()
 	loginDialog()->hide();
 	echoTestDialog()->hide();
 	mainWindow()->show();
+	mainWindow()->raise();
 }
 
 void ApplicationController::incoming()
