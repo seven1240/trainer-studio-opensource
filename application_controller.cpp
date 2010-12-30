@@ -188,6 +188,7 @@ void ApplicationController::starting()
 
 void ApplicationController::authenticating()
 {
+	echoTestDialog()->hide();
 	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->show();
