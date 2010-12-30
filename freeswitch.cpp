@@ -535,6 +535,7 @@ void FreeSwitch::registerSIP()
 void FreeSwitch::setupGateway(QString username, QString password, QString realm, bool tcp)
 {
 	ISettings *settings = new ISettings(this);
+	settings->resetGateway();
 	qDebug() << "FS: setting gateway: " << username << password << realm;
 	QVariantMap gw;
 	gw.insert("username", username);
