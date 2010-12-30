@@ -22,8 +22,9 @@ FSConsoleDialog::FSConsoleDialog(QWidget *parent) :
 	layout->addWidget(_consoleBox);
 	layout->addWidget(_commandLine);
 	setLayout(layout);
+	_commandLine->setFocus();
 
-	this->setMinimumSize(640, 480);
+	this->resize(640, 480);
 	Utils::centerWindowOnDesktop(this);
 
 	connect(clear, SIGNAL(clicked()), this, SLOT(onClear()));
