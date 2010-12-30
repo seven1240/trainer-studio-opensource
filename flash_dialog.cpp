@@ -26,6 +26,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	_mute = new QPushButton("Mute");
 	_mute->setCheckable(true);
 	_test = new QPushButton("Test");
+	_reloadMovie = new QPushButton("Reload");
 	_time = new QLabel();
 
 	QPushButton *copyInteractionId = new QPushButton("Copy IID");
@@ -35,6 +36,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	topLayout->addWidget(_time);
 	topLayout->addWidget(_mute);
 	topLayout->addWidget(_test);
+	topLayout->addWidget(_reloadMovie);
 	topLayout->addWidget(copyInteractionId);
 	topLayout->addWidget(_hangup);
 	topLayout->addWidget(_reconnection);
@@ -64,6 +66,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	connect(_reconnection, SIGNAL(clicked()), this, SLOT(onReconnectionClicked()));
 	connect(_mute, SIGNAL(clicked()), this, SLOT(onMuteClicked()));
 	connect(_test, SIGNAL(clicked()), this, SLOT(onTestClicked()));
+	connect(_reloadMovie, SIGNAL(clicked()), this, SLOT(onReloadMovieClicked()));
 	connect(copyInteractionId, SIGNAL(clicked()), this, SLOT(copyInteractionId()));
 
 	QWebSettings *websetting= QWebSettings::globalSettings();
@@ -132,9 +135,17 @@ void FlashDialog::onTimer()
 
 void FlashDialog::onReservedForInteraction(QVariantMap data)
 {
+	_currentMovie = MOVIE_INTERACTION;
+	_interactionData = data;
+	loadInteractionMovie();
+}
+
+void FlashDialog::loadInteractionMovie()
+{
 	QSettings settings;
 	QString url = settings.value("General/url").toString();
 	User *user = ApplicationController::user();
+	QVariantMap data = _interactionData;
 
 	_interactionId = data["interaction_id"].toString();
 
@@ -196,12 +207,7 @@ void FlashDialog::onHangupClicked()
 
 void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*cidNumber*/)
 {
-	QSettings settings;
-	QString url;
-
 	if (!this->isVisible()) return;
-
-	url = settings.value("General/url").toString();
 
 	if (_seconds < 450) {
 		int ret = QMessageBox::warning(this, "Premature Ending",
@@ -213,6 +219,16 @@ void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*
 			return;
 		}
 	}
+
+	_currentMovie = MOVIE_REVIEW;
+	ApplicationController::server()->review();
+	loadReviewMovie();
+}
+
+void FlashDialog::loadReviewMovie()
+{
+	QSettings settings;
+	QString url = settings.value("General/url").toString();
 
 	//  FlashVars does't work for this swf, so need to set params in url. Hmmm...
 	QString vars = QString("product_type=eqenglish"
@@ -226,7 +242,6 @@ void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*
 						  ).arg(_interactionId).arg(url);
 	QString params = QString("var url='%1/flex/markspot/markspot.swf?%2';var vars='%2';").arg(url).arg(vars);
 	loadMovie(params);
-	ApplicationController::server()->review();
 
 	_seconds = 0;
 	_timer->start();
@@ -276,6 +291,15 @@ void FlashDialog::onTestClicked()
 		//        qDebug() << s;
 		//        e.evaluateJavaScript(s);
 
+	}
+}
+
+void FlashDialog::onReloadMovieClicked()
+{
+	if (MOVIE_INTERACTION == _currentMovie) {
+		onReservedForInteraction(_interactionData);
+	} else if (MOVIE_REVIEW == _currentMovie) {
+		loadReviewMovie();
 	}
 }
 

@@ -5,6 +5,9 @@
 #include <QVariant.h>
 #include <QDateTime.h>
 
+#define MOVIE_INTERACTION 1
+#define MOVIE_REVIEW 2
+
 QT_BEGIN_NAMESPACE
 class QWebView;
 class QPushButton;
@@ -32,6 +35,7 @@ private slots:
 	void onMuteClicked();
 	void onReconnectionClicked();
 	void onTestClicked();
+	void onReloadMovieClicked();
 	void onHangupClicked();
 	void onCallHangup(QString uuid, QString cidNumber, QString cidName);
 	void onReservedForInteraction(QVariantMap);
@@ -50,12 +54,18 @@ private:
 	QPushButton *_reconnection;
 	QPushButton *_mute;
 	QPushButton *_test;
+	QPushButton *_reloadMovie;
 	QLabel *_time;
 	QWebView *_webView;
 	QString _js;
 	QString _interactionId;
+	QVariantMap _interactionData;
+	int _currentMovie;
 	void loadMovie(QString params);
+	void loadInteractionMovie();
+	void loadReviewMovie();
 	void reconnectingStatus(bool reconnecting);
+
 	int _seconds;
 	QTimer *_timer;
 };
