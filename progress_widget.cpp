@@ -44,7 +44,7 @@ ProgressWidget::~ProgressWidget()
 {
 }
 
-void ProgressWidget::showEvent(QShowEvent *e)
+void ProgressWidget::showEvent(QShowEvent * /*e*/)
 {
 	_history->scrollToBottom();
 }

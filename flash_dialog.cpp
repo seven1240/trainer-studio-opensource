@@ -194,7 +194,7 @@ void FlashDialog::onHangupClicked()
 	ApplicationController::fs()->hangup();
 }
 
-void FlashDialog::onCallHangup(QString uuid, QString cidName, QString cidNumber)
+void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*cidNumber*/)
 {
 	QSettings settings;
 	QString url;

@@ -37,7 +37,7 @@ IncomingCallDialog::~IncomingCallDialog()
 {
 }
 
-void IncomingCallDialog::showEvent(QShowEvent *e)
+void IncomingCallDialog::showEvent(QShowEvent * /*e*/)
 {
 	_answer->setFocus();
 }
@@ -54,10 +54,10 @@ void IncomingCallDialog::changeEvent(QEvent *e)
 	}
 }
 
-void IncomingCallDialog::onIncomingCall(QString uuid, QString number, QString name)
+void IncomingCallDialog::onIncomingCall(QString /*uuid*/, QString cidNumber, QString cidName)
 {
-	_callerName = name;
-	_callerNumber = number;
+	_callerName = cidName;
+	_callerNumber = cidNumber;
 	_status->setText(QString("\"%1\" <%2>").arg(_callerName).arg(_callerNumber));
 	_status->repaint();
 }

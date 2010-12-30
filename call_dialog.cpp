@@ -73,11 +73,11 @@ CallDialog::~CallDialog()
 {
 }
 
-void CallDialog::keyPressEvent(QKeyEvent *event)
+void CallDialog::keyPressEvent(QKeyEvent * /*event*/)
 {
 }
 
-void CallDialog::closeEvent(QCloseEvent *event)
+void CallDialog::closeEvent(QCloseEvent * /*event*/)
 {
 	emit closed();
 }
@@ -138,19 +138,19 @@ void CallDialog::onGatewayStateChange(QString /*gwName*/, QString gwState)
 	_sipStatusLabel->setText(QString("SIP State: %1").arg(gwState));
 }
 
-void CallDialog::onCallIncoming(QString uuid, QString cidNumber, QString cidName)
+void CallDialog::onCallIncoming(QString /*uuid*/, QString cidNumber, QString cidName)
 {
 	_display->append(QString("Ring From: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
-void CallDialog::onCallAnswered(QString uuid, QString cidNumber, QString cidName)
+void CallDialog::onCallAnswered(QString /*uuid*/, QString cidNumber, QString cidName)
 {
 	_display->append(QString("Call Answered: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
-void CallDialog::onCallEnded(QString uuid, QString cidNumber, QString cidName)
+void CallDialog::onCallEnded(QString /*uuid*/, QString cidNumber, QString cidName)
 {
 	_display->append(QString("Call Ended: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
