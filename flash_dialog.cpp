@@ -48,7 +48,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	verticalLayout->addWidget(_webView);
 	setLayout(verticalLayout);
 
-	setFixedSize(1024, 728);
+	resize(1024, 728);
 	Utils::centerWindowOnDesktop(this);
 
 	_timer = new QTimer(this);
