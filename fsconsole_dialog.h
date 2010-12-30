@@ -33,6 +33,7 @@ signals:
 private:
 	QTextEdit *_consoleBox;
 	QLineEdit *_commandLine;
+	void insertColorHtml(QString color, QString text);
 };
 
 #endif // FSConsoleDIALOG_H

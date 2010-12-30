@@ -15,6 +15,7 @@ FSConsoleDialog::FSConsoleDialog(QWidget *parent) :
 
 //	QHBoxLayout *toolBar = new QHBoxLayout();
 	QPushButton *clear = new QPushButton("Clear");
+	clear->setAutoDefault(false);
 
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(clear);
@@ -58,6 +59,9 @@ void FSConsoleDialog::onSendCommand()
 	args = cmdList.join(" ");
 	ApplicationController::fs()->command(cmd.toAscii(), args.toAscii(), &res);
 	_consoleBox->append(">>> " + res);
+
+	QScrollBar *sb = _consoleBox->verticalScrollBar();
+	sb->setValue(sb->maximum());
 }
 
 void FSConsoleDialog::onEventLog(QSharedPointer<switch_log_node_t> node,switch_log_level_t level)
@@ -80,10 +84,14 @@ void FSConsoleDialog::onEventLog(QSharedPointer<switch_log_node_t> node,switch_l
 	default:
 			color = "#000000";
 	}
-	_consoleBox->insertHtml("<span style='color:" + color + "'>" +
-		QString(node.data()->data).trimmed().replace("\n", "<br>") +
-		"</span><br>\n");
+	insertColorHtml(color, QString(node.data()->data).trimmed().replace("\n", "<br>"));
 
 	QScrollBar *sb = _consoleBox->verticalScrollBar();
 	sb->setValue(sb->maximum());
+}
+
+void FSConsoleDialog::insertColorHtml(QString color, QString text)
+{
+	_consoleBox->insertHtml("<span style='color:" + color + "'>" +
+		text + "</span><br>\n");
 }
