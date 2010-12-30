@@ -89,6 +89,8 @@ void LoginDialog::onServerConnectionAuthenticated(User *user)
 
 void LoginDialog::onServerConnectionDisconnected()
 {
+	qDebug() << "kill sip gateway";
+	ApplicationController::fs()->killGateway();
 	showLogin();
 }
 

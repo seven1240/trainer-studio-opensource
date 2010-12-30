@@ -57,6 +57,7 @@ public:
 	void setupGateway(QString username, QString password, QString realm, bool tcp);
 	void reload();
 	void registerSIP();
+	void killGateway();
 	switch_status_t mute();
 	switch_status_t unmute();
 	switch_status_t hold(QString uuid);

@@ -549,6 +549,12 @@ void FreeSwitch::setupGateway(QString username, QString password, QString realm,
 	reload();
 }
 
+void FreeSwitch::killGateway()
+{
+	QString res;
+	command("sofia", "profile softphone killgw default", &res);
+}
+
 switch_status_t FreeSwitch::mute()
 {
 	QString res;
