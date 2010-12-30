@@ -56,12 +56,16 @@ void EchoTestDialog::changeEvent(QEvent *e)
 
 void EchoTestDialog::showEvent(QShowEvent * /*e*/)
 {
+	/* only force echo test the first time we login */
+	static bool passedEchoTest = false;
+
 	progress("We will now test your microphone. Press Begin and after the beep, say 'Testing 1, 2, 3' out loud.");
 
 	User *user = ApplicationController::user();
-	_skip->setVisible(user->skipEchoTesting());
+	_skip->setVisible(user->skipEchoTesting() || passedEchoTest);
 	_finish->setVisible(false);
 	_begin->setVisible(true);
+	passedEchoTest = true;
 }
 
 void EchoTestDialog::closeEvent(QCloseEvent * /*e*/)
