@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
 	QSettings settings;
 	if (settings.value("General/url").isNull()) {
 		if (!setDefaultSettings()) {
+			qDebug() << "Faltal: cannot write default settings!";
 			return 99;
 		}
 	}
