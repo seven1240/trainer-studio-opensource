@@ -193,6 +193,7 @@ void ApplicationController::authenticating()
 	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->show();
+	loginDialog()->activateWindow();
 }
 
 void ApplicationController::ready()
@@ -282,6 +283,8 @@ void ApplicationController::training()
 
 void ApplicationController::wrapup()
 {
+	mainWindow()->raise();
+	mainWindow()->activateWindow();
 	_wrapupTimer->start();
 }
 
