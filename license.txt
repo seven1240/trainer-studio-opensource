@@ -3,14 +3,14 @@
 
    LICENSE:
 
-	* IdaptedTrainerStudio is (C) 2010 Idapted Inc.  All Rights Reserved.
+	* EleutianTrainerStudio is (C) 2010 Eleutian Inc.  All Rights Reserved.
 
-	* IdaptedTranerClient may not be distributed in any form without the express consent of Idapted Inc.
+	* EleutianTranerClient may not be distributed in any form without the express consent of Eleutian Inc.
 
-	* This software is intended for the sole use of Idapted Trainers.
+	* This software is intended for the sole use of Eleutian Trainers.
 
-	* IdaptedTrainerStudio IS DISTRIBUTED "AS IS".  NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED. YOU USE IT AT YOUR OWN RISK. NEITHER IDAPTED INC. NOR ANY OF ITS EMPLOYEES, AFFILIATES, OWNERS, OR OTHER RELATED PARTIES WITH IdaptedTrainerStudio WILL BE LIABLE FOR DATA LOSS, DAMAGES, LOSS OF PROFITS OR ANY OTHER KIND OF LOSS WHILE USING OR MISUSING THIS SOFTWARE. EVEN IF IdaptedTrainerStudio AND/OR THE AUTHORS ARE APPRISED OF THE POSSIBILITY OF SUCH DAMAGES OCCURRING. ALAI PRODUCTIONS ASSUMES  NO LIABILITY  FOR DAMAGES,  DIRECT  OR CONSEQUENTIAL, WHICH MAY RESULT FROM THE USE OF IdaptedTrainerStudio.
+	* EleutianTrainerStudio IS DISTRIBUTED "AS IS".  NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED. YOU USE IT AT YOUR OWN RISK. NEITHER Eleutian INC. NOR ANY OF ITS EMPLOYEES, AFFILIATES, OWNERS, OR OTHER RELATED PARTIES WITH EleutianTrainerStudio WILL BE LIABLE FOR DATA LOSS, DAMAGES, LOSS OF PROFITS OR ANY OTHER KIND OF LOSS WHILE USING OR MISUSING THIS SOFTWARE. EVEN IF EleutianTrainerStudio AND/OR THE AUTHORS ARE APPRISED OF THE POSSIBILITY OF SUCH DAMAGES OCCURRING. ALAI PRODUCTIONS ASSUMES  NO LIABILITY  FOR DAMAGES,  DIRECT  OR CONSEQUENTIAL, WHICH MAY RESULT FROM THE USE OF EleutianTrainerStudio.
 
 	* This software may not be reverse-engineered or disassembled, and it includes certain trade secrets and confidential information of Alai Productions
 	
-	* Installing and using IdaptedTrainerStudio means the acceptance of these terms and conditions of the license. If you do not agree with the terms of this license you must remove IdaptedTrainerStudio files from your storage devices and cease to use the product.
+	* Installing and using EleutianTrainerStudio means the acceptance of these terms and conditions of the license. If you do not agree with the terms of this license you must remove EleutianTrainerStudio files from your storage devices and cease to use the product.
