@@ -4,6 +4,7 @@
 #include <QSysInfo>
 #include <QProcess>
 #include <QDesktopWidget>
+#include <QDir>
 #include "utils.h"
 
 namespace Utils {

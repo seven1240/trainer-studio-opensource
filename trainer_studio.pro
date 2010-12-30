@@ -47,5 +47,3 @@ OTHER_FILES += resources/loadflash.js \
 macx:ICON = resources/application.icns
 win32:RC_FILE = resources.rc
 
-HEADERS += \
-    fsconsole_dialog.h
