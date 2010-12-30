@@ -46,6 +46,7 @@ QStateMachine *ServerConnection::createStateMachine()
 	QState *timeout = createState("timeout");
 
 	disconnected->addTransition(this, SIGNAL(connecting()), connecting);
+	timeout->addTransition(this, SIGNAL(connecting()), connecting);
 	connecting->addTransition(_socket, SIGNAL(connected()), connected);
 	connecting->addTransition(_timer, SIGNAL(timeout()), timeout);
 	connected->addTransition(_socket, SIGNAL(disconnected()), disconnected);
