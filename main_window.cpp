@@ -43,7 +43,7 @@ QLayout *MainWindow::createBody()
 	QPushButton *testEchoButton = new QPushButton("Echo");
 	QPushButton *testFlashButton = new QPushButton("Flash");
 	QPushButton *callButton = new QPushButton("Call");
-	QPushButton *stateButton = new QPushButton("> Start working");
+	QPushButton *stateButton = new QPushButton("--initializing--");
 	QPushButton *hangupButton = new QPushButton("Hangup");
 	QPushButton *aboutButton = new QPushButton("About");
 	QLabel *sipLabel = new QLabel("SIP: None");
@@ -56,7 +56,6 @@ QLayout *MainWindow::createBody()
 	testEchoButton->setObjectName("Echo");
 	testFlashButton->setObjectName("Flash");
 	stateButton->setObjectName("State");
-	stateButton->setStyleSheet("*{background-color:red; color:white}");
 	hangupButton->setObjectName("Hangup");
 	aboutButton->setObjectName("About");
 	sipReg->setObjectName("SipReg");
