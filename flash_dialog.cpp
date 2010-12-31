@@ -17,7 +17,7 @@
 #include "main_window.h"
 #include "utils.h"
 
-#define REVIEW_FLASH_URL "/trainer/review/flex"
+#define REVIEW_FLASH_URL "/interaction/clients"
 
 FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent)
