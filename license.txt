@@ -5,7 +5,7 @@
 
 	* EleutianTrainerStudio is (C) 2010 Eleutian Inc.  All Rights Reserved.
 
-	* EleutianTranerClient may not be distributed in any form without the express consent of Eleutian Inc.
+	* EleutianTrainerStudio may not be distributed in any form without the express consent of Eleutian Inc.
 
 	* This software is intended for the sole use of Eleutian Trainers.
 
