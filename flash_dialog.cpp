@@ -205,6 +205,10 @@ void FlashDialog::onHangupClicked()
 {
 	_timer->stop();
 	ApplicationController::fs()->hangup();
+
+	_currentMovie = MOVIE_REVIEW;
+	ApplicationController::server()->review();
+	loadReviewMovie();
 }
 
 void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*cidNumber*/)
@@ -221,6 +225,8 @@ void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*
 			return;
 		}
 	}
+
+	if (_currentMovie == MOVIE_REVIEW) return; //already loaded
 
 	_currentMovie = MOVIE_REVIEW;
 	ApplicationController::server()->review();
