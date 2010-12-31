@@ -69,7 +69,6 @@ private:
 	void write(QString);
 	void write(const char *json);
 
-private:
 	bool _running;
 	bool _connected;
 	QTcpSocket *_socket;
@@ -78,6 +77,7 @@ private:
 	QTimer *_pingTimer;
 	QString _host;
 	int _port;
+	QString _password;
 };
 
 #endif // TCPCLIENT_H

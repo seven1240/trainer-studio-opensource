@@ -163,6 +163,9 @@ void ServerConnection::login(QString username, QString password)
 	write(json);
 
 	free(json);
+
+	// remember password
+	_password = password;
 }
 
 void ServerConnection::logout()
@@ -210,6 +213,7 @@ void ServerConnection::onReadyRead()
 	if (status == "Pong") {
 	}
 	else if (status == "Authenticated") {
+		data.insert("password", _password);
 		emit authenticated(new User(data));
 		_pingTimer->start();
 	}

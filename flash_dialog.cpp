@@ -169,7 +169,7 @@ void FlashDialog::loadInteractionMovie()
 	 arg(data["scenario_id"].toString()).
 	 arg(user->getLogin()).
 	 arg(user->getLogin()).
-	 arg("test").
+	 arg(user->getPassword()).
 	 arg(url);
 
 	loadMovie(params);
@@ -279,8 +279,9 @@ void FlashDialog::onTestClicked()
 	}
 	else if (f == 1) {
 		f++;
-		QString jsLoadFlash=QString("var vars='realtime_port=2000&trainer_login=trainer28&trainer_pwd=test&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697';"
-			"var url='%1/flex/interaction/trainer/interaction.swf';%2").arg(url).arg(_js);
+		QString jsLoadFlash=QString("var vars='realtime_port=2000&trainer_login=trainer39&trainer_pwd=%3&interaction_id=106357&font_size=12&realtime_subscriber=trainer28&environment=production&cs_number=400-887-1020&realtime_channel=a3379aba14f3da5caa6a2760a06e336e8c7c9bac&base_url=http://www.eqenglish.com&realtime_host=127.0.0.1&scenario_id=697';"
+			"var url='%1/flex/interaction/trainer/interaction.swf';%2").arg(url).arg(_js).
+			arg(ApplicationController::user()->getPassword());
 		qDebug() << jsLoadFlash;
 		_webView->page()->mainFrame()->evaluateJavaScript(jsLoadFlash);
 	}

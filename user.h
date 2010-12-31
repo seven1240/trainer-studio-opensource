@@ -17,6 +17,7 @@ public:
 	~User();
 	QVariantMap &details() { return _details; }
 	QString getLogin() { return _details["login"].toString(); }
+	QString getPassword() { return _details["password"].toString(); }
 	QString getVoipUsername() { return _details["voip_username"].toString(); }
 	QString getVoipPassword() { return _details["voip_password"].toString(); }
 	QString getServerVersion() { return _details["version"].toString(); }
