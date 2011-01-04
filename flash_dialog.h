@@ -67,6 +67,7 @@ private:
 	void reconnectingStatus(bool reconnecting);
 
 	int _seconds;
+	int _interactionSeconds;
 	QTimer *_timer;
 };
 

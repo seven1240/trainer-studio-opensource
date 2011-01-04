@@ -114,6 +114,7 @@ void FlashDialog::showEvent(QShowEvent * /*e*/)
 {
 	_test->setVisible(ApplicationController::isDebugging());
 	_seconds = 0;
+	_interactionSeconds = 0;
 	onTimer();
 	_timer->start();
 }
@@ -178,9 +179,9 @@ void FlashDialog::loadInteractionMovie()
 
 void FlashDialog::onLoadFinished(bool)
 {
-	qDebug() << "Webview Load Finished";
-	return;
 	QUrl url = _webView->url();
+	qDebug() << "Webview Load Finished:" << _seconds << " " << url.toString();
+	return;
 	if (url.toString().indexOf("/markspot.swf") < 0) {
 		return;
 	}
@@ -215,7 +216,7 @@ void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*
 {
 	if (!this->isVisible()) return;
 
-	if (_seconds < 450) {
+	if (_interactionSeconds < 450) {
 		int ret = QMessageBox::warning(this, "Premature Ending",
 									   "This call was ended prematurely.  Would you like to skip the review screen?",
 									   QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
@@ -253,8 +254,7 @@ void FlashDialog::loadReviewMovie()
 	QString loadUrl = QString("%1" REVIEW_FLASH_URL "?%2").arg(url).arg(vars);
 	_webView->load(QUrl(loadUrl));
 
-//	loadMovie(params);
-
+	_interactionSeconds = _seconds;
 	_seconds = 0;
 	_timer->start();
 }
