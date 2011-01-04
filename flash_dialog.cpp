@@ -51,7 +51,8 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	setLayout(verticalLayout);
 
 	resize(1024, 728);
-	Utils::centerWindowOnDesktop(this);
+	this->setWindowFlags(Qt::WindowMinMaxButtonsHint);
+	this->setWindowState(Qt::WindowMaximized);
 
 	_timer = new QTimer(this);
 	_timer->setInterval(1000);
