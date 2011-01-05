@@ -3,6 +3,8 @@
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+#include <QNetworkDiskCache>
+#include <QDesktopServices>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QUrl.h>
@@ -79,6 +81,14 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	// Load a blank HTML to avoid cross domain communication between JS and Flash
 	QSettings settings;
 	QString url = settings.value("General/url").toString();
+
+	// set cache
+	QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+	QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+	qDebug() << "WebView cache dir: " << cacheDir;
+	diskCache->setCacheDirectory(cacheDir); 
+	_webView->page()->networkAccessManager()->setCache(diskCache );
+
 	_webView->load(QUrl(QString("%1/user/keep_alive").arg(url)));
 
 	// Allow JS call QT callback using the mainWindow object
@@ -290,7 +300,7 @@ void FlashDialog::onTestClicked()
 		f=0;
 		QString s = QString("%1" REVIEW_FLASH_URL
 			"?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US"
-			"&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=%s").arg(url);
+			"&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=%1").arg(url);
 		_webView->load(QUrl(s));
 	}
 }
