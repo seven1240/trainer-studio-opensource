@@ -68,6 +68,7 @@ private:
 
 	int _seconds;
 	int _interactionSeconds;
+	bool _isMuted;
 	QTimer *_timer;
 };
 

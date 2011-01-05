@@ -29,10 +29,10 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	_hangup = new QPushButton("Disconnect");
 	_reconnection = new QPushButton("Reconnect");
 	_mute = new QPushButton("Mute");
-	_mute->setCheckable(true);
 	_test = new QPushButton("Test");
 	_reloadMovie = new QPushButton("Reload");
 	_time = new QLabel();
+	_isMuted = false;
 
 	QPushButton *copyInteractionId = new QPushButton("Copy ID");
 
@@ -392,15 +392,14 @@ void FlashDialog::onJSWindowObjectCleared()
 
 void FlashDialog::onMuteClicked()
 {
-	if (_mute->isChecked()) {
+	if (_isMuted) {
 		ApplicationController::fs()->unmute();
 		_mute->setText("Mute");
-		_mute->setChecked(false);
-	}
-	else {
+		_isMuted = false;
+	} else {
 		ApplicationController::fs()->mute();
 		_mute->setText("Unmute");
-		_mute->setChecked(true);
+		_isMuted = true;
 	}
 }
 
