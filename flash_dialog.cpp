@@ -26,7 +26,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent)
 {
 	_webView = new QWebView();
-	_hangup = new QPushButton("Hangup");
+	_hangup = new QPushButton("Disconnect");
 	_reconnection = new QPushButton("Reconnect");
 	_mute = new QPushButton("Mute");
 	_mute->setCheckable(true);
