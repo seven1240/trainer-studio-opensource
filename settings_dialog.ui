@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Settings</string>
   </property>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
