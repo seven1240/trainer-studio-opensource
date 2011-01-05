@@ -276,7 +276,7 @@ void FlashDialog::onTestClicked()
 
 	if (f == 0) {
 		f++;
-		_webView->load(QUrl(QString("%1/user/keep_alive").arg(url)));
+		_webView->load(QUrl("http://www.adobe.com/software/flash/about/"));
 	}
 	else if (f == 1) {
 		f++;
