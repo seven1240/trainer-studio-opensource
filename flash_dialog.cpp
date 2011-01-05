@@ -20,6 +20,7 @@
 #include "utils.h"
 
 #define REVIEW_FLASH_URL "/interaction/clients"
+#define MAX_CACHE_SIZE 100 * 1024 * 1024
 
 FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent)
@@ -87,6 +88,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	QString cacheDir = Utils::getCacheDir();
 	qDebug() << "WebView cache dir: " << cacheDir;
 	diskCache->setCacheDirectory(cacheDir); 
+	diskCache->setMaximumCacheSize(MAX_CACHE_SIZE);
 	_webView->page()->networkAccessManager()->setCache(diskCache );
 
 	_webView->load(QUrl(QString("%1/user/keep_alive").arg(url)));
