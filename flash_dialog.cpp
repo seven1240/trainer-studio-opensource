@@ -34,7 +34,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	_reloadMovie = new QPushButton("Reload");
 	_time = new QLabel();
 
-	QPushButton *copyInteractionId = new QPushButton("Copy IID");
+	QPushButton *copyInteractionId = new QPushButton("Copy ID");
 
 	QHBoxLayout *topLayout = new QHBoxLayout();
 	QFrame *topFrame = new QFrame();
