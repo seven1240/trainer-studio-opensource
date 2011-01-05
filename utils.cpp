@@ -160,8 +160,8 @@ namespace Utils {
 		QString cacheDir = getCacheDir();
 		QStringList cmdList;
 		#ifdef Q_WS_WIN
-			cmdList << "del -y " + cacheDir + "\\http\\cache*.cache";
-			cmdList << "del -y " + cacheDir + "\\prepared\\cache*.cache";
+			cmdList << "del /y " + cacheDir + "\\http\\cache*.cache";
+			cmdList << "del /y " + cacheDir + "\\prepared\\cache*.cache";
 		#else
 			cmdList << "rm -f " + cacheDir + "/http/cache*.cache";
 			cmdList << "rm -f " + cacheDir + "/prepared/cache*.cache";
