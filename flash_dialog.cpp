@@ -84,7 +84,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 
 	// set cache
 	QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
-	QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+	QString cacheDir = Utils::getCacheDir();
 	qDebug() << "WebView cache dir: " << cacheDir;
 	diskCache->setCacheDirectory(cacheDir); 
 	_webView->page()->networkAccessManager()->setCache(diskCache );
