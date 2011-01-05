@@ -20,6 +20,8 @@ namespace Utils
 	*/
 	int compareVersion(QString ver1, QString ver2);
 	void openFolder(QString path);
+	QString getCacheDir();
+	void clearWebCache();
 }
 
 #endif // UTILS_H

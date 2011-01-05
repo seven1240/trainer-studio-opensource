@@ -146,6 +146,30 @@ namespace Utils {
 		    args << "/select," << QDir::toNativeSeparators(path);
 		    QProcess::startDetached("explorer", args);
 		#endif
+	}
+	
+	QString getCacheDir()
+	{
+		QDir home = QDir::home();
+		QString path = home.absoluteFilePath(DOTDIR "/cache");
+		qDebug() << path;
+		return path;
+	}
+	void clearWebCache()
+	{
+		QString cacheDir = getCacheDir();
+		QStringList cmdList;
+		#ifdef Q_WS_WIN
+			cmdList << "del -y " + cacheDir + "\\http\\cache*.cache";
+			cmdList << "del -y " + cacheDir + "\\prepared\\cache*.cache";
+		#else
+			cmdList << "rm -f " + cacheDir + "/http/cache*.cache";
+			cmdList << "rm -f " + cacheDir + "/prepared/cache*.cache";
+		#endif
 		
+		for (int i=0; i<cmdList.length(); i++) {
+			qDebug() << "Clearing cache: " << cmdList[i];
+			system(cmdList[i].toAscii());
+		}
 	}
 }
