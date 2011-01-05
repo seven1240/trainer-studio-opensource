@@ -279,3 +279,8 @@ void SettingsDialog::on_pbFSConsole_clicked()
 	d->setAttribute(Qt::WA_DeleteOnClose);
 	d->show();
 }
+
+void SettingsDialog::on_pbClearCache_clicked()
+{
+	Utils::clearWebCache();
+}
