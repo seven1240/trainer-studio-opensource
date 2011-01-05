@@ -283,4 +283,5 @@ void SettingsDialog::on_pbFSConsole_clicked()
 void SettingsDialog::on_pbClearCache_clicked()
 {
 	Utils::clearWebCache();
+	QMessageBox::information(this, QApplication::applicationName(), "Cache cleared!");
 }
