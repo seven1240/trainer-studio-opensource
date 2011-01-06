@@ -21,7 +21,7 @@ class LoginDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	LoginDialog(ProgressWidget *progress, QWidget *parent = 0);
+	LoginDialog(QWidget *parent = 0);
 	~LoginDialog();
 
 protected:

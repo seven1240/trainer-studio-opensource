@@ -4,9 +4,6 @@
 #include <QDesktopServices>
 #include "application_controller.h"
 #include "main_window.h"
-#include "progress_dialog.h"
-#include "progress_widget.h"
-#include "progress_controller.h"
 #include "flash_dialog.h"
 #include "flash_controller.h"
 #include "login_dialog.h"
@@ -28,8 +25,6 @@ ApplicationController::ApplicationController() : Controller(NULL)
 	_server = NULL;
 	_fs = NULL;
 	_loginDialog = NULL;
-	_progressController = NULL;
-	_progressDialog = NULL;
 	_echoTestDialog = NULL;
 	_incomingCallDialog = NULL;
 	_flashDialog = NULL;
@@ -52,10 +47,6 @@ ApplicationController::~ApplicationController()
 	if (_callDialog != NULL) {
 		qDebug() << "Freeing CallDialog";
 		delete _callDialog;
-	}
-	if (_progressDialog != NULL) {
-		qDebug() << "Freeing ProgressDialog";
-		delete _progressDialog;
 	}
 	if (_loginDialog != NULL) {
 		qDebug() << "Freeing LoginDialog";
@@ -91,8 +82,6 @@ int ApplicationController::run()
 	_wrapupTimer->setInterval(5000);
 	_wrapupTimer->setSingleShot(true);
 
-	_progressWidget = new ProgressWidget();
-	_progressController = new ProgressController(_progressWidget, this);
 	_flashController = new FlashController(flashDialog(), this);
 
 	connect(server(), SIGNAL(authenticated(User*)), this, SLOT(authenticated(User*)));
@@ -183,14 +172,11 @@ QStateMachine *ApplicationController::createStateMachine()
 void ApplicationController::starting()
 {
 	incomingCallDialog()->hide();
-	progressDialog()->show();
-	progressDialog()->raise();
 }
 
 void ApplicationController::authenticating()
 {
 	echoTestDialog()->hide();
-	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->show();
 	loginDialog()->activateWindow();
@@ -198,7 +184,6 @@ void ApplicationController::authenticating()
 
 void ApplicationController::ready()
 {
-	progressDialog()->hide();
 	mainWindow()->hide();
 	loginDialog()->hide();
 	echoTestDialog()->hide();
@@ -254,7 +239,6 @@ void ApplicationController::authenticated(User *user)
 		}
 	}
 
-	progressDialog()->hide();
 	loginDialog()->hide();
 	mainWindow()->hide();
 	echoTestDialog()->show();
@@ -330,17 +314,10 @@ CallDialog *ApplicationController::callDialog()
 	return _callDialog;
 }
 
-ProgressDialog *ApplicationController::progressDialog()
-{
-	if (_progressDialog == NULL)
-		_progressDialog = new ProgressDialog(_progressWidget);
-	return _progressDialog;
-}
-
 LoginDialog *ApplicationController::loginDialog()
 {
 	if (_loginDialog == NULL)
-		_loginDialog = new LoginDialog(_progressWidget);
+		_loginDialog = new LoginDialog(_mainWindow);
 	return _loginDialog;
 }
 
