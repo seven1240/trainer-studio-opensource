@@ -22,6 +22,7 @@ public:
 protected:
 	void keyPressEvent(QKeyEvent *event);
 	void closeEvent(QCloseEvent *event);
+	void showEvent(QShowEvent *e);
 
 signals:
 	void closed();

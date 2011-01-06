@@ -23,6 +23,7 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	_hangup = new QPushButton("Hangup");
 	_conf = new QPushButton("Conference");
 	_n800 = new QPushButton("800");
+	_n800->setToolTip("Call 8888879913 via VoIP");
 	_echo = new QPushButton("Echo Test");
 	_sipStatusLabel = new QLabel("SIP: None");
 
@@ -77,6 +78,11 @@ void CallDialog::keyPressEvent(QKeyEvent * /*event*/)
 {
 }
 
+void CallDialog::showEvent(QShowEvent * /*event*/)
+{
+	_call->setEnabled(true);
+}
+
 void CallDialog::closeEvent(QCloseEvent * /*event*/)
 {
 	emit closed();
@@ -89,6 +95,7 @@ void CallDialog::onCall()
 		_display->append(QString("Calling %2").arg(number));
 		ApplicationController::fs()->call(number);
 	}
+	_call->setEnabled(false);
 }
 
 void CallDialog::onHold()
@@ -103,6 +110,7 @@ void CallDialog::onAnswer()
 void CallDialog::onHangup()
 {
 	ApplicationController::fs()->hangup(true);
+	_call->setEnabled(true);
 }
 
 void CallDialog::onCallConf()
