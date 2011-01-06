@@ -125,6 +125,6 @@ int main(int argc, char *argv[])
 	//raise more hard for windows
 	splash->raise();
 	int status = a.exec();
-	delete controller;
+//	delete controller;
 	return status;
 }
