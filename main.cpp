@@ -7,6 +7,7 @@
 #include "server_connection.h"
 #include <lib/qtsingleapplication-2.6.1/QtSingleApplication>
 #include <QMessageBox>
+#include <QSplashScreen>
 
 #define LOG_MAX_SIZE 600 * 1024
 
@@ -94,7 +95,13 @@ int main(int argc, char *argv[])
 	QApplication::setOrganizationName("Eleutian Inc.");
 	QApplication::setOrganizationDomain("eleutian.com");
 
+	QPixmap image(":/images/splash.png");
+    QSplashScreen *splash = new QSplashScreen(image);
+    splash->show();
+    splash->showMessage("Initializing ...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
+	splash->repaint();
 
+	usleep(5000000);
 	configureLogging();
 
 	QSettings settings;
@@ -110,6 +117,9 @@ int main(int argc, char *argv[])
 
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
+	
+    QObject::connect(ApplicationController::fs(), SIGNAL(ready()), splash, SLOT(close()));
+
 	int status = a.exec();
 	delete controller;
 	return status;

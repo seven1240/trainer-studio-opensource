@@ -2,6 +2,7 @@
     <qresource prefix="/images">
         <file alias="application.icns">resources/application.icns</file>
         <file alias="application.ico">resources/application.ico</file>
+        <file alias="splash.png">resources/images/splash.png</file>
     </qresource>
     <qresource prefix="/conf">
         <file alias="freeswitch.xml">resources/conf/freeswitch.xml</file>
