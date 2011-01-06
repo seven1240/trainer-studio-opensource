@@ -88,6 +88,7 @@ signals:
 	void coreLoadingError(QString);
 	void initialized();
 	void loaded(QString, QString, QString);
+	void loadedForSplash(QString, int, QColor);
 	void sofiaReady();
 	void ready();
 	void stopping();

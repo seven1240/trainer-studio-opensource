@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
 	
+    QObject::connect(ApplicationController::fs(), SIGNAL(loadedForSplash(QString,int,QColor)),
+		splash, SLOT(showMessage(QString,int,QColor)));
     QObject::connect(ApplicationController::fs(), SIGNAL(ready()), splash, SLOT(close()));
 
 	int status = a.exec();

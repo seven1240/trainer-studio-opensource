@@ -457,6 +457,8 @@ void FreeSwitch::generalEventHandler(switch_event_t *switchEvent)
 			emit sofiaReady();
 		}
 		emit loaded(modType, modKey, modName);
+		emit loadedForSplash(QString("Loaded: [%1] %2 %3").arg(modType).arg(modKey).arg(modName),
+			Qt::AlignRight|Qt::AlignBottom, Qt::blue);
 		break;
 	}
 	default:
