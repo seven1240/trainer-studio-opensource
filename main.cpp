@@ -5,6 +5,8 @@
 #include "main_window.h"
 #include "freeswitch.h"
 #include "server_connection.h"
+#include <lib/qtsingleapplication-2.6.1/QtSingleApplication>
+#include <QMessageBox>
 
 #define LOG_MAX_SIZE 600 * 1024
 
@@ -79,11 +81,19 @@ bool setDefaultSettings()
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
+	// QApplication a(argc, argv);
+	QtSingleApplication a(argc, argv);
+
+	if (a.isRunning()) {
+		QMessageBox::critical(NULL, "Trainer Studio", "Another Trainer Studio running");
+		return 0;
+	}
+	
 	QApplication::setApplicationName("Trainer Studio");
 	QApplication::setApplicationVersion("3.0.3");
 	QApplication::setOrganizationName("Eleutian Inc.");
 	QApplication::setOrganizationDomain("eleutian.com");
+
 
 	configureLogging();
 
@@ -94,6 +104,9 @@ int main(int argc, char *argv[])
 			return 99;
 		}
 	}
+
+	// QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+	// QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
