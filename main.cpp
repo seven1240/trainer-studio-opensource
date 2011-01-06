@@ -101,7 +101,6 @@ int main(int argc, char *argv[])
     splash->showMessage("Initializing ...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
 	splash->repaint();
 
-	usleep(5000000);
 	configureLogging();
 
 	QSettings settings;
