@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     splash->show();
     splash->showMessage("Initializing ...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
 	splash->repaint();
+	splash->raise();
 
 	configureLogging();
 
@@ -121,6 +122,8 @@ int main(int argc, char *argv[])
 		splash, SLOT(showMessage(QString,int,QColor)));
     QObject::connect(ApplicationController::fs(), SIGNAL(ready()), splash, SLOT(close()));
 
+	//raise more hard for windows
+	splash->raise();
 	int status = a.exec();
 	delete controller;
 	return status;
