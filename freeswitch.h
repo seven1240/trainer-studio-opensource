@@ -53,7 +53,7 @@ protected:
 	void run(void);
 
 public:
-	QString call(QString dialString);
+	QString call(QString dest, QString cidName = "Trainer Studio", QString cidNumber = "0000000000");
 	void setupGateway(QString username, QString password, QString realm, bool tcp);
 	void reload();
 	void registerSIP();

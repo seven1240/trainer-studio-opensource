@@ -105,8 +105,8 @@
                     <param name="hold-file" value="$${hold_music}"/>
                     <!--<param name="timer-name" value="soft"/>-->
                     <param name="dialplan" value="XML"/>
-                    <param name="cid-name" value="$${outbound_caller_name}"/>
-                    <param name="cid-num" value="$${outbound_caller_number}"/>
+                    <param name="cid-name" value="Trainer Studio"/>
+                    <param name="cid-num" value="0000000000"/>
                     <param name="sample-rate" value="8000"/>
                     <param name="codec-ms" value="20"/>
                   </settings>

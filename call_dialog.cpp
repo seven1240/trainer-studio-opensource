@@ -12,6 +12,7 @@
 #include "call_dialog.h"
 #include "dial_pad_widget.h"
 #include "utils.h"
+#include "user.h"
 
 CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 {
@@ -21,9 +22,10 @@ CallDialog::CallDialog(QWidget *parent) : QDialog(parent)
 	_hold = new QPushButton("Hold");
 	_answer = new QPushButton("Answer");
 	_hangup = new QPushButton("Hangup");
-	_conf = new QPushButton("Conference");
-	_n800 = new QPushButton("800");
-	_n800->setToolTip("Call 8888879913 via VoIP");
+	_conf = new QPushButton("Conf 20");
+	_n800 = new QPushButton("Conf 30");
+	_conf->setToolTip("Call Conference Room 20");
+	_n800->setToolTip("Call Conference Room 30");
 	_echo = new QPushButton("Echo Test");
 	_sipStatusLabel = new QLabel("SIP: None");
 
@@ -91,9 +93,11 @@ void CallDialog::closeEvent(QCloseEvent * /*event*/)
 void CallDialog::onCall()
 {
 	QString number = _number->text();
+	QString cidName = ApplicationController::user()->getLogin();
+	QString cidNumber = ApplicationController::user()->getVoipUsername();
 	if (!number.isEmpty()) {
 		_display->append(QString("Calling %2").arg(number));
-		ApplicationController::fs()->call(number);
+		ApplicationController::fs()->call(number, cidName, cidNumber);
 	}
 	_call->setEnabled(false);
 }
@@ -115,12 +119,12 @@ void CallDialog::onHangup()
 
 void CallDialog::onCallConf()
 {
-	_number->setText("conf");
+	_number->setText("conf_20");
 }
 
 void CallDialog::onCall800()
 {
-	_number->setText("8888879913");
+	_number->setText("conf_30");
 }
 
 void CallDialog::onCallEcho()
@@ -148,19 +152,19 @@ void CallDialog::onGatewayStateChange(QString /*gwName*/, QString gwState)
 
 void CallDialog::onCallIncoming(QString /*uuid*/, QString cidNumber, QString cidName)
 {
-	_display->append(QString("Ring From: %2").arg(
+	_display->append(QString("RingFrom: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
 void CallDialog::onCallAnswered(QString /*uuid*/, QString cidNumber, QString cidName)
 {
-	_display->append(QString("Call Answered: %2").arg(
+	_display->append(QString("Answered: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 
 void CallDialog::onCallEnded(QString /*uuid*/, QString cidNumber, QString cidName)
 {
-	_display->append(QString("Call Ended: %2").arg(
+	_display->append(QString("Ended: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
 }
 

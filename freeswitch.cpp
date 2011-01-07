@@ -510,10 +510,11 @@ void FreeSwitch::printEventHeaders(QSharedPointer<switch_event_t>event)
 	qDebug() << "\n\n";
 }
 
-QString FreeSwitch::call(QString dialString)
+QString FreeSwitch::call(QString dest, QString cidName, QString cidNumber)
 {
 	QString res;
-	command("pa", ("call " + dialString).toAscii(), &res);
+	QString dialString = QString("call %1 XML %2 %3").arg(dest).arg(cidName).arg(cidNumber);
+	command("pa", dialString.toAscii(), &res);
 	qDebug() << "Call: " << res.trimmed();
 	QStringList sl = res.split(":");
 	if (sl.count() == 3 && sl.at(0) == "SUCCESS") {
