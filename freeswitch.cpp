@@ -513,7 +513,7 @@ void FreeSwitch::printEventHeaders(QSharedPointer<switch_event_t>event)
 QString FreeSwitch::call(QString dest, QString cidName, QString cidNumber)
 {
 	QString res;
-	QString dialString = QString("call %1 XML %2 %3").arg(dest).arg(cidName).arg(cidNumber);
+	QString dialString = QString("call %1 XML %3 %2").arg(dest).arg(cidName).arg(cidNumber);
 	command("pa", dialString.toAscii(), &res);
 	qDebug() << "Call: " << res.trimmed();
 	QStringList sl = res.split(":");
