@@ -151,6 +151,7 @@ void ServerConnection::login(QString username, QString password)
 
 	cJSON_AddItemToObject(cj, "username", cJSON_CreateString(username.toAscii().data()));
 	cJSON_AddItemToObject(cj, "password", cJSON_CreateString(password.toAscii().data()));
+	cJSON_AddItemToObject(cj, "user_agent", cJSON_CreateString("Trainer Studio"));
 	cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
 	cJSON_AddItemToObject(cj, "system_info", info);
 
