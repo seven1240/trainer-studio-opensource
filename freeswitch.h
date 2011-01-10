@@ -66,6 +66,7 @@ public:
 	switch_status_t recordStart(QString uuid, QString filename);
 	switch_status_t recordStop(QString uuid, QString filename);
 	void answer();
+	void play(QString sound);
 
 	switch_status_t portAudioDtmf(char chr);
 	QString portAudioRescan();

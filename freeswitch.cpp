@@ -598,6 +598,12 @@ void FreeSwitch::hangup(bool all)
 	}
 }
 
+void FreeSwitch::play(QString sound)
+{
+	QString res;
+	command("bgapi", QString("pa play %1").arg(sound).toAscii(), &res);
+}
+
 switch_status_t FreeSwitch::recordStart(QString uuid, QString filename)
 {
 	QString res;
