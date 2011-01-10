@@ -166,5 +166,6 @@ void CallDialog::onCallEnded(QString /*uuid*/, QString cidNumber, QString cidNam
 {
 	_display->append(QString("Ended: %2").arg(
 		Utils::formatCallerID(cidName, cidNumber)));
+	_call->setEnabled(true);
 }
 
