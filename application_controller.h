@@ -11,9 +11,6 @@ QT_END_NAMESPACE
 class MainWindow;
 class ServerConnection;
 class FreeSwitch;
-class ProgressDialog;
-class ProgressController;
-class ProgressWidget;
 class FlashController;
 class FlashDialog;
 class EchoTestDialog;
@@ -34,10 +31,7 @@ private:
 	static ServerConnection *_server;
 	static FreeSwitch *_fs;
 	static User *_user;
-	ProgressWidget *_progressWidget;
-	ProgressController *_progressController;
 	FlashController *_flashController;
-	ProgressDialog *_progressDialog;
 	LoginDialog *_loginDialog;
 	EchoTestDialog *_echoTestDialog;
 	FlashDialog *_flashDialog;
@@ -46,7 +40,6 @@ private:
 	MainWindow *_mainWindow;
 
 private:
-	ProgressDialog *progressDialog();
 	LoginDialog *loginDialog();
 	EchoTestDialog *echoTestDialog();
 	FlashDialog *flashDialog();

@@ -5,6 +5,9 @@
 #include "main_window.h"
 #include "freeswitch.h"
 #include "server_connection.h"
+#include <lib/qtsingleapplication-2.6.1/QtSingleApplication>
+#include <QMessageBox>
+#include <QSplashScreen>
 
 #define LOG_MAX_SIZE 600 * 1024
 
@@ -79,11 +82,25 @@ bool setDefaultSettings()
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
+	// QApplication a(argc, argv);
+	QtSingleApplication a(argc, argv);
+
+	if (a.isRunning()) {
+		QMessageBox::critical(NULL, "Trainer Studio", "Another Trainer Studio running");
+		return 0;
+	}
+	
 	QApplication::setApplicationName("Trainer Studio");
 	QApplication::setApplicationVersion("3.0.3");
 	QApplication::setOrganizationName("Eleutian Inc.");
 	QApplication::setOrganizationDomain("eleutian.com");
+
+	QPixmap image(":/images/splash.png");
+    QSplashScreen *splash = new QSplashScreen(image);
+    splash->show();
+    splash->showMessage("Initializing ...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
+	splash->repaint();
+	splash->raise();
 
 	configureLogging();
 
@@ -95,9 +112,19 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+	// QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
+	
+    QObject::connect(ApplicationController::fs(), SIGNAL(loadedForSplash(QString,int,QColor)),
+		splash, SLOT(showMessage(QString,int,QColor)));
+    QObject::connect(ApplicationController::fs(), SIGNAL(ready()), splash, SLOT(close()));
+
+	//raise more hard for windows
+	splash->raise();
 	int status = a.exec();
-	delete controller;
+//	delete controller;
 	return status;
 }

@@ -12,6 +12,7 @@ ServerConnection::ServerConnection()
 	_connected = false;
 	_socket = new QTcpSocket(this);
 	_timer = new QTimer(this);
+	_timer->setSingleShot(true);
 	_pingTimer = new QTimer(this);
 	_pingTimer->setInterval(10000);
 	_machine = createStateMachine();
@@ -150,6 +151,7 @@ void ServerConnection::login(QString username, QString password)
 
 	cJSON_AddItemToObject(cj, "username", cJSON_CreateString(username.toAscii().data()));
 	cJSON_AddItemToObject(cj, "password", cJSON_CreateString(password.toAscii().data()));
+	cJSON_AddItemToObject(cj, "user_agent", cJSON_CreateString("Trainer Studio"));
 	cJSON_AddItemToObject(cj, "action", cJSON_CreateString("Authenticate"));
 	cJSON_AddItemToObject(cj, "system_info", info);
 
@@ -176,7 +178,9 @@ void ServerConnection::logout()
 void ServerConnection::close()
 {
 	qDebug() << "SC: closing";
+	_timer->stop();
 	_socket->close();
+	_connected = false;
 }
 
 void ServerConnection::onReadyRead()
@@ -258,6 +262,7 @@ void ServerConnection::onReadyRead()
 
 void ServerConnection::onTimeout()
 {
+	_connected = false;
 	close();
 }
 

@@ -12,10 +12,9 @@
 #include "server_connection.h"
 #include "settings_dialog.h"
 #include "echo_test_dialog.h"
-#include "progress_widget.h"
 #include "utils.h"
 
-LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
+LoginDialog::LoginDialog(QWidget *parent) :
 	QDialog(parent)
 {
 	_settings = new QPushButton("Settings");
@@ -25,7 +24,6 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	_username = new QLineEdit();
 	_password = new QLineEdit();
 	_password->setEchoMode(QLineEdit::Password);
-	_progress = progress;
 
 	QGroupBox *loginFormGroupBox = new QGroupBox(tr("Login"));
 	QFormLayout *formLayout = new QFormLayout;
@@ -33,16 +31,24 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	formLayout->addRow(new QLabel(tr("Password:")), _password);
 	loginFormGroupBox->setLayout(formLayout);
 
-	_loginFrame = new QFrame();
 	QVBoxLayout *loginLayout = new QVBoxLayout();
 	loginLayout->addWidget(loginFormGroupBox);
 	loginLayout->addWidget(_login);
 	loginLayout->addWidget(_settings);
+	_loginFrame = new QFrame();
 	_loginFrame->setLayout(loginLayout);
 
+	QLabel *progressLabel = new QLabel("Login to server, please wait ...");
+	QPushButton *cancel = new QPushButton("Cancel");
+	QVBoxLayout *progressLayout = new QVBoxLayout();
+	progressLayout->addWidget(progressLabel);
+	progressLayout->addWidget(cancel);
+	_progressFrame = new QFrame();
+	_progressFrame->setLayout(progressLayout);
+	
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(_loginFrame);
-	mainLayout->addWidget(_progress);
+	mainLayout->addWidget(_progressFrame);
 	setLayout(mainLayout);
 
 	setFixedSize(320, 240);
@@ -65,8 +71,8 @@ LoginDialog::LoginDialog(ProgressWidget *progress, QWidget *parent) :
 	connect(ApplicationController::server(), SIGNAL(authenticateError(QString)), this, SLOT(onAuthenticateError(QString)));
 	connect(ApplicationController::server(), SIGNAL(socketError(QString)), this, SLOT(onSocketError(QString)));
 	connect(_login, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
+	connect(cancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 	connect(_settings, SIGNAL(clicked()), this, SLOT(onSettingsClicked()));
-	connect(_progress, SIGNAL(canceled()), this, SLOT(onCancelClicked()));
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -150,14 +156,14 @@ void LoginDialog::onSocketError(QString error)
 
 void LoginDialog::showProgress()
 {
+	_progressFrame->show();
 	_loginFrame->hide();
-	_progress->show();
 }
 
 void LoginDialog::showLogin()
 {
-	_progress->hide();
 	_loginFrame->show();
+	_progressFrame->hide();
 }
 
 void LoginDialog::onLoginClicked()

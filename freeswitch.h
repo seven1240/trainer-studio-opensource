@@ -53,7 +53,7 @@ protected:
 	void run(void);
 
 public:
-	QString call(QString dialString);
+	QString call(QString dest, QString cidName = "Trainer Studio", QString cidNumber = "0000000000");
 	void setupGateway(QString username, QString password, QString realm, bool tcp);
 	void reload();
 	void registerSIP();
@@ -66,6 +66,7 @@ public:
 	switch_status_t recordStart(QString uuid, QString filename);
 	switch_status_t recordStop(QString uuid, QString filename);
 	void answer();
+	void play(QString sound);
 
 	switch_status_t portAudioDtmf(char chr);
 	QString portAudioRescan();
@@ -88,6 +89,7 @@ signals:
 	void coreLoadingError(QString);
 	void initialized();
 	void loaded(QString, QString, QString);
+	void loadedForSplash(QString, int, QColor);
 	void sofiaReady();
 	void ready();
 	void stopping();
