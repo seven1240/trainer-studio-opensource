@@ -25,6 +25,7 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
 
 	setFixedSize(320, 140);
 	setWindowTitle("Incoming Call");
+	setWindowFlags(Qt::WindowStaysOnTopHint);
 
 	connect(ctrlA, SIGNAL(activated()), this, SLOT(onAnswerClicked()));
 	connect(commandA, SIGNAL(activated()), this, SLOT(onAnswerClicked()));
