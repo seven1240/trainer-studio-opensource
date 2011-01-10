@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	QPixmap image(":/images/splash.png");
     QSplashScreen *splash = new QSplashScreen(image);
     splash->show();
-    splash->showMessage("Initializing ...", Qt::AlignRight|Qt::AlignBottom, Qt::blue);
+    splash->showMessage("Initializing ...", Qt::AlignLeft|Qt::AlignBottom, Qt::blue);
 	splash->repaint();
 	splash->raise();
 
