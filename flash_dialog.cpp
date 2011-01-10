@@ -229,8 +229,6 @@ void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*
 {
 	if (!this->isVisible()) return;
 
-	ApplicationController::fs()->play(TONE_BUSY);
-
 	if (_interactionSeconds < 450) {
 		int ret = QMessageBox::warning(this, "Premature Ending",
 									   "This call was ended prematurely.  Would you like to skip the review screen?",
