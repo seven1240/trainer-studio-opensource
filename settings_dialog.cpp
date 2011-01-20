@@ -17,9 +17,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 	ui->setupUi(this);
 	ui->cbTemplate->addItem("EQEnglish Trainer");
 	ui->cbTemplate->addItem("EQEnglish Trainer (China)");
-	ui->cbTemplate->addItem("EQEnglish Trainer (New Server)");
 	ui->cbTemplate->addItem("Spicus Trainer");
-	ui->cbTemplate->addItem("Spicus Trainer (Old Server)");
 	ui->cbTemplate->addItem("Test Server");
 	ui->cbTemplate->addItem("Developer");
 	ui->cbTemplate->setCurrentIndex(-1);
@@ -62,30 +60,22 @@ void SettingsDialog::on_pushButton_clicked()
 	switch(ui->cbTemplate->currentIndex()) {
 
 	case 0:
-		ui->leURL->setText("http://www.idapted.com");
-		ui->leServer->setText("voip.idapted.com:7000");
-		break;
-	case 1:
-		ui->leURL->setText("http://www.eqenglish.com");
-		ui->leServer->setText("voip.idapted.com:7000");
-		break;
-	case 2:
 		ui->leURL->setText("http://www.eleutian.com");
 		ui->leServer->setText("voip.eleutian.com:7000");
 		break;
-	case 3:
+	case 1:
+		ui->leURL->setText("http://www.eqenglish.com");
+		ui->leServer->setText("voip.eleutian.com:7000");
+		break;
+	case 2:
 		ui->leURL->setText("http://www.eleutian.com");
 		ui->leServer->setText("voip.eleutian.com:7001");
 		break;
-	case 4:
-		ui->leURL->setText("http://www.idapted.com");
-		ui->leServer->setText("voip.idapted.com:7001");
-		break;
-	case 5:
+	case 3:
 		ui->leURL->setText("http://www.veecue.com");
 		ui->leServer->setText("voip.veecue.com:7000");
 		break;
-	case 6:
+	case 4:
 		ui->leURL->setText("http://localhost:9393");
 		ui->leServer->setText("localhost:7000");
 		break;
