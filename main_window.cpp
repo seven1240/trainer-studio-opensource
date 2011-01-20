@@ -136,7 +136,12 @@ void MainWindow::on_Logout_clicked()
 
 void MainWindow::on_State_clicked()
 {
-	if (!_sipStateReady) switch_sleep(2000000);
+	if (!_sipStateReady) {
+		for(int i=0; i<2000; i++) {
+			switch_sleep(1000);
+			QApplication::processEvents();
+		}
+	}
 
 	if (!_sipStateReady){
 		QMessageBox::warning(this, QApplication::applicationName(),
