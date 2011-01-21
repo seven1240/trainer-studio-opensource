@@ -301,7 +301,7 @@ void FlashDialog::onTestClicked()
 	else if (f == 2) {
 		f=0;
 		QString s = QString("%1" REVIEW_FLASH_URL
-			"?product_type=eqenglish&background_color=#F3F3F3&font_family=Arial&default_ui_language=en_US"
+			"?product_type=eqenglish&background_color=%23F3F3F3&font_family=Arial&default_ui_language=en_US"
 			"&ui_language=en_US&mode=trainer&interaction_id=108219&base_url=%1").arg(url);
 		_webView->load(QUrl(s));
 	}
