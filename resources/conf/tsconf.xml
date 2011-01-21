@@ -2,26 +2,20 @@
 <document type="trainer_studio/xml">
     <profiles>
         <profile name="EQEnglish Trainer">
-            <params name="url" value="http://www.eqenglish.com">
-            <params name="server" value="voip.idapted.com">
-            <params name="port" value="7000">
-        </profile>
-
-        <profile name="EQEnglish Trainer (New Server)">
             <params name="url" value="http://www.eleutian.com">
             <params name="server" value="voip.eleutian.com">
-            <params name="port" value="7000">
+            <params name="port" value="7002">
+        </profile>
+
+        <profile name="EQEnglish Trainer (China)">
+            <params name="url" value="http://www.eqenglish.com">
+            <params name="server" value="voip.eleutian.com">
+            <params name="port" value="7002">
         </profile>
 
         <profile name="Spicus Trainer">
             <params name="url" value="http://www.eleutian.com">
             <params name="server" value="voip.eleutian.com">
-            <params name="port" value="7001">
-        </profile>
-
-        <profile name="Spicus Trainer (Old Server)">
-            <params name="url" value="http://www.eqenglish.com">
-            <params name="server" value="voip.idapted.com">
             <params name="port" value="7001">
         </profile>
 

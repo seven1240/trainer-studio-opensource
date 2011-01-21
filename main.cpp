@@ -73,9 +73,9 @@ bool setDefaultSettings()
 {
 	QSettings settings;
 	settings.beginGroup("General");
-	settings.setValue("url", "http://www.idapted.com");
-	settings.setValue("trainer_server", "voip.idapted.com");
-	settings.setValue("trainer_server_port", 7000);
+	settings.setValue("url", "http://www.eleutian.com");
+	settings.setValue("trainer_server", "voip.eleutian.com");
+	settings.setValue("trainer_server_port", 7002);
 	settings.endGroup();
 	return true;
 }
