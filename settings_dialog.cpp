@@ -61,11 +61,11 @@ void SettingsDialog::on_pushButton_clicked()
 
 	case 0:
 		ui->leURL->setText("http://www.eleutian.com");
-		ui->leServer->setText("voip.eleutian.com:7000");
+		ui->leServer->setText("voip.eleutian.com:7002");
 		break;
 	case 1:
 		ui->leURL->setText("http://www.eqenglish.com");
-		ui->leServer->setText("voip.eleutian.com:7000");
+		ui->leServer->setText("voip.eleutian.com:7002");
 		break;
 	case 2:
 		ui->leURL->setText("http://www.eleutian.com");
