@@ -3,6 +3,12 @@
         <file alias="application.icns">resources/application.icns</file>
         <file alias="application.ico">resources/application.ico</file>
         <file alias="splash.png">resources/images/splash.png</file>
+        <file alias="hangup.png">resources/images/hangup.png</file>
+        <file alias="mute.png">resources/images/mute.png</file>
+        <file alias="reconnect.png">resources/images/reconnect.png</file>
+        <file alias="test.png">resources/images/test.png</file>
+        <file alias="reload.png">resources/images/reload.png</file>
+        <file alias="copy_id.png">resources/images/copy_id.png</file>
     </qresource>
     <qresource prefix="/conf">
         <file alias="freeswitch.xml">resources/conf/freeswitch.xml</file>
