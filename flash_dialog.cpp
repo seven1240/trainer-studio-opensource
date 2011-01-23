@@ -399,11 +399,11 @@ void FlashDialog::onJSWindowObjectCleared()
 void FlashDialog::onMuteClicked()
 {
 	if (_mute->isChecked()) {
-		ApplicationController::fs()->unmute();
-		_mute->setText("Mute");
-	} else {
 		ApplicationController::fs()->mute();
 		_mute->setText("Unmute");
+	} else {
+		ApplicationController::fs()->unmute();
+		_mute->setText("Mute");
 	}
 }
 
