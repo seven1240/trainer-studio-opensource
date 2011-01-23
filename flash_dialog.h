@@ -13,6 +13,7 @@ class QWebView;
 class QPushButton;
 class QLabel;
 class QTimer;
+class QAction;
 QT_END_NAMESPACE
 
 class FlashDialog : public QDialog {
@@ -50,26 +51,26 @@ signals:
 	void closed();
 
 private:
-	QPushButton *_hangup;
-	QPushButton *_reconnection;
-	QPushButton *_mute;
-	QPushButton *_test;
-	QPushButton *_reloadMovie;
+
+	QAction *_test;
+	QAction *_mute;
+	QAction *_reconnect;
+	QLabel *_reconnectLabel;
 	QLabel *_time;
 	QWebView *_webView;
 	QString _js;
 	QString _interactionId;
 	QVariantMap _interactionData;
+
 	int _currentMovie;
+	int _seconds;
+	int _interactionSeconds;
+	QTimer *_timer;
+
 	void loadMovie(QString params);
 	void loadInteractionMovie();
 	void loadReviewMovie();
 	void reconnectingStatus(bool reconnecting);
-
-	int _seconds;
-	int _interactionSeconds;
-	bool _isMuted;
-	QTimer *_timer;
 };
 
 #endif // FLASHDIALOG_H

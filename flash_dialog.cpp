@@ -7,6 +7,8 @@
 #include <QDesktopServices>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QAction>
+#include <QToolBar>
 #include <QUrl.h>
 #include <QApplication>
 #include <QClipboard>
@@ -26,30 +28,33 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	QDialog(parent)
 {
 	_webView = new QWebView();
-	_hangup = new QPushButton("Disconnect");
-	_reconnection = new QPushButton("Reconnect");
-	_mute = new QPushButton("Mute");
-	_test = new QPushButton("Test");
-	_reloadMovie = new QPushButton("Reload");
+	_mute = new QAction(QPixmap(":/images/mute.png"), tr("&Mute"), this);
+	_mute->setCheckable(true);
+	_reconnect = new QAction(QPixmap(":/images/reconnect.png"), tr("&Reconnect"), this);
+	_reconnectLabel = new QLabel();
 	_time = new QLabel();
-	_isMuted = false;
+	_test = new QAction(QPixmap(":/images/test.png"), tr("&Test"), this);
+	_test->setToolTip(tr("Test loading pages"));
 
-	QPushButton *copyInteractionId = new QPushButton("Copy ID");
+	QAction *reload = new QAction(QPixmap(":/images/reload.png"), tr("&Reload"), this);
+	QAction *copyID = new QAction(QPixmap(":/images/copy_id.png"), tr("&Copy ID"), this);
+	QAction *hangup = new QAction(QPixmap(":/images/hangup.png"), tr("Hangup"), this);
 
-	QHBoxLayout *topLayout = new QHBoxLayout();
-	QFrame *topFrame = new QFrame();
-	topLayout->addWidget(_time);
-	topLayout->addWidget(_mute);
-	topLayout->addWidget(_test);
-	topLayout->addWidget(_reloadMovie);
-	topLayout->addWidget(copyInteractionId);
-	topLayout->addWidget(_hangup);
-	topLayout->addWidget(_reconnection);
-	topFrame->setLayout(topLayout);
-	topFrame->setFixedHeight(40);
+	QToolBar *toolBar = new QToolBar(tr("&Tile"), this);
+	toolBar->addWidget(_time);
+	toolBar->addSeparator();
+	toolBar->addAction(_test);
+	toolBar->addAction(_mute);
+	toolBar->addAction(reload);
+	toolBar->addAction(copyID);
+	toolBar->addAction(_reconnect);
+	toolBar->addWidget(_reconnectLabel);
+	toolBar->addSeparator();
+	toolBar->addAction(hangup);
 
 	QVBoxLayout *verticalLayout = new QVBoxLayout();
-	verticalLayout->addWidget(topFrame);
+	verticalLayout->setMargin(0);
+	verticalLayout->addWidget(toolBar);
 	verticalLayout->addWidget(_webView);
 	setLayout(verticalLayout);
 
@@ -68,12 +73,12 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	connect(ApplicationController::fs(), SIGNAL(callEnded(QString,QString,QString)), this, SLOT(onCallHangup(QString,QString,QString)));
 	connect(_webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
 
-	connect(_hangup, SIGNAL(clicked()), this, SLOT(onHangupClicked()));
-	connect(_reconnection, SIGNAL(clicked()), this, SLOT(onReconnectionClicked()));
-	connect(_mute, SIGNAL(clicked()), this, SLOT(onMuteClicked()));
-	connect(_test, SIGNAL(clicked()), this, SLOT(onTestClicked()));
-	connect(_reloadMovie, SIGNAL(clicked()), this, SLOT(onReloadMovieClicked()));
-	connect(copyInteractionId, SIGNAL(clicked()), this, SLOT(copyInteractionId()));
+	connect(hangup, SIGNAL(activated()), this, SLOT(onHangupClicked()));
+	connect(_reconnect, SIGNAL(activated()), this, SLOT(onReconnectionClicked()));
+	connect(_mute, SIGNAL(activated()), this, SLOT(onMuteClicked()));
+	connect(_test, SIGNAL(activated()), this, SLOT(onTestClicked()));
+	connect(reload, SIGNAL(activated()), this, SLOT(onReloadMovieClicked()));
+	connect(copyID, SIGNAL(activated()), this, SLOT(copyInteractionId()));
 
 	QWebSettings *websetting= QWebSettings::globalSettings();
 	websetting->setAttribute(QWebSettings::JavascriptEnabled, true);
@@ -138,6 +143,7 @@ void FlashDialog::closeEvent(QCloseEvent * /*e*/)
 	ApplicationController::fs()->hangup(true);
 	_webView->reload();
 	lower();
+	_reconnectLabel->setText("");
 	qDebug() << "flashDialog Closing";
 	emit closed();
 }
@@ -228,6 +234,7 @@ void FlashDialog::onHangupClicked()
 void FlashDialog::onCallHangup(QString /*uuid*/, QString /*cidName*/, QString /*cidNumber*/)
 {
 	if (!this->isVisible()) return;
+	_reconnectLabel->setText("Disconnected");
 
 	if (_interactionSeconds < 450) {
 		int ret = QMessageBox::warning(this, "Premature Ending",
@@ -348,7 +355,7 @@ void FlashDialog::onReconnectionClicked()
 void FlashDialog::onLostConnection()
 {
 	reconnectingStatus(true);
-	ApplicationController::fs()->play(TONE_BUSY);
+//	ApplicationController::fs()->play(TONE_BUSY);
 }
 
 void FlashDialog::onInteractionReconnected()
@@ -358,18 +365,16 @@ void FlashDialog::onInteractionReconnected()
 
 void FlashDialog::reconnectingStatus(bool reconnecting)
 {
+	_reconnect->setEnabled(!reconnecting);
+
 	if (reconnecting)
 	{
-		_reconnection->setStyleSheet("background-color: #ffaaaa; color: #000;");
-		_reconnection->setText("Reconnecting...");
-		_reconnection->setEnabled(false);
+		_reconnectLabel->setStyleSheet("background-color: #ff0000; color: #000;");
+		_reconnectLabel->setText("Reconnecting...");
 		_timer->stop();
-	}
-	else
-	{
-		_reconnection->setStyleSheet("background-color: ; color: ;");
-		_reconnection->setText("Reconnect");
-		_reconnection->setEnabled(true);
+	} else {
+		_reconnectLabel->setStyleSheet("");
+		_reconnectLabel->setText("Connected");
 		_timer->start();
 	}
 }
@@ -393,14 +398,12 @@ void FlashDialog::onJSWindowObjectCleared()
 
 void FlashDialog::onMuteClicked()
 {
-	if (_isMuted) {
+	if (_mute->isChecked()) {
 		ApplicationController::fs()->unmute();
 		_mute->setText("Mute");
-		_isMuted = false;
 	} else {
 		ApplicationController::fs()->mute();
 		_mute->setText("Unmute");
-		_isMuted = true;
 	}
 }
 
