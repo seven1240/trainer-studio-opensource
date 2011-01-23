@@ -6,6 +6,7 @@
 #include "application_controller.h"
 #include "incoming_call_dialog.h"
 #include "freeswitch.h"
+#include "utils.h"
 
 IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
 	QDialog(parent)
@@ -26,6 +27,8 @@ IncomingCallDialog::IncomingCallDialog(QWidget *parent) :
 	setFixedSize(320, 140);
 	setWindowTitle("Incoming Call");
 	setWindowFlags(Qt::WindowStaysOnTopHint);
+
+	Utils::centerWindowOnDesktop(this);
 
 	connect(ctrlA, SIGNAL(activated()), this, SLOT(onAnswerClicked()));
 	connect(commandA, SIGNAL(activated()), this, SLOT(onAnswerClicked()));
