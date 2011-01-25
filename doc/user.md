@@ -14,6 +14,11 @@ Before TS is developed, TC(short for Trainer Client) is used. The technology use
 - VoIP core changed to use open source FreeSWITCH.
 - Mordern software look and feel with cross platform support such as Windows and Mac.
 
+## Install
+
+- Don't need to uninstall TC, but never run TC and TS at the same time.
+- If there's a problem on install flashxxx.dll, you can just ignore it, or close your FireFox browser and retry.
+
 ## Features and Functions
 
 TS is designed to support multiple products of Eleutian. So, correct settings need be done on the first run.
@@ -72,7 +77,7 @@ Click *call* on the main window will open a call window. It is like a softphone 
 
 *Do not open this window* when you plan to do interaction.
 
-### For advanced users
+## For advanced users
 
 This section is for technology support or supervisors.
 
