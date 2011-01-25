@@ -33,25 +33,22 @@ By click *Settings* on the login windows can open a settings window. And then us
 
 Default devices normally work, however, for users has multiple audio devices such as an USB mic/headset might want to change.
 
-*Output Device* and Ring Device can be the same or difference, say you want to listen on a headset but want to hear a ring from you computer speaker.
+- *Output Device* and Ring Device can be the same or difference, say you want to listen on a headset but want to hear a ring from you computer speaker.
 
-*Ring File* can be the default ring tone, or choose a .wav file locally. *Only*  .wav is supported.
+- *Ring File* can be the default ring tone, or choose a .wav file locally. *Only*  .wav is supported.
 
-*Reset* can reset everything on the audio page.
+- *Reset* can reset everything on the audio page.
 
-*Loop Test* is designed to test the local sound devices. I.e, you speak on the mic and then can hear immediately on the headset.
+- *Loop Test* is designed to test the local sound devices. I.e, you speak on the mic and then can hear immediately on the headset.
 
 Note, *Loop Test* is different that *Echo Test*. *Loop* is echoed locally on your computer(i.e. you can do that without network), and *Echo* is actually doing a call to our server and voices is echoed back from the server.
 
 ### Diagnostic
 
-*Enable Debug* is designed for advanced users.
-
-*Clear Cache* - Clear the browser cache, i.e. downloaded html and swf files. It only affect to the internal embedded browser and has no effect to other browsers such as IE and FireFox.
-
-*FS Console* - For advanced users only.
-
-*Reveal log file in folder* - Can open a directory to browse the log file on user's computer. Sometimes technology support people might require a log to find problems. This button is designed to find logs easily.
+- *Enable Debug* is designed for advanced users.
+- *Clear Cache* - Clear the browser cache, i.e. downloaded html and swf files. It only affect to the internal embedded browser and has no effect to other browsers such as IE and FireFox.
+- *FS Console* - For advanced users only.
+- *Reveal log file in folder* - Can open a directory to browse the log file on user's computer. Sometimes technology support people might require a log to find problems. This button is designed to find logs easily.
 
 ### The main window
 
@@ -63,13 +60,13 @@ You will be force *Paused* when the server knows you have problem to get a call.
 
 Also can call the *Interaction window* or the *Flash window*. It is an embedded browser such as IE and FireFox which can load flash and webpages during an interaction.
 
-*Timer* - Time for interaction or review. It is counting up other than count down in the old TC.
-*Mute* - Mute or UnMute your mic so the other party(student/learner) cannot hear you.
-*Reload* - Reload the current page. It is safe to reload if something went wrong, like the *bubbles* problem in TC.
-*Copy ID* - Copy the interaction ID to your clipboard so you can paste somewhere.
-*Reconnect* - Reconnect hangup the student side and re-call them, helpful if sound was bad or getting worse. Note, you can only reconnect a few times on the current settings, normally 3 or 4.
-*Hangup* - Hangup the call and go to review.
-*Finish* - on the review screen, the *Finish* button is actually on the flash page but not on the window. Be sure to click *Finish* instead of the X icon on the window.
+- *Timer* - Time for interaction or review. It is counting up other than count down in the old TC.
+- *Mute* - Mute or UnMute your mic so the other party(student/learner) cannot hear you.
+- *Reload* - Reload the current page. It is safe to reload if something went wrong, like the *bubbles* problem in - TC.
+- *Copy ID* - Copy the interaction ID to your clipboard so you can paste somewhere.
+- *Reconnect* - Reconnect hangup the student side and re-call them, helpful if sound was bad or getting worse. Note, you can only reconnect a few times on the current settings, normally 3 or 4.
+- *Hangup* - Hangup the call and go to review.
+- *Finish* - on the review screen, the *Finish* button is actually on the flash page but not on the window. Be sure to click *Finish* instead of the X icon on the window.
 
 ### The call window
 
@@ -85,12 +82,12 @@ By Enabling debug you can see two more buttons, one is called *Flash* on the mai
 
 	Settings -> Diagnostic -> Enable Debug 
 
-1st click - Open the Adobe Flash site, so you knows your version of flash plugin.
-2nd click - Open a sample Interaction screen.
-3rd click - Open a sample review screen.
-4th? - go to 1st.
+- 1st click - Open the Adobe Flash site, so you knows your version of flash plugin.
+- 2nd click - Open a sample Interaction screen.
+- 3rd click - Open a sample review screen.
+- 4th? - go to 1st.
 
-LOGs.
+### LOGs.
 
 Click *reveal log files in folder* on the *Diagnostic* window will guide you to the log folder. 
 
