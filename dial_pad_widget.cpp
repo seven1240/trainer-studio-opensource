@@ -19,7 +19,7 @@ DialPadWidget::DialPadWidget(QWidget *parent) :
 	QString pad[4][3] = {
 		{ "1", "2", "3" },
 		{ "4", "5", "6" },
-		{ "9", "8", "9" },
+		{ "7", "8", "9" },
 		{ "*", "0", "#" },
 	};
 
