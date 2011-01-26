@@ -100,7 +100,7 @@ void EchoTestDialog::onNewEvent(QSharedPointer<switch_event_t> spEvent)
 		}
 	case SWITCH_EVENT_CHANNEL_BRIDGE:
 		{
-			progress("Server Answered, Please talk...");
+			progress("Server answered, please talk after the beep ...");
 			break;
 		}
 	case SWITCH_EVENT_CHANNEL_HANGUP:
