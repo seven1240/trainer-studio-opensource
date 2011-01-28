@@ -33,6 +33,7 @@ FlashDialog::FlashDialog(QWidget *parent) :
 	_reconnect = new QAction(QPixmap(":/images/reconnect.png"), tr("&Reconnect"), this);
 	_reconnectLabel = new QLabel();
 	_time = new QLabel();
+	_time->setFont( QFont( "Times", 24, QFont::Bold ) );
 	_test = new QAction(QPixmap(":/images/test.png"), tr("&Test"), this);
 	_test->setToolTip(tr("Test loading pages"));
 
