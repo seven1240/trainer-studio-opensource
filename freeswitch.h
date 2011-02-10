@@ -24,7 +24,8 @@
  * Contributor(s):
  *
  * Joao Mesquita <jmesquita@freeswitch.org>
- *
+ * Seven Du <seven@eleutian.com>
+ * Jacob <jacob@eleutian.com>
  */
 #ifndef FSHOST_H
 #define FSHOST_H

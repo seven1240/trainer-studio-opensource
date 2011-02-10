@@ -1,6 +1,6 @@
 /*
  * FreeSWITCH Modular Media Switching Software Library / Soft-Switch Application
- * Copyright (C) 2005-2009, Anthony Minessale II <anthm@freeswitch.org>
+ * Copyright (C) 2011, Anthony Minessale II <anthm@freeswitch.org>
  *
  * Version: MPL 1.1
  *
@@ -24,7 +24,8 @@
  * Contributor(s):
  *
  * Joao Mesquita <jmesquita@freeswitch.org>
- *
+ * Seven Du <seven@eleutian.com>
+ * Jacob <jacob@eleutian.com>
  */
 
 #include <QtGui>

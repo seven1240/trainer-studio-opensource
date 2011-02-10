@@ -1,20 +1,21 @@
-                                                                     
-                                                                     
-                                                                     
-                                             
+
+
+
+
   SOFTWARE LICENSE AGREEMENT
 
 
    LICENSE:
 
-	* EleutianTrainerStudio is (c) 2011 Eleutian Technology Inc.  All Rights Reserved.
+	* Eleutian Trainer Studio Opensource Edition is (c) 2011 Eleutian Technology, LLC. All Rights Reserved.
 
-	* EleutianTrainerStudio may not be distributed in any form without the express consent of Eleutian Technology Inc.
+	* Eleutian Trainer Studio Opensource Edition may not be distributed except in compliance with the Apache License V. 2.0 (the license). You may obtain a copy of the License at http://www.apache.org/licenses/ .
 
-	* This software is intended for the sole use of Eleutian Teachers and Trainers.
+	* This software is originally intended for the sole use of Eleutian Teachers and Trainers, but can be used in other places with VoIP and Socket/HTTP technologies.
 
-	* EleutianTrainerStudio IS DISTRIBUTED "AS IS".  NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED. YOU USE IT AT YOUR OWN RISK. NEITHER ELEUTIAN TECHNOLOGY INC. NOR ANY OF ITS EMPLOYEES, AFFILIATES, OWNERS, OR OTHER RELATED PARTIES WITH EleutianTrainerStudio WILL BE LIABLE FOR DATA LOSS, DAMAGES, LOSS OF PROFITS OR ANY OTHER KIND OF LOSS WHILE USING OR MISUSING THIS SOFTWARE. EVEN IF EleutianTrainerStudio AND/OR THE AUTHORS ARE APPRISED OF THE POSSIBILITY OF SUCH DAMAGES OCCURRING. ELEUTIAN TECHNOLOGY INC ASSUMES  NO LIABILITY  FOR DAMAGES,  DIRECT  OR CONSEQUENTIAL, WHICH MAY RESULT FROM THE USE OF EleutianTrainerStudio.
+	* Eleutian Trainer Studio Opensource Edition IS DISTRIBUTED "AS IS".  NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED. YOU USE IT AT YOUR OWN RISK. NEITHER ELEUTIAN TECHNOLOGY INC. NOR ANY OF ITS EMPLOYEES, AFFILIATES, OWNERS, OR OTHER RELATED PARTIES WITH Eleutian Trainer Studio Opensource Edition WILL BE LIABLE FOR DATA LOSS, DAMAGES, LOSS OF PROFITS OR ANY OTHER KIND OF LOSS WHILE USING OR MISUSING THIS SOFTWARE. EVEN IF EleutianTrainerStudio AND/OR THE AUTHORS ARE APPRISED OF THE POSSIBILITY OF SUCH DAMAGES OCCURRING. ELEUTIAN TECHNOLOGY INC ASSUMES  NO LIABILITY  FOR DAMAGES,  DIRECT  OR CONSEQUENTIAL, WHICH MAY RESULT FROM THE USE OF Eleutian Trainer Studio OpenSource Edition.
 
-	* This software may not be reverse-engineered or disassembled, and it includes certain trade secrets and confidential information of Eleutian Technology Inc.
-	
-	* Installing and using EleutianTrainerStudio means the acceptance of these terms and conditions of the license. If you do not agree with the terms of this license you must remove EleutianTrainerStudio files from your storage devices and cease to use the product.
+	* This software may not be reverse-engineered or disassembled.
+
+	* Installing and using Eleutian Trainer Studio Opensource Edition means the acceptance of these terms and conditions of the license. If you do not agree with the terms of this license you must remove Eleutian Trainer Studio Opensource Edition files from your storage devices and cease to use the product.
+

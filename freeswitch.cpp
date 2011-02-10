@@ -24,7 +24,8 @@
  * Contributor(s):
  *
  * Joao Mesquita <jmesquita@freeswitch.org>
- *
+ * Seven Du <seven@eleutian.com>
+ * Jacob <jacob@eleutian.com>
  */
 
 #include <QtGui>

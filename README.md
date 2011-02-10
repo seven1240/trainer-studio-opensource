@@ -1,18 +1,16 @@
 # Overview
 
-Developed in Qt, using libfreeswitch for the sip part.
+A VoIP Developed in Qt, using libfreeswitch for the sip part.
 
-See the following link to get a full overview of the entire system.
-<https://github.com/eleutian/wiki/wiki/Queue-System>
+It is designed to work with a *server* which speaks a private JSON protocol. However, the *server* code is too specific to our business logic to be opensourced. So, we only opensource the *client* part as a thank to the FreeSWITCH community. The code is straight forward and it's easy to take out of the socket( the JSON protocol) code or you can implement your own server - you can figure out the protocol by following the code and working flows described in doc/ .
+
+The idea is to initiate a TCP socket connection on authenticate, the remote server verify the login/pass and return back a user object (in JSON) which contains a SIP server and username/password pair, then the client can register to SIP. The advantage of using a TCP socket is that the server knows immediately if a client gone(crash/network down).
 
 # Build
 
 ## Mac
 
-TS depends on FreeSWITCH to be built, just download and install TS in /Applicaions:
-
-CN server: <http://www.eqenglish.com/assets/trainer_files/Trainer-Studio-Alpha-Edition-RC3.dmg>
-US server: <http://www.idapted.com/assets/trainer_files/Trainer-Studio-Alpha-Edition-RC3.dmg>
+TS depends on FreeSWITCH to be built, freeswitch must be targeted to /Applications/TrainerStudio.app/FreeSWITCH. (e.g. ./configure --prefix=/Applications/TrainerStudio.app/FreeSWITCH).
 
 
 ### Compile FS
