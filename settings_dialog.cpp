@@ -15,10 +15,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 	ui(new Ui::SettingsDialog)
 {
 	ui->setupUi(this);
-	ui->cbTemplate->addItem("EQEnglish Trainer");
-	ui->cbTemplate->addItem("EQEnglish Trainer (China)");
-	ui->cbTemplate->addItem("Spicus Trainer");
-	ui->cbTemplate->addItem("Test Server");
 	ui->cbTemplate->addItem("Developer");
 	ui->cbTemplate->setCurrentIndex(-1);
 
@@ -60,22 +56,6 @@ void SettingsDialog::on_pushButton_clicked()
 	switch(ui->cbTemplate->currentIndex()) {
 
 	case 0:
-		ui->leURL->setText("http://www.eleutian.com");
-		ui->leServer->setText("voip.eleutian.com:7002");
-		break;
-	case 1:
-		ui->leURL->setText("http://www.eqenglish.com");
-		ui->leServer->setText("voip.eleutian.com:7002");
-		break;
-	case 2:
-		ui->leURL->setText("http://www.eleutian.com");
-		ui->leServer->setText("voip.eleutian.com:7001");
-		break;
-	case 3:
-		ui->leURL->setText("http://www.veecue.com");
-		ui->leServer->setText("voip.veecue.com:7000");
-		break;
-	case 4:
 		ui->leURL->setText("http://localhost:9393");
 		ui->leServer->setText("localhost:7000");
 		break;

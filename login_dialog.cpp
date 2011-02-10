@@ -172,7 +172,7 @@ void LoginDialog::onLoginClicked()
 	settings.setValue("StoredData/Username", _username->text());
 	QString host = settings.value("General/trainer_server").toString();
         int port = settings.value("General/trainer_server_port").toInt();
-	if (host == NULL || host.isEmpty()) host = "voip.eleutian.com";
+	if (host == NULL || host.isEmpty()) host = "localhost";
 	if (port == 0) port = 7002;
 
 	_abort = false;

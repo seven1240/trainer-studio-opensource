@@ -204,7 +204,7 @@ void MainWindow::onReservedForInteraction(QVariantMap data)
 void MainWindow::on_About_clicked()
 {
 	QMessageBox::about(this, QApplication::applicationName(),
-		QString("%1 Version: %2\n\nCopyright (C) 2010 Eleutian Inc. \n"
+		QString("%1 Version: %2\n\nCopyright (C) 2010-2011 Eleutian Inc. \n"
 			"All rights reserved.").arg(
 			QApplication::applicationName()).arg(
 			QApplication::applicationVersion()));

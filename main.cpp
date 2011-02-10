@@ -73,9 +73,9 @@ bool setDefaultSettings()
 {
 	QSettings settings;
 	settings.beginGroup("General");
-	settings.setValue("url", "http://www.eleutian.com");
-	settings.setValue("trainer_server", "voip.eleutian.com");
-	settings.setValue("trainer_server_port", 7002);
+	settings.setValue("url", "http://localhost:9393");
+	settings.setValue("trainer_server", "localhost");
+	settings.setValue("trainer_server_port", 7000);
 	settings.endGroup();
 	return true;
 }
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	}
 	
 	QApplication::setApplicationName("Trainer Studio");
-	QApplication::setApplicationVersion("3.0.3");
+	QApplication::setApplicationVersion("1.0.0");
 	QApplication::setOrganizationName("Eleutian Inc.");
 	QApplication::setOrganizationDomain("eleutian.com");
 
@@ -112,12 +112,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	// QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-	// QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-
 	ApplicationController *controller = new ApplicationController();
 	controller->run();
-	
+
     QObject::connect(ApplicationController::fs(), SIGNAL(loadedForSplash(QString,int,QColor)),
 		splash, SLOT(showMessage(QString,int,QColor)));
     QObject::connect(ApplicationController::fs(), SIGNAL(ready()), splash, SLOT(close()));
