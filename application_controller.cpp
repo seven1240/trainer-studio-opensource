@@ -317,7 +317,7 @@ CallDialog *ApplicationController::callDialog()
 LoginDialog *ApplicationController::loginDialog()
 {
 	if (_loginDialog == NULL)
-		_loginDialog = new LoginDialog(_mainWindow);
+		_loginDialog = new LoginDialog();
 	return _loginDialog;
 }
 
