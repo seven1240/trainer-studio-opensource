@@ -1,6 +1,6 @@
 # Overview
 
-A VoIP Developed in Qt, using libfreeswitch for the sip part.
+A VoIP client developed in Qt, using libfreeswitch for the sip part.
 
 It is designed to work with a *server* which speaks a private JSON protocol. However, the *server* code is too specific to our business logic to be opensourced. So, we only opensource the *client* part as a thank to the FreeSWITCH community. The code is straight forward and it's easy to take out of the socket( the JSON protocol) code or you can implement your own server - you can figure out the protocol by following the code and working flows described in doc/ .
 
@@ -12,20 +12,20 @@ The idea is to initiate a TCP socket connection on authenticate, the remote serv
 
 TS depends on FreeSWITCH to be built, freeswitch must be targeted to /Applications/TrainerStudio.app/FreeSWITCH. (e.g. ./configure --prefix=/Applications/TrainerStudio.app/FreeSWITCH).
 
+You should make install and change the .pro file (or symlink) so the build system can find and link to it.
 
 ### Compile FS
 
 You don't need FS source to compile TS, but in case you want to compile, here is the instruction:
 
-```bash
- git clone git://git.freeswitch.org/freeswitch.git
- cd freeswitch
- ./bootstrap.sh
- #edit modules.conf, uncomment mod_port_audio
- ./configure --prefix=/Applications/TrainerStudio.app/FreeSWITCH
- make
- make install
-```
+	git clone git://git.freeswitch.org/freeswitch.git
+	cd freeswitch
+	./bootstrap.sh
+	#edit modules.conf, uncomment mod_port_audio
+	./configure --prefix=/Applications/TrainerStudio.app/FreeSWITCH
+	make
+	make install
+
 
 **Note**: you can also install in /usr/local/freeswitch by using ./configure without --prefix, but you need to change the trainer\_studio.pro to let it can find the headers in the following step
 
@@ -57,30 +57,6 @@ Need qt 4.7. VC++ Version <http://qt.nokia.com/downloads>
 freeswitch and trainer\_studio need in the same dir.
 
 Open trainer_studio.pro in Qt Creator, using shadow build.
-
-It is also possible to build in VS Express with the .sln. Deprecated though.
-
-### Known issues
-
-* ESC key make login dialog disappear, should catch it.
-
-Moria collected some issues, sent to Jacob via email.
-
-### Todo
-
-* End an interaction if SIP broken.
-
-* Webkit cache. Will need this to speed up flash loading and give better experience for trainers who has slow internet.
-
-* Debugging tools. Like ping, traceroute etc. Make it easy to report bugs, like POST the latest logs/configs to a http server.
-
-* compiled binaries and dlls should be on a separate file server instead of github.
-
-* auto-upgrade feature, better installation experience. 
-
-* Replace socket protocol to existing protocols like google's protocol buffer etc. To be discussed.
-
-* makerelease.sh can auto gen .dmg
 
 ## Releasing
 
@@ -121,17 +97,10 @@ There's a inno setup .iss available. Compiled DLLs need in certain dir.
 
 Win: <http://www.dependencywalker.com/> dll checker
 
-
 Mac:
 
-```bash
- otool -L xxx.dylib
-
- otool -l xxxx.dylib
-
- nm -gfj xxxxx.dylib
-
- file TrainerStudio
-
- install_name_tool
-```
+	otool -L xxx.dylib
+	otool -l xxxx.dylib
+	nm -gfj xxxxx.dylib
+	file TrainerStudio
+	install_name_tool
