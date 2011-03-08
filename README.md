@@ -107,4 +107,4 @@ Mac:
 
 ## Thanks
 
-We borrowed (or, stealed) some ideas and codes from <http://wiki.freeswitch.org/wiki/FSComm>.
+We borrowed (or, stole) some ideas and codes from <http://wiki.freeswitch.org/wiki/FSComm>.
