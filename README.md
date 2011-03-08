@@ -104,3 +104,7 @@ Mac:
 	nm -gfj xxxxx.dylib
 	file TrainerStudio
 	install_name_tool
+
+## Thanks
+
+We borrowed (or, stealed) some ideas and codes from <http://wiki.freeswitch.org/wiki/FSComm>.
